@@ -14,7 +14,7 @@ module.exports = function (dbIyectada){
         return db.Todos(TABLA)
     }
     function uno(id){
-        return db.uno(TABLA, id)
+        return db.elementos_cotizaciones( id)
     }
     function agregar(body){
         return db.agregar(TABLA, body)

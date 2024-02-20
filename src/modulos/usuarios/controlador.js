@@ -17,23 +17,24 @@ module.exports = function (dbIyectada){
     }
     async function agregar(body){
         const usuario = {
-            id: body.id,
+            id_usuario: body.id_usuario,
             usuario: body.usuario,
             rol: body.rol,
             create_at: body.create_at,
             update_at: body.update_at,
             correo: body.correo,
             activo: body.activo,
+            id_sucursal: body.id_sucursal
         }
         const respuesta = await db.agregar(TABLA, usuario)
         // console.log('respuesta', respuesta);
-        const insertId = (body.id === 0) ? respuesta.insertId : body.id
+        const insertId = (body.id_usuario === 0) ? respuesta.insertId : body.id_usuario
         
         let respuesta2 = ''
         if (body.usuario || body.password) {
             respuesta2 = await auth.agregar({
-                id: insertId,
-                usuario: body.usuario,
+                id_usuario: insertId,
+                correo: body.correo,
                 password: body.password
             })
         }
@@ -44,12 +45,17 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
+    function listaTecnicos( id_sucursal){
+        console.log({id_sucursal});
+        return db.listaTecnicos( id_sucursal)
+    }
 
     return {
         todos,
         uno,
         agregar,
-        eliminar
+        eliminar,
+        listaTecnicos
     }
     
 }

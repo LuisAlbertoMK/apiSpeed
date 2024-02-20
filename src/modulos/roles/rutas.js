@@ -8,42 +8,32 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/:id', uno)
 router.post('/', agregar)
 router.put('/', eliminar)
-router.get('/no_cotizacion/:no_cotizacion', no_cotizacion)
-router.get('/:id', consultaCotizacion)
 
 
 async function todos (req, res, next){
     try {
-        const items =  await controlador.todos(req.query.start, req.query.end)
+        const items =  await controlador.todos()
         respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)
     }
 }
-async function no_cotizacion(req, res, next){
+async function uno(req, res, next){
     try {
-        const items = await controlador.no_cotizacion(req.params.no_cotizacion)
+        const items = await controlador.uno(req.params.id)
         respuesta.success(req, res, items, 200)
-    } catch (error) {
-        next(error)
-    }
-}
-async function consultaCotizacion(req, res, next){
-    try {
-        const items = await controlador.consultaCotizacion(req.params.id)
-        respuesta.success(req, res, items[0], 200)
     } catch (error) {
         next(error)
     }
 }
 async function agregar(req, res, next){
     try {
-
         const items = await controlador.agregar(req.body)
         mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
-        respuesta.success(req, res, items, 201)
+        respuesta.success(req, res, mensaje, 201)
     } catch (error) {
         next(error)
     }

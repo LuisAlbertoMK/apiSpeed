@@ -16,18 +16,28 @@ module.exports = function (dbIyectada){
     function uno(id){
         return db.uno(TABLA, id)
     }
-    function agregar(body){
-        return db.agregar(TABLA, body)
+    async function agregar(body){
+        const respuesta = await db.agregar(TABLA, body)
+        const insertId = (body.id_moRefaccion === 0) ? respuesta.insertId : body.id_moRefaccion
+        return respuesta
     }
     function eliminar(body){
         return db.eliminar(TABLA, body)
+    }
+    function registraCompatible(body){
+        return db.agregar('compatibles', body)
+    }
+    function getCompatibles(body){
+        return db.getCompatibles(body)
     }
 
     return {
         todos,
         uno,
         agregar,
-        eliminar
+        eliminar,
+        registraCompatible,
+        getCompatibles
     }
     
 }

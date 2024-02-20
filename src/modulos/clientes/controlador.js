@@ -10,11 +10,14 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
 
-    function todos(){
-        return db.Todos(TABLA)
+    function clientes(){
+        return db.clientes()
     }
-    function uno(id){
-        return db.uno(TABLA, id)
+    function clientesSucursal(id_sucursal){
+        return db.clientesSucursal(id_sucursal)
+    }
+    function cliente(id_cliente){
+        return db.cliente(id_cliente)
     }
     function agregar(body){
         return db.agregar(TABLA, body)
@@ -24,8 +27,9 @@ module.exports = function (dbIyectada){
     }
 
     return {
-        todos,
-        uno,
+        clientes,
+        clientesSucursal,
+        cliente,
         agregar,
         eliminar
     }

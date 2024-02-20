@@ -8,6 +8,7 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/listaTecnicos/:id_sucursal', listaTecnicos)
 router.get('/:id', uno)
 // router.post('/', seguridad(), agregar)
 router.post('/', agregar)
@@ -19,15 +20,21 @@ async function todos (req, res, next){
     try {
         const items =  await controlador.todos()
         respuesta.success(req, res, items, 200)
-    } catch (error) {  
-
-        
+    } catch (error) {          
+        next(error)
+    }
+}
+async function listaTecnicos (req, res, next){
+    try {
+        const items =  await controlador.listaTecnicos(req.params.id_sucursal)
+        respuesta.success(req, res, items[0], 200)
+    } catch (error) {          
         next(error)
     }
 }
 async function uno(req, res, next){
     try {
-        const items = await controlador.uno(req.params.id)
+        const items = await controlador.uno(req.params.id_usuario)
         respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)
@@ -36,7 +43,7 @@ async function uno(req, res, next){
 async function agregar(req, res, next){
     try {
         const items = await controlador.agregar(req.body)
-        mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
+        mensaje  =  (req.body.id_usuario === 0) ? 'Item registrado' : 'Item actualizado'
         respuesta.success(req, res, mensaje, 201)
     } catch (error) {
         next(error)

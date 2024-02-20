@@ -1,5 +1,5 @@
 
-const TABLA = 'formapago'
+const TABLA = 'promociones'
 
 
 module.exports = function (dbIyectada){
@@ -23,11 +23,12 @@ module.exports = function (dbIyectada){
         return db.eliminar(TABLA, body)
     }
 
+
     return {
         todos,
         uno,
         agregar,
-        eliminar
+        eliminar,
     }
     
 }

@@ -8,42 +8,44 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/ObtenerDetallePaquete', ObtenerDetallePaquete)
 router.post('/', agregar)
 router.put('/', eliminar)
-router.get('/no_cotizacion/:no_cotizacion', no_cotizacion)
-router.get('/:id', consultaCotizacion)
+router.get('/:id', uno)
+// router.put('/categoria', categoria)
 
 
 async function todos (req, res, next){
     try {
-        const items =  await controlador.todos(req.query.start, req.query.end)
-        respuesta.success(req, res, items, 200)
-    } catch (error) {
-        next(error)
-    }
-}
-async function no_cotizacion(req, res, next){
-    try {
-        const items = await controlador.no_cotizacion(req.params.no_cotizacion)
-        respuesta.success(req, res, items, 200)
-    } catch (error) {
-        next(error)
-    }
-}
-async function consultaCotizacion(req, res, next){
-    try {
-        const items = await controlador.consultaCotizacion(req.params.id)
+        const items =  await controlador.todos()
         respuesta.success(req, res, items[0], 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function ObtenerDetallePaquete (req, res, next){
+    try {
+        const items =  await controlador.ObtenerDetallePaquete(req.query.id_paquete)
+        respuesta.success(req, res, items[0], 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function uno(req, res, next){
+    try {
+        const items = await controlador.uno(req.params.id)
+        respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)
     }
 }
 async function agregar(req, res, next){
     try {
-
         const items = await controlador.agregar(req.body)
         mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
-        respuesta.success(req, res, items, 201)
+        console.log(items);
+        const {insertId} = items
+        respuesta.success(req, res, insertId , 201)
     } catch (error) {
         next(error)
     }
@@ -56,4 +58,5 @@ async function eliminar(req, res, next){
         next(error)
     }
 }
+
 module.exports = router

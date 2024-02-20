@@ -3,28 +3,34 @@ const express = require('express')
 const respuesta = require('../../red/respuestas')
 const controlador= require('./index')
 
-
-
 const router = express.Router()
 
 router.get('/', todos)
-router.get('/:id', uno)
 router.post('/', agregar)
 router.put('/', eliminar)
-
+router.get('/clientesSucursal/:id_sucursal', clientesSucursal)
+router.get('/:id_cliente', uno)
 
 async function todos (req, res, next){
     try {
-        const items =  await controlador.todos()
-        respuesta.success(req, res, items, 200)
+        const items =  await controlador.clientes()
+        respuesta.success(req, res, items[0], 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function clientesSucursal (req, res, next){
+    try {
+        const items =  await controlador.clientesSucursal(req.params.id_sucursal)
+        respuesta.success(req, res, items[0], 200)
     } catch (error) {
         next(error)
     }
 }
 async function uno(req, res, next){
     try {
-        const items = await controlador.uno(req.params.id)
-        respuesta.success(req, res, items, 200)
+        const items = await controlador.cliente(req.params.id_cliente)
+        respuesta.success(req, res, items[0], 200)
     } catch (error) {
         next(error)
     }
@@ -46,4 +52,5 @@ async function eliminar(req, res, next){
         next(error)
     }
 }
+
 module.exports = router

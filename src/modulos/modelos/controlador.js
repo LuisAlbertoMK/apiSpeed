@@ -13,7 +13,8 @@ module.exports = function (dbIyectada){
     function todos(){
         return db.Todos(TABLA)
     }
-    function uno(id){
+    function uno(id_marca){
+        return db.query(TABLA, {id_marca})
         return db.uno(TABLA, id)
     }
     function agregar(body){
@@ -22,8 +23,9 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
-    function modelosMarca(body){
-        return db.consultaModeloMarca(TABLA, body)
+    function modelosMarca(id_marca){
+        // return db.query(TABLA, {id_marca})
+        return db.consultaModeloMarca(TABLA, id_marca)
     }
 
     return {

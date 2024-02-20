@@ -10,24 +10,31 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
 
-    function todos(){
-        return db.Todos(TABLA)
+    function todos(start, end){
+        return db.consultaCotizaciones(start, end)
     }
-    function uno(id){
-        return db.uno(TABLA, id)
+    function consultaCotizacion(id){
+        return db.consultaCotizacion(id)
     }
-    function agregar(body){
+    async function agregar(body){
         return db.agregar(TABLA, body)
+        const respuesta = await db.agregar(TABLA, body)
+        const insertId = (body.id_cotizacion === 0) ? respuesta.insertId : body.id_cotizacion
+        return insertId
     }
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
+    function no_cotizacion(body){
+        return db.no_cotizacion(body)
+    }
 
     return {
         todos,
-        uno,
         agregar,
-        eliminar
+        eliminar,
+        no_cotizacion,
+        consultaCotizacion
     }
     
 }

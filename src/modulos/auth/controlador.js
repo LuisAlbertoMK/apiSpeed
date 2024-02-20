@@ -11,22 +11,21 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
     async function login(correo, password) {
+        let dataUsuario = {}
         const data = await db.query(TABLA, {correo})
-
-        return bcrypt.compare(password, data.password)
+        const token = await bcrypt.compare(password, data.password)
             .then(resultado=>{
-                if (resultado === true) {
-                    // generar token
-                    return auth.asignaToken({...data})
-                }else{
-                    throw new Error('Informacion invalida')
-                }
+                return resultado ? auth.asignaToken({...data}) : false
             })
+        if (token) {
+            dataUsuario = await db.query('usuarios',{id_usuario: data.id_usuario})
+        }
+        return {token, data, dataUsuario}
     }
 
     async function agregar(data){
         const authData = {
-            id: data.id
+            id_usuario: data.id_usuario
         }
         if (data.correo) {
             authData.correo = data.correo

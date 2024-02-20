@@ -22,12 +22,16 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
+    function empreasSucursal(id_sucursal){
+        return db.sucursalesEmpresas(id_sucursal)
+    }
 
     return {
         todos,
         uno,
         agregar,
-        eliminar
+        eliminar,
+        empreasSucursal
     }
     
 }

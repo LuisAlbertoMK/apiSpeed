@@ -32,6 +32,7 @@ async function uno(req, res, next){
 async function agregar(req, res, next){
     try {
         const items = await controlador.agregar(req.body)
+        console.log(items);
         mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
         respuesta.success(req, res, mensaje, 201)
     } catch (error) {

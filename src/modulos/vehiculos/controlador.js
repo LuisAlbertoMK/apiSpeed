@@ -13,8 +13,8 @@ module.exports = function (dbIyectada){
     function todos(){
         return db.Todos(TABLA)
     }
-    function uno(id){
-        return db.uno(TABLA, id)
+    function uno(id_vehiculo){
+        return db.vehiculo(id_vehiculo)
     }
     function agregar(body){
         return db.agregar(TABLA, body)
@@ -28,10 +28,14 @@ module.exports = function (dbIyectada){
     function VehiculosRelacionados(){
         return db.VehiculosRelacionados(TABLA)
     }
+    function vehiculosCiente(id_cliente){
+        return db.vehiculosCliente(id_cliente)
+    }
 
     return {
         todos,
         VehiculosRelacionados,
+        vehiculosCiente,
         uno,
         agregar,
         eliminar,

@@ -1,5 +1,5 @@
 
-const TABLA = 'formapago'
+const TABLA = 'paquetes'
 
 
 module.exports = function (dbIyectada){
@@ -11,9 +11,10 @@ module.exports = function (dbIyectada){
     }
 
     function todos(){
-        return db.Todos(TABLA)
+        return db.consultaPaquetes()
     }
-    function uno(id){
+    function uno(id_categoria){
+        return db.query(TABLA, {id_categoria})
         return db.uno(TABLA, id)
     }
     function agregar(body){
@@ -22,12 +23,16 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
+    function ObtenerDetallePaquete(id_paquete){
+        return db.ObtenerDetallePaquete(id_paquete)
+    }
 
     return {
         todos,
         uno,
         agregar,
-        eliminar
+        eliminar,
+        ObtenerDetallePaquete
     }
     
 }

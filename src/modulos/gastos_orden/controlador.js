@@ -13,6 +13,9 @@ module.exports = function (dbIyectada){
     function todos(){
         return db.Todos(TABLA)
     }
+    function gastosRecepcion(id_recepcion){
+        return db.gastosRecepcionUnica(id_recepcion)
+    }
     function uno(id){
         return db.uno(TABLA, id)
     }
@@ -26,6 +29,7 @@ module.exports = function (dbIyectada){
     return {
         todos,
         uno,
+        gastosRecepcion,
         agregar,
         eliminar
     }

@@ -9,7 +9,7 @@ router.get('/login', login)
 
 async function login(req, res, next){
     try {
-        const token = await controlador.login(req.body.correo, req.body.password)
+        const token = await controlador.login(req.query.correo, req.query.password)
         respuesta.success(req, res, token, 200)
     } catch (error) {
         next(error)

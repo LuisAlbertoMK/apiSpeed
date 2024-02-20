@@ -8,10 +8,10 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
-// router.get('/:id', uno)
+router.get('/:id', uno)
 router.post('/', agregar)
 router.put('/', eliminar)
-router.get('/modelosMarca/:id', modelosMarca)
+router.get('/modelosMarca/:id_marca', modelosMarca)
 
 
 async function todos (req, res, next){
@@ -49,7 +49,7 @@ async function eliminar(req, res, next){
 }
 async function modelosMarca(req, res, next){
     try {
-        const items = await controlador.modelosMarca(req.params.id)
+        const items = await controlador.modelosMarca(req.params.id_marca)
         respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)

@@ -9,6 +9,7 @@ const router = express.Router()
 
 router.get('/', todos)
 router.get('/:id', uno)
+router.get('/recepcion/:id_recepcion', PagosRecepcionUnica)
 router.post('/', agregar)
 router.put('/', eliminar)
 
@@ -17,6 +18,14 @@ async function todos (req, res, next){
     try {
         const items =  await controlador.todos()
         respuesta.success(req, res, items, 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function PagosRecepcionUnica (req, res, next){
+    try {
+        const items =  await controlador.PagosRecepcionUnica(req.params.id_recepcion)
+        respuesta.success(req, res, items[0], 200)
     } catch (error) {
         next(error)
     }

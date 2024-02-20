@@ -16,8 +16,11 @@ module.exports = function (dbIyectada){
     function uno(id){
         return db.uno(TABLA, id)
     }
-    function agregar(body){
-        return db.agregar(TABLA, body)
+    async function agregar(body){
+        const respuesta = await db.agregar(TABLA, body)
+        console.log(respuesta);
+        const insertId = (body.id_ === 0) ? respuesta.insertId : body.id
+        return insertId
     }
     function eliminar(body){
         return db.eliminar(TABLA, body)

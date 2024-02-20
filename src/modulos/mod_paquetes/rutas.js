@@ -8,10 +8,12 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/ObtenerDetallePaqueteModificado', ObtenerDetallePaqueteModificado)
+router.get('/ObtenerDetallePaqueteModificadoRecep', ObtenerDetallePaqueteModificadoRecep)
+router.post('/recep', agregar2)
 router.post('/', agregar)
+router.put('/eliminaRelacionados', eliminaRelacionados)
 router.put('/', eliminar)
-router.get('/VehiculosRelacionados', VehiculosRelacionados)
-router.get('/vehiculosCiente/:id_cliente', vehiculosCiente)
 router.get('/:id', uno)
 
 
@@ -23,17 +25,19 @@ async function todos (req, res, next){
         next(error)
     }
 }
-async function VehiculosRelacionados (req, res, next){
+async function ObtenerDetallePaqueteModificado (req, res, next){
     try {
-        const items =  await controlador.VehiculosRelacionados()
+        const items =  await controlador.ObtenerDetallePaqueteModificado(req.query.id_cotizacion, req.query.id_paquete)
         respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)
     }
 }
-async function vehiculosCiente (req, res, next){
+async function ObtenerDetallePaqueteModificadoRecep (req, res, next){
     try {
-        const items =  await controlador.vehiculosCiente(req.params.id_cliente)
+        const items =  await controlador.ObtenerDetallePaqueteModificadoRecep(
+            req.query.id_recepcion, req.query.id_paquete, req.query.id_eleRecepcion
+        )
         respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)
@@ -42,7 +46,7 @@ async function vehiculosCiente (req, res, next){
 async function uno(req, res, next){
     try {
         const items = await controlador.uno(req.params.id)
-        respuesta.success(req, res, items[0], 200)
+        respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)
     }
@@ -56,9 +60,26 @@ async function agregar(req, res, next){
         next(error)
     }
 }
+async function agregar2(req, res, next){
+    try {
+        const items = await controlador.agregar2(req.body)
+        mensaje  =  (items.insertId == 0) ? 'Item registrado' : 'Item actualizado'
+        respuesta.success(req, res, items.insertId, 201)
+    } catch (error) {
+        next(error)
+    }
+}
 async function eliminar(req, res, next){
     try {
         const items = await controlador.eliminar(req.body)
+        respuesta.success(req, res, 'item eliminado', 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function eliminaRelacionados(req, res, next){
+    try {
+        const items = await controlador.eliminaRelacionados(req.body.id_eleRecepcion)
         respuesta.success(req, res, 'item eliminado', 200)
     } catch (error) {
         next(error)

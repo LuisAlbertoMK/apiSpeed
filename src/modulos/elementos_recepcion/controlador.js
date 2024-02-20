@@ -12,14 +12,14 @@ module.exports = function (dbIyectada){
     function todos(){
         return db.Todos(TABLA)
     }
-    function uno(id){
-        return db.uno(TABLA, id)
+    function uno(id_recepcion){
+        return db.RecepcionElementos( id_recepcion)
     }
     function agregar(body){
         return db.agregar(TABLA, body)
     }
-    function eliminar(body){
-        return db.eliminar(TABLA, body)
+    function eliminar(id_eleRecepcion){
+        return db.queryEliminar(TABLA, {id_eleRecepcion})
     }
 
     return {
