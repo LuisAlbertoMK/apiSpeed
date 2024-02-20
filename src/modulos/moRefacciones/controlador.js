@@ -1,5 +1,5 @@
 
-const TABLA = 'moRefacciones'
+const TABLA = 'morefacciones'
 
 
 module.exports = function (dbIyectada){
