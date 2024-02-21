@@ -1,5 +1,5 @@
 
-const TABLA = 'pagos_orden'
+const TABLA = 'pagosorden'
 
 
 module.exports = function (dbIyectada){

@@ -139,7 +139,7 @@ function elementos_cotizaciones(id_cotizacion){
             moref.precio,
             moref.tipo,
             moref.descripcion
-        FROM elementos_cotizacion AS eleCot
+        FROM elementoscotizacion AS eleCot
         LEFT JOIN cotizaciones AS coti ON eleCot.id_cotizacion = coti.id_cotizacion
         LEFT JOIN morefacciones AS moref ON eleCot.id_moRefaccion = moref.id_moRefaccion
         WHERE coti.id_cotizacion = ${id_cotizacion}`
@@ -311,7 +311,7 @@ function RecepcionElementos(id_recepcion){
             moref.precio,
             moref.tipo,
             moref.descripcion
-        FROM elementos_recepcion AS eleCot
+        FROM elementosrecepcion AS eleCot
         LEFT JOIN recepciones AS recep ON eleCot.id_recepcion = recep.id_recepcion
         LEFT JOIN morefacciones AS moref ON eleCot.id_moRefaccion = moref.id_moRefaccion
         WHERE recep.id_recepcion  = ${id_recepcion}`

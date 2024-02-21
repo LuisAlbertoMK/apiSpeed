@@ -1,5 +1,5 @@
 
-const TABLA = 'imagenes_recepciones'
+const TABLA = 'imagenesrecepciones'
 
 module.exports = function (dbIyectada){
 

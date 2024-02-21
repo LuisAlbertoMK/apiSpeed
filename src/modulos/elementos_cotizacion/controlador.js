@@ -1,5 +1,5 @@
 
-const TABLA = 'elementos_cotizacion'
+const TABLA = 'elementoscotizacion'
 
 
 module.exports = function (dbIyectada){
