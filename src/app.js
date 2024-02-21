@@ -42,7 +42,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 //configuracion
 app.set('port', config.app.port)
-const whiteList=['https://proyectopruebas-5bfd4.web.app/loginv1','...'];
+const whiteList=['https://proyectopruebas-5bfd4.web.app','...'];
 app.use(cors({origin: whiteList}));
 //rutas
 app.use('/api/clientes', clientes)
