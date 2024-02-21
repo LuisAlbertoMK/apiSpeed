@@ -33,6 +33,7 @@ const promociones = require('./modulos/promociones/rutas')
 const paquetes = require('./modulos/paquetes/rutas')
 const elementosPaquetes = require('./modulos/elementosPaquetes/rutas')
 const mod_paquetes = require('./modulos/mod_paquetes/rutas')
+const depositos= require('./modulos/depositos/rutas')
 
 const app = express()
 // Middleware
@@ -74,6 +75,7 @@ app.use('/api/servicios', servicios)
 app.use('/api/formaPago', formaPago)
 app.use('/api/promociones', promociones)
 app.use('/api/mod_paquetes', mod_paquetes)
+app.use('/api/depositos', depositos)
 app.use(error)
 
 
