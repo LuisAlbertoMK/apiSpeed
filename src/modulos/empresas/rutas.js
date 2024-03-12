@@ -8,6 +8,7 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/empresasTaller', empresasTaller)
 router.get('/:id', uno)
 router.post('/', agregar)
 router.put('/', eliminar)
@@ -16,6 +17,14 @@ router.put('/', eliminar)
 async function todos (req, res, next){
     try {
         const items =  await controlador.todos()
+        respuesta.success(req, res, items, 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function empresasTaller (req, res, next){
+    try {
+        const items =  await controlador.empresasTaller(req.query.id_taller)
         respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)

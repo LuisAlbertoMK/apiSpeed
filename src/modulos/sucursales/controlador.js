@@ -13,9 +13,14 @@ module.exports = function (dbIyectada){
     function todos(){
         return db.Todos(TABLA)
     }
+    function sucursalesTaller(id_taller){
+        return db.sucursalesTaller(id_taller)
+    }
+    function sucursalUnica(id_taller, id_sucursal){
+        return db.sucursalUnica(id_taller, id_sucursal)
+    }
     function uno(id_sucursal){
         return db.query(TABLA, {id_sucursal})
-        return db.uno(TABLA, id)
     }
     function agregar(body){
         return db.agregar(TABLA, body)
@@ -26,6 +31,8 @@ module.exports = function (dbIyectada){
 
     return {
         todos,
+        sucursalesTaller,
+        sucursalUnica,
         uno,
         agregar,
         eliminar

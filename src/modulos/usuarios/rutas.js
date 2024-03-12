@@ -19,7 +19,7 @@ router.put('/', eliminar)
 async function todos (req, res, next){
     try {
         const items =  await controlador.todos()
-        respuesta.success(req, res, items, 200)
+        respuesta.success(req, res, items[0], 200)
     } catch (error) {          
         next(error)
     }

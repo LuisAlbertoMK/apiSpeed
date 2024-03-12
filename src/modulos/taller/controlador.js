@@ -1,5 +1,5 @@
 
-const TABLA = 'marcas'
+const TABLA = 'taller'
 
 
 module.exports = function (dbIyectada){
@@ -14,12 +14,10 @@ module.exports = function (dbIyectada){
         return db.Todos(TABLA)
     }
     function uno(id){
-        return db.uno(TABLA, id)
+        return db.informaciontaller(id)
     }
-    async function agregar(body){
-        const respuesta = await db.agregar(TABLA, body)
-        const insertId = (body.id_ === 0) ? respuesta.insertId : body.id
-        return insertId
+    function agregar(body){
+        return db.agregar(TABLA, body)
     }
     function eliminar(body){
         return db.eliminar(TABLA, body)

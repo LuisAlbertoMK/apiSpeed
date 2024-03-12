@@ -13,6 +13,9 @@ module.exports = function (dbIyectada){
     function todos(){
         return db.Todos(TABLA)
     }
+    function empresasTaller(id_taller){
+        return db.empresasTaller(id_taller)
+    }
     function uno(id){
         return db.uno(TABLA, id)
     }
@@ -31,6 +34,7 @@ module.exports = function (dbIyectada){
         uno,
         agregar,
         eliminar,
+        empresasTaller,
         empreasSucursal
     }
     

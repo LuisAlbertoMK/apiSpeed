@@ -9,6 +9,7 @@ const router = express.Router()
 
 router.get('/', todos)
 router.get('/ObtenerDetallePaquete', ObtenerDetallePaquete)
+router.get('/paquetesTaller', paquetesTaller)
 router.post('/', agregar)
 router.put('/', eliminar)
 router.get('/:id', uno)
@@ -23,9 +24,17 @@ async function todos (req, res, next){
         next(error)
     }
 }
+async function paquetesTaller (req, res, next){
+    try {
+        const {id_taller} = req.query
+        const items =  await controlador.paquetesTaller(id_taller)
+        respuesta.success(req, res, items[0], 200)
+    } catch (error) { next(error) }
+}
 async function ObtenerDetallePaquete (req, res, next){
     try {
-        const items =  await controlador.ObtenerDetallePaquete(req.query.id_paquete)
+        const {id_paquete} = req.query
+        const items =  await controlador.ObtenerDetallePaquete(id_paquete)
         respuesta.success(req, res, items[0], 200)
     } catch (error) {
         next(error)

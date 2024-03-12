@@ -1,5 +1,5 @@
 
-const TABLA = 'elementos_mod_paquetes'
+const TABLA = 'elementosmodpaquetes'
 
 module.exports = function (dbIyectada){
 
@@ -27,8 +27,8 @@ module.exports = function (dbIyectada){
     function eliminaRelacionados(id_eleRecepcion){
         return db.eliminaEleModPaqRecep(id_eleRecepcion)
     }
-    function ObtenerDetallePaqueteModificado(id_cotizacion, id_paquete,id_eleRecepcion ) {
-        return db.ObtenerDetallePaqueteModificado(id_cotizacion, id_paquete,id_eleRecepcion)
+    function ObtenerDetallePaqueteModificado(id_cotizacion, id_paquete ) {
+        return db.ObtenerDetallePaqueteModificado(id_cotizacion, id_paquete)
     }
     function ObtenerDetallePaqueteModificadoRecep(id_recepcion, id_paquete,id_eleRecepcion) {
         return db.ObtenerDetallePaqueteModificadoRecep(id_recepcion, id_paquete,id_eleRecepcion)

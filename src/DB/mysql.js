@@ -80,6 +80,17 @@ function query(tabla, consulta){
         })
     })
 }
+// login
+function dataUsuario(id_usuario){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT usu.*, rol.rol FROM usuarios AS usu
+        LEFT JOIN roles AS rol ON usu.id_rol = rol.id_rol
+        WHERE usu.id_usuario = ${id_usuario};`, (error, result) =>{
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+
 function queryEliminar(tabla, consulta){
     console.log({consulta});
     return new Promise((resolve, reject) =>{
@@ -98,12 +109,9 @@ function consultaModeloMarca(tabla, id_marca){
 
 
 
-function VehiculosRelacionados(){
+function VehiculosRelacionados(id_sucursal){
     return new Promise((resolve, reject) =>{
-        conexion.query(`SELECT  * 
-        FROM vehiculos AS v LEFT JOIN (clientes AS c,marcas AS ma, modelos AS mo, categorias AS ca) ON 
-        v.id_cliente = c.id_cliente && v.id_marca = ma.id_marca && v.id_modelo = mo.id_modelo
-        && v.id_categoria = ca.id_categoria`, (error, result) =>{
+        conexion.query(`call sp_vehiculos(${id_sucursal})`, (error, result) =>{
             return error ? reject(error) : resolve(result)
         })
     })
@@ -157,21 +165,34 @@ function contador(tabla){
         })
     })
 }
-//CONSULTA DE VEHICULO
-function vehiculo(id_vehiculo){
+// INFORMACION DE CLIENTES
+function clientesTallerSucursal(id_taller, id_sucursal){
     return new Promise((resolve, reject) =>{
-        conexion.query(`
-        SELECT 
-            veh.*,
-            mar.marca,
-            model.modelo,
-            cat.categoria
-        FROM vehiculos AS veh
-        LEFT JOIN marcas AS mar ON veh.id_marca = mar.id_marca
-        LEFT JOIN modelos AS model ON veh.id_modelo = model.id_modelo
-        LEFT JOIN categorias AS cat ON veh.id_categoria = cat.id_categoria
-        WHERE veh.id_vehiculo = ${id_vehiculo}
-        `, (error, result) =>{
+        conexion.query(`CALL sp_clientesTallerSucursal(${id_taller},${id_sucursal})`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
+
+//CONSULTA DE VEHICULOS
+function verificaPlacas(placas){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_consultaPlacas('${placas}')`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function vehiculosTallerSucursal(id_taller, id_sucursal){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_vehiculosTallerSucursal(${id_taller},${id_sucursal})`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function vehiculosCliente(id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_vehiculosCliente(${id_cliente})`, (error, result) =>{
             return error ? reject(error) : resolve(result)
         })
     })
@@ -191,10 +212,18 @@ function clientesSucursal(id_sucursal){
         })
     })
 }
-function cliente(id){
+function contadorClientesUsuario(id_usuario){
     return new Promise((resolve, reject) =>{
-        conexion.query(`SELECT cli.*, su.sucursal, emp.empresa FROM clientes AS cli LEFT JOIN (sucursales AS su, empresas AS emp) ON cli.id_sucursal = su.id_sucursal && cli.id_empresa = emp.id_empresa where cli.id_cliente = ${id}`, (error, result) =>{
-            return error ? reject(error) : resolve(result)
+        conexion.query(`call sp_contarClientesUsuario(${id_usuario})`, (error, result) =>{
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+
+function cliente(id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_clienteUnico(${id_cliente})`, (error, result) =>{
+            return error ? reject(error) : resolve(result[0])
         })
     })
 }
@@ -272,24 +301,10 @@ function consultaCotizacion(id_cotizacion){
     })
 }
 // consulta de recepciones
-function RecepcionesConsulta(start, end){
+
+function recepcionesTaller(id_taller, id_sucursal,start, end){
     return new Promise((resolve, reject) =>{
-        conexion.query(`
-        SELECT 
-            recep.*, 
-            cli.no_cliente, 
-            fp.formaPago, 
-            serv.servicio, 
-            sucu.sucursal, 
-            ve.placas
-        FROM recepciones AS recep 
-            LEFT JOIN formapago AS fp ON recep.id_formaPago = fp.id_formaPago
-            LEFT JOIN clientes AS cli ON recep.id_cliente = cli.id_cliente
-            LEFT JOIN vehiculos AS ve ON recep.id_vehiculo = ve.id_vehiculo
-            LEFT JOIN servicios AS serv ON recep.id_servicio = serv.id_servicio
-            LEFT JOIN sucursales AS sucu ON recep.id_sucursal = sucu.id_sucursal
-        WHERE recep.createRecepciones_at
-        BETWEEN  ${start} AND ${end}
+        conexion.query(`call sp_recepcionesTallerSucursal(${id_taller}, ${id_sucursal},'${start}','${end}')
         `, (error, result) =>{
             return error ? reject(error) : resolve(result)
         })
@@ -329,6 +344,14 @@ function RecepcionesVehiculoConsulta(id_vehiculo){
         })
     })
 }
+function seriviciosAceptados(id_taller, id_sucursal){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_serviciosAceptados(${id_taller}, ${id_sucursal})`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
 
 // consulta data paquetes
 function consultaPaquetes(){
@@ -343,15 +366,15 @@ function consultaPaquetes(){
 function ObtenerDetallePaquete(id_paquete){
     return new Promise((resolve, reject) =>{
         conexion.query(`
-        CALL ObtenerDetallePaquete(${id_paquete})
+        CALL sp_detallesPaquete(${id_paquete})
         `, (error, result) =>{
             return error ? reject(error) : resolve(result)
         })
     })
 }
-function ObtenerDetallePaqueteModificado(id_cotizacion, id_paquete, id_eleRecepcion){
+function ObtenerDetallePaqueteModificado(id_cotizacion, id_paquete){
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL ObtenerDetallePaqueteModificado(${id_cotizacion},${id_paquete},${id_eleRecepcion})`, 
+        conexion.query(`CALL sp_paquetesModificados(${id_cotizacion},${id_paquete})`, 
         (error, result) =>{
             return error ? reject(error) : resolve(result[0])
         })
@@ -398,10 +421,118 @@ function listaTecnicos(id_sucursal){
     })
 }
 
+// planes
+function plancliente(id_usuario){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_planCliente(${id_usuario})`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
+// SUCURSALES
+function sucursalesTaller(id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_sucursales(${id_taller})`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function sucursalUnica(id_taller, id_sucursal){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_sucursalUnica(${id_taller}, ${id_sucursal})`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
+
+// USUARIOS
+function usuariosRol(){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_usuariosRol()`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
+// INFORMACION DE  TALLER
+function informaciontaller(id_usuario){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_informaciontaller(${id_usuario})`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
+
+// INFORMACION DE EMPRESAS
+function empresasTaller(id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_empresasTaller(${id_taller})`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
+
+// INFORMACION MO REFACCIONES
+function morefaccionesTaller(id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_morefaccionesTaller(${id_taller})`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
+// INFORMACION DE PAQUETES
+function paquetesTaller(id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_paquetes(${id_taller})`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
+
+// INFORMACION DE PAGOSTALLER
+function pagosTaller(id_taller, id_sucursal, start, end){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_pagosOrdenesTaller(${id_taller}, ${id_sucursal},'${start}','${end}')`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
+
+// INFORMACION GASTOSORDEN
+function gastosOrdenTaller(id_taller, id_sucursal, start, end){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_gastosOrdenesTaller(${id_taller}, ${id_sucursal},'${start}','${end}')`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
+// INFORMACION GASTOSOPERACION TALLER
+function gastosOperacionTaller(id_taller, id_sucursal, start, end){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_gastosOperacionTaller(${id_taller}, ${id_sucursal},'${start}','${end}')`, (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
+
+
+
+
+
 module.exports = {
     contador,
     clientes,
     clientesSucursal,
+    contadorClientesUsuario,
     cliente,
     Todos,
     uno,
@@ -417,11 +548,11 @@ module.exports = {
     sucursalesEmpresas,
     consultaCotizaciones,
     consultaCotizacion,
-    vehiculo,
+    
     elementos_cotizaciones,
-    RecepcionesConsulta,
     RecepcionConsulta,
     RecepcionesVehiculoConsulta,
+    seriviciosAceptados,
     RecepcionElementos,
     ObtenerDetallePaquete,
     consultaPaquetes,
@@ -429,5 +560,21 @@ module.exports = {
     ObtenerDetallePaqueteModificadoRecep,
     gastosRecepcionUnica,
     PagosRecepcionUnica,
-    listaTecnicos
+    listaTecnicos,
+    plancliente,
+    dataUsuario,
+    sucursalesTaller,
+    sucursalUnica,
+    usuariosRol,
+    informaciontaller,
+    empresasTaller,
+    clientesTallerSucursal,
+    verificaPlacas,
+    vehiculosTallerSucursal,
+    morefaccionesTaller,
+    paquetesTaller,
+    pagosTaller,
+    gastosOrdenTaller,
+    gastosOperacionTaller,
+    recepcionesTaller
 }

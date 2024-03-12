@@ -8,6 +8,7 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/gastosOperacionTaller', gastosOperacionTaller)
 router.get('/:id', uno)
 router.post('/', agregar)
 router.put('/', eliminar)
@@ -17,9 +18,14 @@ async function todos (req, res, next){
     try {
         const items =  await controlador.todos()
         respuesta.success(req, res, items, 200)
-    } catch (error) {
-        next(error)
-    }
+    } catch (error) { next(error) }
+}
+async function gastosOperacionTaller (req, res, next){
+    try {
+        const {id_taller, id_sucursal, start, end}= req.query
+        const items =  await controlador.gastosOperacionTaller(id_taller, id_sucursal, start, end)
+        respuesta.success(req, res, items[0], 200)
+    } catch (error) { next(error) }
 }
 async function uno(req, res, next){
     try {

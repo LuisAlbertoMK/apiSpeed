@@ -13,6 +13,9 @@ module.exports = function (dbIyectada){
     function todos(){
         return db.consultaPaquetes()
     }
+    function paquetesTaller(id_taller){
+        return db.paquetesTaller(id_taller)
+    }
     function uno(id_categoria){
         return db.query(TABLA, {id_categoria})
     }
@@ -28,6 +31,7 @@ module.exports = function (dbIyectada){
 
     return {
         todos,
+        paquetesTaller,
         uno,
         agregar,
         eliminar,

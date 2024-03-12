@@ -10,8 +10,14 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
 
-    function todos(start, end){
-        return db.RecepcionesConsulta(start, end)
+    function todos(){
+        return db.todos(TABLA)
+    }
+    function recepcionesTaller(id_taller, id_sucursal, start, end){
+        return db.recepcionesTaller(id_taller, id_sucursal, start, end)
+    }
+    function aceptados(id_taller, id_sucursal){
+        return db.seriviciosAceptados(id_taller, id_sucursal)
     }
     function uno(id_recepcion){
         return db.uno(TABLA, id_recepcion)
@@ -35,7 +41,9 @@ module.exports = function (dbIyectada){
         agregar,
         eliminar,
         RecepcionesVehiculoConsulta,
-        getRecepcion
+        getRecepcion,
+        aceptados,
+        recepcionesTaller
     }
     
 }

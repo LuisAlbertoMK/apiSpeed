@@ -34,6 +34,9 @@ const paquetes = require('./modulos/paquetes/rutas')
 const elementosPaquetes = require('./modulos/elementosPaquetes/rutas')
 const mod_paquetes = require('./modulos/mod_paquetes/rutas')
 const depositos= require('./modulos/depositos/rutas')
+const planes= require('./modulos/planes/rutas')
+const planCliente= require('./modulos/planCliente/rutas')
+const taller= require('./modulos/taller/rutas')
 
 const app = express()
 // Middleware
@@ -42,7 +45,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 //configuracion
 app.set('port', config.app.port)
-const whiteList=['http://localhost:4201','https://f8dkdj3k-4201.usw3.devtunnels.ms','...'];
+const whiteList=['http://localhost:4201','...'];
 app.use(cors({origin: whiteList}));
 //rutas
 app.use('/api/clientes', clientes)
@@ -57,13 +60,13 @@ app.use('/api/cotizaciones', cotizaciones)
 app.use('/api/recepciones', recepciones)
 app.use('/api/gastos_orden', gastos_orden)
 app.use('/api/pagos_orden', pagos_orden)
+app.use('/api/gastos_operacion', gastos_operacion)
+app.use('/api/gastosDiarios', gastosDiarios)
 app.use('/api/empresas', empresas)
 app.use('/api/formaPago', formaPago)
 app.use('/api/elementos_cotizacion', elementos_cotizacion)
 app.use('/api/elementos_recepcion', elementos_recepcion)
 app.use('/api/imagenes_recepciones', imagenes_recepciones)
-app.use('/api/gastosDiarios', gastosDiarios)
-app.use('/api/gastos_operacion', gastos_operacion)
 app.use('/api/historial_cliente', historial_cliente)
 app.use('/api/anios', anios)
 app.use('/api/marcas', marcas)
@@ -76,6 +79,9 @@ app.use('/api/formaPago', formaPago)
 app.use('/api/promociones', promociones)
 app.use('/api/mod_paquetes', mod_paquetes)
 app.use('/api/depositos', depositos)
+app.use('/api/planes', planes)
+app.use('/api/planCliente', planCliente)
+app.use('/api/taller', taller)
 app.use(error)
 
 

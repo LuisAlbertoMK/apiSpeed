@@ -27,7 +27,8 @@ async function todos (req, res, next){
 }
 async function ObtenerDetallePaqueteModificado (req, res, next){
     try {
-        const items =  await controlador.ObtenerDetallePaqueteModificado(req.query.id_cotizacion, req.query.id_paquete)
+        const {id_cotizacion, id_paquete, id_eleRecepcion} = req.query
+        const items =  await controlador.ObtenerDetallePaqueteModificado(id_cotizacion, id_paquete)
         respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)

@@ -10,7 +10,9 @@ const router = express.Router()
 router.get('/', todos)
 router.post('/', agregar)
 router.put('/', eliminar)
-router.get('/VehiculosRelacionados', VehiculosRelacionados)
+router.get('/verificaPlacas', verificaPlacas)
+router.get('/vehiculosTallerSucursal', vehiculosTallerSucursal)
+router.get('/vehiculosCliente', vehiculosCliente)
 router.get('/vehiculosCiente/:id_cliente', vehiculosCiente)
 router.get('/:id', uno)
 
@@ -23,10 +25,28 @@ async function todos (req, res, next){
         next(error)
     }
 }
-async function VehiculosRelacionados (req, res, next){
+async function verificaPlacas (req, res, next){
     try {
-        const items =  await controlador.VehiculosRelacionados()
-        respuesta.success(req, res, items, 200)
+        const {placas}= req.query
+        const items =  await controlador.verificaPlacas(placas)
+        respuesta.success(req, res, items[0], 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function vehiculosTallerSucursal (req, res, next){
+    try {
+        const {id_taller, id_sucursal}= req.query
+        const items =  await controlador.vehiculosTallerSucursal(id_taller, id_sucursal)
+        respuesta.success(req, res, items[0], 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function vehiculosCliente (req, res, next){
+    try {
+        const items =  await controlador.vehiculosCliente(req.query.id_cliente)
+        respuesta.success(req, res, items[0], 200)
     } catch (error) {
         next(error)
     }

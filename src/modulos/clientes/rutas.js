@@ -8,6 +8,8 @@ const router = express.Router()
 router.get('/', todos)
 router.post('/', agregar)
 router.put('/', eliminar)
+router.get('/clientesTallerSucursal', clientesTallerSucursal)
+router.get('/contadorClientesUsuario', contadorClientesUsuario)
 router.get('/clientesSucursal/:id_sucursal', clientesSucursal)
 router.get('/:id_cliente', uno)
 
@@ -27,6 +29,25 @@ async function clientesSucursal (req, res, next){
         next(error)
     }
 }
+async function clientesTallerSucursal (req, res, next){
+    try {
+        const {id_taller, id_sucursal} = req.query
+        const items =  await controlador.clientesTallerSucursal(id_taller, id_sucursal)
+        respuesta.success(req, res, items[0], 200)
+    } catch (error) {
+        next(error)
+    }
+}
+
+async function contadorClientesUsuario (req, res, next){
+    try {
+        const items =  await controlador.contadorClientesUsuario(req.query.id_usuario)
+        console.log({items});
+        respuesta.success(req, res, items[0], 200)
+    } catch (error) {
+        next(error)
+    }
+}
 async function uno(req, res, next){
     try {
         const items = await controlador.cliente(req.params.id_cliente)
@@ -38,7 +59,7 @@ async function uno(req, res, next){
 async function agregar(req, res, next){
     try {
         const items = await controlador.agregar(req.body)
-        mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
+        mensaje  =  (items.insertId) ? items.insertId : 'Item actualizado'
         respuesta.success(req, res, mensaje, 201)
     } catch (error) {
         next(error)

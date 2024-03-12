@@ -13,8 +13,14 @@ module.exports = function (dbIyectada){
     function clientes(){
         return db.clientes()
     }
+    function clientesTallerSucursal(id_taller, id_sucursal){
+        return db.clientesTallerSucursal(id_taller, id_sucursal)
+    }
     function clientesSucursal(id_sucursal){
         return db.clientesSucursal(id_sucursal)
+    }
+    function contadorClientesUsuario(id_sucursal){
+        return db.contadorClientesUsuario(id_sucursal)
     }
     function cliente(id_cliente){
         return db.cliente(id_cliente)
@@ -31,7 +37,9 @@ module.exports = function (dbIyectada){
         clientesSucursal,
         cliente,
         agregar,
-        eliminar
+        eliminar,
+        contadorClientesUsuario,
+        clientesTallerSucursal
     }
     
 }

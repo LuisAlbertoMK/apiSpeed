@@ -12,15 +12,21 @@ module.exports = function (dbIyectada){
     }
     async function login(correo, password) {
         let dataUsuario = {}
+        let taller = {}
+        let sucursal = {}
         const data = await db.query(TABLA, {correo})
         const token = await bcrypt.compare(password, data.password)
             .then(resultado=>{
                 return resultado ? auth.asignaToken({...data}) : false
             })
         if (token) {
-            dataUsuario = await db.query('usuarios',{id_usuario: data.id_usuario})
+            dataUsuario = await db.dataUsuario( data.id_usuario)
+            taller = await db.query('taller', {id_taller: dataUsuario.id_taller})
+            const newDataSucursal = await db.sucursalUnica(dataUsuario.id_taller, dataUsuario.id_sucursal)
+            const otra = newDataSucursal[0]
+            sucursal = otra[0]
         }
-        return {token, data, dataUsuario}
+        return {token, data, dataUsuario, taller, sucursal}
     }
 
     async function agregar(data){

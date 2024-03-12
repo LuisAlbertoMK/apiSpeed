@@ -25,13 +25,17 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
+    function gastosOrdenTaller(id_taller, id_sucursal, start, end){
+        return db.gastosOrdenTaller(id_taller, id_sucursal, start, end)
+    }
 
     return {
         todos,
         uno,
         gastosRecepcion,
         agregar,
-        eliminar
+        eliminar,
+        gastosOrdenTaller
     }
     
 }

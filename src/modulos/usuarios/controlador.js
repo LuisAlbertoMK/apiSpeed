@@ -10,7 +10,7 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
     function todos(){
-        return db.Todos(TABLA)
+        return db.usuariosRol()
     }
     function uno(id){
         return db.uno(TABLA, id)
@@ -18,13 +18,14 @@ module.exports = function (dbIyectada){
     async function agregar(body){
         const usuario = {
             id_usuario: body.id_usuario,
+            id_taller: body.id_taller,
+            id_sucursal: body.id_sucursal,
             usuario: body.usuario,
-            rol: body.rol,
+            id_rol: body.id_rol,
             create_at: body.create_at,
             update_at: body.update_at,
             correo: body.correo,
-            activo: body.activo,
-            id_sucursal: body.id_sucursal
+            activo: body.activo
         }
         const respuesta = await db.agregar(TABLA, usuario)
         // console.log('respuesta', respuesta);

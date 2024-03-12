@@ -8,8 +8,7 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
-router.get('/sucursalesTaller', sucursalesTaller)
-router.get('/sucursalUnica', sucursalUnica)
+router.get('/:id_usuario', uno)
 router.post('/', agregar)
 router.put('/', eliminar)
 
@@ -22,27 +21,10 @@ async function todos (req, res, next){
         next(error)
     }
 }
-async function sucursalesTaller (req, res, next){
-    try {
-        const items =  await controlador.sucursalesTaller(req.query.id_taller)
-        respuesta.success(req, res, items[0], 200)
-    } catch (error) {
-        next(error)
-    }
-}
-async function sucursalUnica (req, res, next){
-    try {
-        const {id_taller, id_sucursal} = req.query
-        const items =  await controlador.sucursalUnica(id_taller, id_sucursal)
-        respuesta.success(req, res, items[0], 200)
-    } catch (error) {
-        next(error)
-    }
-}
 async function uno(req, res, next){
     try {
-        const items = await controlador.uno(req.params.id_sucursal)
-        respuesta.success(req, res, items, 200)
+        const items = await controlador.uno(req.params.id_usuario)
+        respuesta.success(req, res, items[0], 200)
     } catch (error) {
         next(error)
     }

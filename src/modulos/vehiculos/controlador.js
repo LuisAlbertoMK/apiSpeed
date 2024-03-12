@@ -25,21 +25,29 @@ module.exports = function (dbIyectada){
     function placas(){
         return db.placas(TABLA)
     }
-    function VehiculosRelacionados(){
-        return db.VehiculosRelacionados(TABLA)
+    function vehiculosCliente(id_sucursal){
+        return db.vehiculosCliente(id_sucursal)
     }
     function vehiculosCiente(id_cliente){
         return db.vehiculosCliente(id_cliente)
     }
+    function verificaPlacas(placas){
+        return db.verificaPlacas(placas)
+    }
+    function vehiculosTallerSucursal(id_taller, id_sucursal){
+        return db.vehiculosTallerSucursal(id_taller, id_sucursal)
+    }
 
     return {
         todos,
-        VehiculosRelacionados,
+        vehiculosCliente,
         vehiculosCiente,
         uno,
         agregar,
         eliminar,
-        placas
+        placas,
+        verificaPlacas,
+        vehiculosTallerSucursal
     }
     
 }
