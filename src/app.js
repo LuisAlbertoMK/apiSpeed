@@ -45,7 +45,9 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 //configuracion
 app.set('port', config.app.port)
-const whiteList=['http://localhost:4201','...'];
+
+const whiteList=['https://proyectopruebas-5bfd4.web.app','https://proyectopruebas-5bfd4.web.app'];
+
 app.use(cors({origin: whiteList}));
 //rutas
 app.use('/api/clientes', clientes)
