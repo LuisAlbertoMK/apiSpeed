@@ -37,6 +37,7 @@ const depositos= require('./modulos/depositos/rutas')
 const planes= require('./modulos/planes/rutas')
 const planCliente= require('./modulos/planCliente/rutas')
 const taller= require('./modulos/taller/rutas')
+const reportes= require('./modulos/reportes/rutas')
 
 const app = express()
 // Middleware
@@ -46,7 +47,7 @@ app.use(express.urlencoded({extended: true}))
 //configuracion
 app.set('port', config.app.port)
 
-const whiteList=['https://proyectopruebas-5bfd4.web.app','https://proyectopruebas-5bfd4.web.app'];
+const whiteList=['http://localhost:4201','https://proyectopruebas-5bfd4.web.app'];
 
 app.use(cors({origin: whiteList}));
 //rutas
@@ -84,6 +85,7 @@ app.use('/api/depositos', depositos)
 app.use('/api/planes', planes)
 app.use('/api/planCliente', planCliente)
 app.use('/api/taller', taller)
+app.use('/api/reportes', reportes)
 app.use(error)
 
 

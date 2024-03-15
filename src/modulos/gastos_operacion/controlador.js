@@ -10,14 +10,19 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
 
-    function todos(){
-        return db.Todos(TABLA)
+    function todos(dataOperacion){
+        const {id_taller, id_sucursal, start, end} = dataOperacion
+        return db.sp_gastosOperacion(id_taller, id_sucursal, start, end)
     }
     function gastosOperacionTaller(id_taller, id_sucursal, start, end){
         return db.gastosOperacionTaller(id_taller, id_sucursal, start, end)
     }
+
     function uno(id){
         return db.uno(TABLA, id)
+    }
+    function gastosOperacionTallerReporte(id_taller, id_sucursal, start, end){
+        return db.gastosOperacionTallerReporte(id_taller, id_sucursal, start, end)
     }
     function agregar(body){
         return db.agregar(TABLA, body)
@@ -31,7 +36,8 @@ module.exports = function (dbIyectada){
         uno,
         agregar,
         eliminar,
-        gastosOperacionTaller
+        gastosOperacionTaller,
+        gastosOperacionTallerReporte
     }
     
 }

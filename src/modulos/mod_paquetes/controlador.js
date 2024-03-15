@@ -19,7 +19,7 @@ module.exports = function (dbIyectada){
         return db.agregar(TABLA, body)
     }
     function agregar2(body){
-        return db.agregar('elementos_mod_paquetes_recep', body)
+        return db.agregar('elementosmodpaquetesrecep', body)
     }
     function eliminar(body){
         return db.eliminar(TABLA, body)

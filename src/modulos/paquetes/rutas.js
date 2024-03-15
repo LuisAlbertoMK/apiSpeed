@@ -52,7 +52,6 @@ async function agregar(req, res, next){
     try {
         const items = await controlador.agregar(req.body)
         mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
-        console.log(items);
         const {insertId} = items
         respuesta.success(req, res, insertId , 201)
     } catch (error) {

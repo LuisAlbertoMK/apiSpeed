@@ -16,6 +16,9 @@ module.exports = function (dbIyectada){
     function uno(id_vehiculo){
         return db.vehiculo(id_vehiculo)
     }
+    function vehiculoUnico(id_vehiculo){
+        return db.vehiculoUnico(id_vehiculo)
+    }
     function agregar(body){
         return db.agregar(TABLA, body)
     }
@@ -42,6 +45,7 @@ module.exports = function (dbIyectada){
         todos,
         vehiculosCliente,
         vehiculosCiente,
+        vehiculoUnico,
         uno,
         agregar,
         eliminar,

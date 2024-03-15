@@ -31,6 +31,11 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
+    
+    function clienteUnico(id_cliente){
+        return db.clienteUnico( id_cliente)
+    }
+
 
     return {
         clientes,
@@ -39,7 +44,8 @@ module.exports = function (dbIyectada){
         agregar,
         eliminar,
         contadorClientesUsuario,
-        clientesTallerSucursal
+        clientesTallerSucursal,
+        clienteUnico
     }
     
 }

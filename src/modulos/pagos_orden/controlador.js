@@ -10,8 +10,10 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
 
-    function todos(){
-        return db.Todos(TABLA)
+    function todos(dataPagos){
+        const {id_taller, id_sucursal, start, end} = dataPagos
+        return db.sp_pagosTallerSucursal(id_taller, id_sucursal, start, end)
+        // return db.Todos(TABLA)
     }
     function pagosTaller(id_taller, id_sucursal, start, end){
         return db.pagosTaller(id_taller, id_sucursal, start, end)

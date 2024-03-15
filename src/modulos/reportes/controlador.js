@@ -1,5 +1,5 @@
 
-const TABLA = 'depositos'
+const TABLA = 'reportes'
 
 
 module.exports = function (dbIyectada){
@@ -13,11 +13,8 @@ module.exports = function (dbIyectada){
     function todos(){
         return db.Todos(TABLA)
     }
-    function depositosTallerSucursal(id_taller, id_sucursal, start, end){
-        return db.depositosTallerSucursal(id_taller, id_sucursal, start, end)
-    }
-    function uno(id){
-        return db.uno(TABLA, id)
+    function uno(id_recepcion){
+        return db.query(TABLA, {id_recepcion})
     }
     function agregar(body){
         return db.agregar(TABLA, body)
@@ -30,8 +27,7 @@ module.exports = function (dbIyectada){
         todos,
         uno,
         agregar,
-        eliminar,
-        depositosTallerSucursal
+        eliminar
     }
     
 }

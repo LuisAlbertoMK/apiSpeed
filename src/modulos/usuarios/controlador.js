@@ -28,7 +28,7 @@ module.exports = function (dbIyectada){
             activo: body.activo
         }
         const respuesta = await db.agregar(TABLA, usuario)
-        // console.log('respuesta', respuesta);
+
         const insertId = (body.id_usuario === 0) ? respuesta.insertId : body.id_usuario
         
         let respuesta2 = ''
@@ -47,7 +47,6 @@ module.exports = function (dbIyectada){
         return db.eliminar(TABLA, body)
     }
     function listaTecnicos( id_sucursal){
-        console.log({id_sucursal});
         return db.listaTecnicos( id_sucursal)
     }
 
