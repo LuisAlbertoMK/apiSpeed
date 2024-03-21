@@ -22,7 +22,7 @@ module.exports = function (dbIyectada){
          return db.recepcionesTaller(id_taller, id_sucursal, start, end)
     }
     async function recepcionesTaller2(dataPeticion){
-        console.log(dataPeticion);
+        
         const {id_taller, id_sucursal, start, end, gastos, conEstado} = dataPeticion
 
         const newGastos = (gastos && gastos != undefined)
@@ -73,8 +73,12 @@ module.exports = function (dbIyectada){
     function getRecepcion(id_recepcion){
         return db.RecepcionConsulta(id_recepcion)
     }
+    function recepcionesCliente(id_cliente){
+        return db.recepcionesCliente(id_cliente)
+    }
 
     return {
+        recepcionesCliente,
         todos,
         uno,
         agregar,

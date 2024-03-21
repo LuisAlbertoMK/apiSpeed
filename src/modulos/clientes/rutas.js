@@ -3,6 +3,10 @@ const express = require('express')
 const respuesta = require('../../red/respuestas')
 const controlador= require('./index')
 
+const vehiculos = require('../vehiculos')
+const cotizaciones = require('../cotizaciones')
+const recepciones = require('../recepciones')
+
 const router = express.Router()
 
 router.get('/', todos)
@@ -11,7 +15,7 @@ router.put('/', eliminar)
 router.get('/clientesTallerSucursal', clientesTallerSucursal)
 router.get('/contadorClientesUsuario', contadorClientesUsuario)
 router.get('/clientesSucursal/:id_sucursal', clientesSucursal)
-// router.get('/:id_cliente', uno)
+router.get('/:id_cliente', uno)
 
 async function todos (req, res, next){
     try {
@@ -47,8 +51,20 @@ async function contadorClientesUsuario (req, res, next){
 }
 async function uno(req, res, next){
     try {
-        const items = await controlador.cliente(req.params.id_cliente)
-        respuesta.success(req, res, items[0], 200)
+        const {historial} = req.query
+        const {id_cliente}= req.params
+        const historialBoolean = (historial === 'true')
+        let items = await controlador.clienteUnico(id_cliente).then(ans => ans[0])
+        if (historialBoolean) {
+            const [dataCliente, vehiculosCliente, cotizacionesCliente, recepcionesCliente] = await Promise.all([
+                controlador.clienteUnico(id_cliente).then(ans => ans[0]),
+                vehiculos.vehiculosCiente(id_cliente),
+                cotizaciones.cotizacionesCliente(id_cliente),
+                recepciones.recepcionesCliente(id_cliente)
+                ]);
+            items = {dataCliente, vehiculosCliente, cotizacionesCliente, recepcionesCliente}
+        }
+        respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
 async function agregar(req, res, next){

@@ -18,9 +18,6 @@ module.exports = function (dbIyectada){
     }
     async function agregar(body){
         return db.agregar(TABLA, body)
-        const respuesta = await db.agregar(TABLA, body)
-        const insertId = (body.id_cotizacion === 0) ? respuesta.insertId : body.id_cotizacion
-        return insertId
     }
     function eliminar(body){
         return db.eliminar(TABLA, body)
@@ -28,13 +25,18 @@ module.exports = function (dbIyectada){
     function no_cotizacion(body){
         return db.no_cotizacion(body)
     }
+    function cotizacionesCliente(id_cliente){
+        return db.cotizacionesCliente(id_cliente)
+    }
+
 
     return {
         todos,
         agregar,
         eliminar,
         no_cotizacion,
-        consultaCotizacion
+        consultaCotizacion,
+        cotizacionesCliente
     }
     
 }

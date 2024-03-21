@@ -79,4 +79,11 @@ async function RecepcionesVehiculoConsulta(req, res, next){
         respuesta.success(req, res, items, 201)
     } catch (error) { next(error) }
 }
+async function recepcionesCliente(id_cliente) {
+    try {
+        const items =  await controlador.recepcionesCliente(id_cliente)
+        respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+
 module.exports = router
