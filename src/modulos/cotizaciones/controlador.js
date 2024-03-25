@@ -13,8 +13,8 @@ module.exports = function (dbIyectada){
     function todos(start, end){
         return db.consultaCotizaciones(start, end)
     }
-    function consultaCotizacion(id){
-        return db.consultaCotizacion(id)
+    function consultaCotizacion(id_cotizacion){
+        return db.consultaCotizacion(id_cotizacion)
     }
     async function agregar(body){
         return db.agregar(TABLA, body)

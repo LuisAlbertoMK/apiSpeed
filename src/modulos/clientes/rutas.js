@@ -42,31 +42,41 @@ async function clientesTallerSucursal (req, res, next){
         respuesta.success(req, res, items[0], 200)
     } catch (error) { next(error) }
 }
-
 async function contadorClientesUsuario (req, res, next){
     try {
         const items =  await controlador.contadorClientesUsuario(req.query.id_usuario)
         respuesta.success(req, res, items[0], 200)
     } catch (error) { next(error) }
 }
-async function uno(req, res, next){
+async function uno(req, res, next) {
     try {
-        const {historial} = req.query
-        const {id_cliente}= req.params
-        const historialBoolean = (historial === 'true')
-        let items = await controlador.clienteUnico(id_cliente).then(ans => ans[0])
-        if (historialBoolean) {
-            const [dataCliente, vehiculosCliente, cotizacionesCliente, recepcionesCliente] = await Promise.all([
-                controlador.clienteUnico(id_cliente).then(ans => ans[0]),
-                vehiculos.vehiculosCiente(id_cliente),
-                cotizaciones.cotizacionesCliente(id_cliente),
-                recepciones.recepcionesCliente(id_cliente)
-                ]);
-            items = {dataCliente, vehiculosCliente, cotizacionesCliente, recepcionesCliente}
-        }
-        respuesta.success(req, res, items, 200)
-    } catch (error) { next(error) }
-}
+      const { historial } = req.query;
+      const { id_cliente } = req.params;
+      const shouldIncludeHistory = historial === 'true';
+      const [
+        dataCliente,
+        vehiculosCliente,
+        cotizacionesCliente,
+        recepcionesCliente,
+      ] = await Promise.all([
+        controlador.clienteUnico(id_cliente),
+        shouldIncludeHistory ? vehiculos.vehiculosCiente(id_cliente) : [],
+        shouldIncludeHistory ? cotizaciones.cotizacionesCliente(id_cliente) : [],
+        shouldIncludeHistory ? recepciones.recepcionesCliente(id_cliente) : [],
+      ]);
+  
+      const items = shouldIncludeHistory
+        ? {
+            dataCliente,
+            vehiculosCliente,
+            cotizacionesCliente,
+            recepcionesCliente,
+          }
+        : dataCliente;
+  
+      respuesta.success(req, res, items, 200);
+    } catch (error) { next(error); }
+  }
 async function agregar(req, res, next){
     try {
         const items = await controlador.agregar(req.body)

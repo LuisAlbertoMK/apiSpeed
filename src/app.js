@@ -4,6 +4,7 @@ const config = require('./config')
 const cors = require('cors')
 
 const clientes = require('./modulos/clientes/rutas')
+const correos = require('./modulos/correos/rutas')
 const usuarios = require('./modulos/usuarios/rutas')
 const auth = require('./modulos/auth/rutas')
 const error = require('./red/errores')
@@ -52,6 +53,7 @@ const whiteList=['http://localhost:4201','https://proyectopruebas-5bfd4.web.app'
 app.use(cors({origin: whiteList}));
 //rutas
 app.use('/api/clientes', clientes)
+app.use('/api/correos', correos)
 app.use('/api/usuarios', usuarios)
 app.use('/api/auth', auth)
 app.use('/api/sucursales', sucursales)

@@ -1,5 +1,5 @@
 
-const TABLA = 'elementoscotizacion'
+const TABLA = 'anios'
 
 
 module.exports = function (dbIyectada){
@@ -10,11 +10,11 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
 
-    function todos(){
-        return db.Todos(TABLA)
+    function todos(correo){
+        return db.correosClientes(correo)
     }
-    function uno(id_cotizacion){
-        return db.elementos_cotizaciones( id_cotizacion)
+    function uno(id){
+        return db.uno(TABLA, id)
     }
     function agregar(body){
         return db.agregar(TABLA, body)

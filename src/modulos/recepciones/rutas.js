@@ -2,6 +2,11 @@ const express = require('express')
 
 const respuesta = require('../../red/respuestas')
 const controlador= require('./index')
+const clientes = require('../clientes')
+const vehiculos = require('../vehiculos')
+const reportes = require('../reportes')
+const elementos_recepcion = require('../elementos_recepcion')
+const mod_paquetes = require('../mod_paquetes')
 
 
 
@@ -54,8 +59,28 @@ async function aceptados (req, res, next){
 }
 async function uno(req, res, next){
     try {
-        const items = await controlador.getRecepcion(req.params.id_recepcion)
-        respuesta.success(req, res, items[0], 200)
+        const {id_recepcion} = req.params        
+        const recepcion = await controlador.getRecepcion(id_recepcion)
+        const {id_cliente, id_sucursal, id_vehiculo} = recepcion
+        const cliente = await clientes.clienteUnico(id_cliente) || {}
+        const vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
+        const reporte = await reportes.uno(id_recepcion)
+        const elementos = await elementos_recepcion.uno(id_recepcion)
+
+        const newElementos = await Promise.all(elementos.map(async e => {
+            if (e.id_paquete) {
+                const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificadoRecep(id_recepcion, e['id_paquete'],e['id_eleRecepcion'] )
+                console.log(e.id_paquete, detallePaqueteResp);
+                e['elementos'] = [...detallePaqueteResp];
+                e.nombre = detallePaqueteResp[0].paquete
+                e['tipo'] = 'paquete'
+            }
+            return e
+        }))
+
+        const dataRecepcion = {recepcion, cliente, vehiculo, reporte, elementos: newElementos}
+
+        respuesta.success(req, res, dataRecepcion, 200)
     } catch (error) { next(error) }
 }
 async function agregar(req, res, next){
