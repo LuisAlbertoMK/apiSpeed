@@ -10,7 +10,7 @@ const router = express.Router()
 router.get('/', todos)
 router.get('/pagosTaller', pagosTaller)
 router.get('/recepcion/:id_recepcion', PagosRecepcionUnica)
-router.get('/:id', uno)
+router.get('/:id_recepcion', uno)
 router.post('/', agregar)
 router.put('/', eliminar)
 
@@ -42,7 +42,7 @@ async function PagosRecepcionUnica (req, res, next){
 }
 async function uno(req, res, next){
     try {
-        const items = await controlador.uno(req.params.id)
+        const items = await controlador.uno(req.params.id_recepcion)
         respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)

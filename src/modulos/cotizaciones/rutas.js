@@ -2,7 +2,11 @@ const express = require('express')
 
 const respuesta = require('../../red/respuestas')
 const controlador= require('./index')
-
+const clientes = require('../clientes')
+const vehiculos = require('../vehiculos')
+const elementos_cotizacion = require('../elementos_cotizacion')
+const mod_paquetes = require('../mod_paquetes')
+const sucursales = require('../sucursales')
 
 
 const router = express.Router()
@@ -11,7 +15,7 @@ router.get('/', todos)
 router.post('/', agregar)
 router.put('/', eliminar)
 router.get('/no_cotizacion/:no_cotizacion', no_cotizacion)
-router.get('/:id_cotizacion', consultaCotizacion)
+router.get('/:id_cotizacion', uno)
 
 
 async function todos (req, res, next){
@@ -57,5 +61,31 @@ async function eliminar(req, res, next){
     } catch (error) {
         next(error)
     }
+}
+async function uno(req, res, next){
+    try {
+        const {id_cotizacion} = req.params        
+        const cotizacion = await controlador.consultaCotizacion(id_cotizacion)
+        console.log({cotizacion});
+        const {id_cliente, id_sucursal, id_vehiculo, id_taller} = cotizacion
+        const cliente = await clientes.clienteUnico(id_cliente)
+        const sucursal = await sucursales.sucursalUnica(id_taller, id_sucursal)
+        const vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
+        const elementos = await elementos_cotizacion.uno(id_cotizacion)
+        const newElementos = await Promise.all(elementos.map(async e => {
+            if (e.id_paquete) {
+                const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificado(id_cotizacion, e['id_paquete'],e['id_eleCotizacion'] )
+                // console.log(e.id_paquete, detallePaqueteResp);
+                e['elementos'] = [...detallePaqueteResp];
+                e.nombre = detallePaqueteResp[0].paquete
+                e['tipo'] = 'paquete'
+            }
+            return e
+        }))
+
+        const dataRecepcion = {cotizacion, cliente, vehiculo, elementos: newElementos, sucursal: sucursal[0]}
+
+        respuesta.success(req, res, dataRecepcion, 200)
+    } catch (error) { next(error) }
 }
 module.exports = router

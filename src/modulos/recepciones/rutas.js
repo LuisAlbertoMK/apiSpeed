@@ -7,7 +7,9 @@ const vehiculos = require('../vehiculos')
 const reportes = require('../reportes')
 const elementos_recepcion = require('../elementos_recepcion')
 const mod_paquetes = require('../mod_paquetes')
-
+const gastos_orden = require('../gastos_orden')
+const pagos_orden = require('../pagos_orden')
+const sucursales = require('../sucursales')
 
 
 const router = express.Router()
@@ -61,16 +63,18 @@ async function uno(req, res, next){
     try {
         const {id_recepcion} = req.params        
         const recepcion = await controlador.getRecepcion(id_recepcion)
-        const {id_cliente, id_sucursal, id_vehiculo} = recepcion
+        const {id_cliente, id_sucursal, id_vehiculo,id_taller} = recepcion
         const cliente = await clientes.clienteUnico(id_cliente) || {}
         const vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
         const reporte = await reportes.uno(id_recepcion)
         const elementos = await elementos_recepcion.uno(id_recepcion)
-
+        const gastosOrden = await gastos_orden.todosOrden(id_recepcion)
+        const pagosOrden = await pagos_orden.PagosRecepcionUnica(id_recepcion)
+        const sucursal = await sucursales.sucursalUnica(id_taller, id_sucursal)
         const newElementos = await Promise.all(elementos.map(async e => {
             if (e.id_paquete) {
                 const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificadoRecep(id_recepcion, e['id_paquete'],e['id_eleRecepcion'] )
-                console.log(e.id_paquete, detallePaqueteResp);
+                // console.log(e.id_paquete, detallePaqueteResp);
                 e['elementos'] = [...detallePaqueteResp];
                 e.nombre = detallePaqueteResp[0].paquete
                 e['tipo'] = 'paquete'
@@ -78,7 +82,12 @@ async function uno(req, res, next){
             return e
         }))
 
-        const dataRecepcion = {recepcion, cliente, vehiculo, reporte, elementos: newElementos}
+        const dataRecepcion = 
+        {
+            recepcion, cliente, vehiculo, reporte, 
+            elementos: newElementos, gastosOrden, pagosOrden,
+            sucursal: sucursal[0]
+        }
 
         respuesta.success(req, res, dataRecepcion, 200)
     } catch (error) { next(error) }

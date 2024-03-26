@@ -9,7 +9,7 @@ const router = express.Router()
 
 router.get('/', todos)
 router.get('/sucursalesTaller', sucursalesTaller)
-router.get('/sucursalUnica', sucursalUnica)
+router.get('/:id_sucursal', sucursalUnica)
 router.post('/', agregar)
 router.put('/', eliminar)
 
@@ -32,7 +32,8 @@ async function sucursalesTaller (req, res, next){
 }
 async function sucursalUnica (req, res, next){
     try {
-        const {id_taller, id_sucursal} = req.query
+        const {id_taller} = req.query
+        const { id_sucursal} = req.params
         const items =  await controlador.sucursalUnica(id_taller, id_sucursal)
         respuesta.success(req, res, items[0], 200)
     } catch (error) {

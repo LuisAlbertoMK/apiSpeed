@@ -235,7 +235,7 @@ function consultaCotizacion(id_cotizacion){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_consultaCotizacion(${id_cotizacion})
         `, (error, result) =>{ 
-            return error ? reject(error) : resolve(result[0])
+            return error ? reject(error) : resolve(result[0][0])
         })
     })
 }
@@ -384,7 +384,7 @@ function sp_gastosOrdenesTallerSucursal(id_taller, id_sucursal, start,end){
 function PagosRecepcionUnica(id_recepcion){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_pagosOrdenRecepcion(${id_recepcion})`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result)
+            return error ? reject(error) : resolve(result[0])
         })
     })
 }
@@ -420,7 +420,7 @@ function sucursalesTaller(id_taller){
 function sucursalUnica(id_taller, id_sucursal){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_sucursalUnica(${id_taller}, ${id_sucursal})`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result)
+            return error ? reject(error) : resolve(result[0])
         })
     })
 }
