@@ -27,8 +27,8 @@ module.exports = function (dbIyectada){
     function agregar(body){
         return db.agregar(TABLA, body)
     }
-    function eliminar(body){
-        return db.eliminar(TABLA, body)
+    function eliminar(id_pagoOrden){
+        return db.eliminarQuery(TABLA, {id_pagoOrden})
     }
 
     return {

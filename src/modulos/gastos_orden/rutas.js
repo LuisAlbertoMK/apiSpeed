@@ -12,8 +12,9 @@ router.get('/todosFechas', todosFechas)
 router.get('/gastosOrdenTaller', gastosOrdenTaller)
 router.get('/recepcion/:id_recepcion', gastosRecepcion)
 router.post('/', agregar)
-router.put('/', eliminar)
+// router.put('/', eliminar)
 router.get('/:id_recepcion', uno)
+router.delete('/', eliminar)
 
 
 
@@ -61,7 +62,8 @@ async function agregar(req, res, next){
 }
 async function eliminar(req, res, next){
     try {
-        const items = await controlador.eliminar(req.body)
+        const {id_gastoOrden} = req.query
+        const items = await controlador.eliminar(id_gastoOrden)
         respuesta.success(req, res, 'item eliminado', 200)
     } catch (error) { next(error) }
 }

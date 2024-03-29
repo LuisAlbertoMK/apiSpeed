@@ -12,8 +12,8 @@ router.get('/pagosTaller', pagosTaller)
 router.get('/recepcion/:id_recepcion', PagosRecepcionUnica)
 router.get('/:id_recepcion', uno)
 router.post('/', agregar)
-router.put('/', eliminar)
-
+// router.put('/', eliminar)
+router.delete('/', eliminar)
 
 async function todos (req, res, next){
     try {
@@ -59,7 +59,8 @@ async function agregar(req, res, next){
 }
 async function eliminar(req, res, next){
     try {
-        const items = await controlador.eliminar(req.body)
+        const {id_pagoOrden} = req.query
+        const items = await controlador.eliminar(id_pagoOrden)
         respuesta.success(req, res, 'item eliminado', 200)
     } catch (error) {
         next(error)

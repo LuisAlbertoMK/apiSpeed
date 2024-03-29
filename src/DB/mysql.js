@@ -66,6 +66,13 @@ function eliminar(tabla, data){
         })
     })
 }
+function eliminarQuery(tabla, consulta){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`DELETE FROM ${tabla} WHERE ?`, consulta, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
 function agregar(tabla, data){
     return new Promise((resolve, reject) =>{
         conexion.query(`INSERT INTO  ${tabla} SET ? ON DUPLICATE KEY UPDATE ?`, [data, data], (error, result) =>{ 
@@ -529,6 +536,14 @@ function correosClientes(correo){
     })
 }
 
+// TECNICOS
+function sp_tecnicosTallerSucursal(id_taller, id_sucursal){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_tecnicosTallerSucursal(${id_taller}, ${id_sucursal})`
+        , (error, result) =>{ return error ? reject(error) : resolve(result[0]) })
+    })
+}
+
 module.exports = {
     recepcionesCliente,
     correosClientes,
@@ -544,6 +559,7 @@ module.exports = {
     uno,
     agregar,
     eliminar,
+    eliminarQuery,
     query,
     queryEliminar,
     eliminaEleModPaqRecep,
@@ -591,5 +607,6 @@ module.exports = {
     sp_ordenesAbiertas,
     sp_pagosTallerSucursal,
     sp_gastosOperacion,
-    sp_gastosOrdenesTallerSucursal
+    sp_gastosOrdenesTallerSucursal,
+    sp_tecnicosTallerSucursal
 }
