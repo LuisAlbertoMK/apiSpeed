@@ -7,6 +7,7 @@ const clientes = require('../clientes')
 const cotizaciones = require('../cotizaciones')
 const recepciones = require('../recepciones')
 
+
 const router = express.Router()
 
 router.get('/', todos)
@@ -26,7 +27,16 @@ async function todos (req, res, next){
         if (consulta === 'uno') {
             items = await controlador.vehiculoUnico(id_vehiculo)
         }else if(consulta === 'todos'){
-            items =  await controlador.todos()
+            const vehiculos =  await controlador.todos()
+            const promesas = vehiculos.map(async element => {
+                let asigna ={ ...element };
+                const { id_cliente } = element;
+                asigna['data_cliente'] = await  clientes.clienteUnico(id_cliente)
+                return asigna
+            })
+            const resultados = await Promise.all(promesas);
+            // return resultados
+            items = resultados
         }
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error)}
@@ -41,8 +51,22 @@ async function verificaPlacas (req, res, next){
 async function vehiculosTallerSucursal (req, res, next){
     try {
         const {id_taller, id_sucursal}= req.query
-        const items =  await controlador.vehiculosTallerSucursal(id_taller, id_sucursal)
-        respuesta.success(req, res, items[0], 200)
+        
+        let  temps =  await controlador.vehiculosTallerSucursal(id_taller, id_sucursal)
+        // console.log({respuestas: respuestas[0]});
+        const respuestas = temps[0]
+        // const vehiculos =  await controlador.todos()
+            const promesas = respuestas.map(async element => {
+                let asigna ={ ...element };
+                const { id_cliente } = element;
+                console.log({id_cliente});
+                asigna['data_cliente'] = await  clientes.clienteUnico(id_cliente)
+                return asigna
+            })
+            const resultados = await Promise.all(promesas);
+            // return resultados
+        const items = resultados
+        respuesta.success(req, res, items, 200)
     } catch (error) { next(error)}
 }
 async function vehiculosCliente (req, res, next){

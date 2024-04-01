@@ -3,6 +3,8 @@ const TABLA = 'recepciones'
 
 const reportes = require('../reportes')
 const gastos_orden = require('../gastos_orden')
+const clientes = require('../clientes')
+const vehiculos = require('../vehiculos')
 
 module.exports = function (dbIyectada){
 
@@ -41,13 +43,15 @@ module.exports = function (dbIyectada){
         
         // Transformamos cada elemento de 'respuesta' a una promesa que resuelve con el elemento actualizado
         const promesas = respuesta.map(async element => {
-            const { id_recepcion } = element;
+            const { id_recepcion, id_cliente, id_vehiculo } = element;
             const reporte = await reportes.uno(id_recepcion);
             let asigna ={ ...element, reporte };
             if (newGastos) {
                 const gastosOrden = await gastos_orden.todosOrden(id_recepcion)
                 asigna['gastosOrden'] = gastosOrden   
             }
+            asigna['data_cliente'] = await  clientes.clienteUnico(id_cliente)
+            asigna['data_vehiculo'] = await  vehiculos.vehiculoUnico(id_vehiculo)
             return asigna
             // Retorna el elemento actualizado con el 'reporte' agregado
         });
