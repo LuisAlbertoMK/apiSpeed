@@ -68,9 +68,9 @@ async function uno(req, res, next){
         const cotizacion = await controlador.consultaCotizacion(id_cotizacion)
         console.log({cotizacion});
         const {id_cliente, id_sucursal, id_vehiculo, id_taller} = cotizacion
-        const cliente = await clientes.clienteUnico(id_cliente)
+        const data_cliente = await clientes.clienteUnico(id_cliente)
         const sucursal = await sucursales.sucursalUnica(id_taller, id_sucursal)
-        const vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
+        const data_vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
         const elementos = await elementos_cotizacion.uno(id_cotizacion)
         const newElementos = await Promise.all(elementos.map(async e => {
             if (e.id_paquete) {
@@ -83,7 +83,8 @@ async function uno(req, res, next){
             return e
         }))
 
-        const dataRecepcion = {cotizacion, cliente, vehiculo, elementos: newElementos, sucursal: sucursal[0]}
+        const dataRecepcion = {...cotizacion, data_cliente, data_vehiculo, elementos: newElementos, 
+            data_sucursal: sucursal[0]}
 
         respuesta.success(req, res, dataRecepcion, 200)
     } catch (error) { next(error) }

@@ -64,8 +64,8 @@ async function uno(req, res, next){
         const {id_recepcion} = req.params        
         const recepcion = await controlador.getRecepcion(id_recepcion)
         const {id_cliente, id_sucursal, id_vehiculo,id_taller} = recepcion
-        const cliente = await clientes.clienteUnico(id_cliente) || {}
-        const vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
+        const data_cliente = await clientes.clienteUnico(id_cliente) || {}
+        const data_vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
         const reporte = await reportes.uno(id_recepcion)
         const elementos = await elementos_recepcion.uno(id_recepcion)
         const gastosOrden = await gastos_orden.todosOrden(id_recepcion)
@@ -84,9 +84,9 @@ async function uno(req, res, next){
 
         const dataRecepcion = 
         {
-            recepcion, cliente, vehiculo, reporte, 
+            ...recepcion, data_cliente, data_vehiculo, reporte, 
             elementos: newElementos, gastosOrden, pagosOrden,
-            sucursal: sucursal[0]
+            data_sucursal: sucursal[0]
         }
 
         respuesta.success(req, res, dataRecepcion, 200)
