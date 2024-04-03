@@ -30,33 +30,34 @@ module.exports = function (dbIyectada){
         const newGastos = (gastos && gastos != undefined)
         let respuesta 
         
-        if(conEstado == 'entregado' && start && end){ 
+        if(conEstado === 'entregado' && start && end){ 
             respuesta = await db.serviciosEntregado(id_taller, id_sucursal, start, end) 
-        }
-        if(conEstado == 'todos' && start && end){ 
+        }else if(conEstado === 'todos' && start && end){ 
             respuesta = await db.recepcionesTaller2(id_taller, id_sucursal, start, end) 
-        }
-        if (conEstado === 'cancelado') {
-            respuesta = await db.sp_ordenesAbiertas(id_taller, id_sucursal)
+        }else if (conEstado === 'cancelado') {
+            console.log(conEstado);
+            resultados = await db.sp_ordenesAbiertas(id_taller, id_sucursal)
         }
     
-        
+        if(conEstado !== 'cancelado'){
+            const promesas = respuesta.map(async element => {
+                const { id_recepcion, id_cliente, id_vehiculo } = element;
+                const reporte = await reportes.uno(id_recepcion);
+                let asigna ={ ...element, reporte };
+                if (newGastos) {
+                    const gastosOrden = await gastos_orden.todosOrden(id_recepcion)
+                    asigna['gastosOrden'] = gastosOrden   
+                }
+                asigna['data_cliente'] = await  clientes.clienteUnico(id_cliente)
+                asigna['data_vehiculo'] = await  vehiculos.vehiculoUnico(id_vehiculo)
+                return asigna
+                // Retorna el elemento actualizado con el 'reporte' agregado
+            });
+    
+            resultados = await Promise.all(promesas);
+        }
         // Transformamos cada elemento de 'respuesta' a una promesa que resuelve con el elemento actualizado
-        const promesas = respuesta.map(async element => {
-            const { id_recepcion, id_cliente, id_vehiculo } = element;
-            const reporte = await reportes.uno(id_recepcion);
-            let asigna ={ ...element, reporte };
-            if (newGastos) {
-                const gastosOrden = await gastos_orden.todosOrden(id_recepcion)
-                asigna['gastosOrden'] = gastosOrden   
-            }
-            asigna['data_cliente'] = await  clientes.clienteUnico(id_cliente)
-            asigna['data_vehiculo'] = await  vehiculos.vehiculoUnico(id_vehiculo)
-            return asigna
-            // Retorna el elemento actualizado con el 'reporte' agregado
-        });
-
-        const resultados = await Promise.all(promesas);
+        
         return resultados
     }
     function aceptados(id_taller, id_sucursal){

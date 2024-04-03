@@ -64,7 +64,7 @@ async function uno(req, res, next){
         const {id_recepcion} = req.params        
         const recepcion = await controlador.getRecepcion(id_recepcion)
         const {id_cliente, id_sucursal, id_vehiculo,id_taller} = recepcion
-        const data_cliente = await clientes.clienteUnico(id_cliente) || {}
+        const data_cliente = await clientes.clienteUnico(id_cliente)
         const data_vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
         const reporte = await reportes.uno(id_recepcion)
         const elementos = await elementos_recepcion.uno(id_recepcion)
