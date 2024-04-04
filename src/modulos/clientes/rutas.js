@@ -19,7 +19,7 @@ router.get('/:id_cliente', uno)
 
 async function todos (req, res, next){
     try {
-        const {consulta, id_cliente} = req.query
+        const {consulta, id_cliente, historial} = req.query
         let items 
         if (consulta === 'uno') {
             items =  await controlador.clienteUnico(id_cliente)
@@ -54,7 +54,7 @@ async function uno(req, res, next) {
       const { id_cliente } = req.params;
       const shouldIncludeHistory = historial === 'true';
       const [
-        dataCliente,
+        data_cliente,
         vehiculosCliente,
         cotizacionesCliente,
         recepcionesCliente,
@@ -67,12 +67,12 @@ async function uno(req, res, next) {
   
       const items = shouldIncludeHistory
         ? {
-            dataCliente,
-            vehiculosCliente,
-            cotizacionesCliente,
-            recepcionesCliente,
+            data_cliente,
+            vehiculos: vehiculosCliente,
+            cotizaciones:cotizacionesCliente,
+            recepciones: recepcionesCliente,
           }
-        : dataCliente;
+        : data_cliente;
   
       respuesta.success(req, res, items, 200);
     } catch (error) { next(error); }

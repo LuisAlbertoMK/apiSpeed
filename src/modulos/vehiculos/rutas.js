@@ -86,16 +86,19 @@ async function uno(req, res, next){
         const {historial} = req.query
         const historialBoolean = (historial === 'true')
         const { id_vehiculo} = req.params
-        let items = await controlador.vehiculoUnico(id_vehiculo).then(ans => ans[0])
-        const dataVehiculo = {...items}
+        let data_vehiculo = await controlador.vehiculoUnico(id_vehiculo)
+        items = data_vehiculo
         if (historialBoolean) {
-            const id_cliente = dataVehiculo.id_cliente;
-            const [dataCliente, cotizacionesCliente, recepcionesCliente] = await Promise.all([
-            clientes.clienteUnico(id_cliente).then(ans => ans[0]),
+            const id_cliente = data_vehiculo.id_cliente;
+            const [data_cliente, cotizacionesCliente, recepcionesCliente] = await Promise.all([
+            clientes.clienteUnico(id_cliente),
             cotizaciones.cotizacionesCliente(id_cliente),
             recepciones.recepcionesCliente(id_cliente)
             ]);
-            items = { dataCliente, dataVehiculo, cotizacionesCliente, recepcionesCliente }
+            items = { 
+                data_cliente, data_vehiculo, 
+                cotizaciones: cotizacionesCliente, recepciones: recepcionesCliente 
+            }
         }
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
