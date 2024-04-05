@@ -30,6 +30,9 @@ module.exports = function (dbIyectada){
     function eliminar(id_pagoOrden){
         return db.eliminarQuery(TABLA, {id_pagoOrden})
     }
+    function pagoTotal(id_recepcion){
+        return db.pagoTotal(id_recepcion)
+    }
 
     return {
         todos,
@@ -37,7 +40,8 @@ module.exports = function (dbIyectada){
         PagosRecepcionUnica,
         agregar,
         eliminar,
-        pagosTaller
+        pagosTaller,
+        pagoTotal
     }
     
 }

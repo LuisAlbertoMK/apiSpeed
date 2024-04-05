@@ -35,7 +35,6 @@ module.exports = function (dbIyectada){
         }else if(conEstado === 'todos' && start && end){ 
             respuesta = await db.recepcionesTaller2(id_taller, id_sucursal, start, end) 
         }else if (conEstado === 'cancelado') {
-            console.log(conEstado);
             resultados = await db.sp_ordenesAbiertas(id_taller, id_sucursal)
         }
     

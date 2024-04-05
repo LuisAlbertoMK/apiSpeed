@@ -34,8 +34,11 @@ async function pagosTaller (req, res, next){
 }
 async function PagosRecepcionUnica (req, res, next){
     try {
-        const items =  await controlador.PagosRecepcionUnica(req.params.id_recepcion)
-        respuesta.success(req, res, items[0], 200)
+        const { pagototal }= req.query
+        const { id_recepcion} = req.params
+        let items =  await controlador.PagosRecepcionUnica(id_recepcion)
+        // if(pagototal) items = await controlador.pagoTotal(id_recepcion)
+        respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)
     }

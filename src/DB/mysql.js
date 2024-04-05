@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigmysql)
+    conexion = mysql.createConnection(dbconfigMariaDB)
 
     conexion.connect((err)=>{
         if (err) {
@@ -408,6 +408,20 @@ function listaTecnicos(id_sucursal){
         })
     })
 }
+function pagoTotal(id_recepcion){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT total FROM pagototalorden WHERE id_recepcion = ${id_recepcion} `, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function listaTecnicos(id_sucursal){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_listaTecnicos(${id_sucursal})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
 // planes
 function plancliente(id_usuario){
     return new Promise((resolve, reject) =>{
@@ -608,5 +622,6 @@ module.exports = {
     sp_pagosTallerSucursal,
     sp_gastosOperacion,
     sp_gastosOrdenesTallerSucursal,
-    sp_tecnicosTallerSucursal
+    sp_tecnicosTallerSucursal,
+    pagoTotal
 }
