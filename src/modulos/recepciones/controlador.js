@@ -3,6 +3,7 @@ const TABLA = 'recepciones'
 
 const reportes = require('../reportes')
 const gastos_orden = require('../gastos_orden')
+const pagos_orden = require('../pagos_orden')
 const clientes = require('../clientes')
 const vehiculos = require('../vehiculos')
 
@@ -46,7 +47,10 @@ module.exports = function (dbIyectada){
                 if (newGastos) {
                     const gastosOrden = await gastos_orden.todosOrden(id_recepcion)
                     asigna['gastosOrden'] = gastosOrden   
+                    const pagosOrden = await pagos_orden.PagosRecepcionUnica(id_recepcion)
+                    asigna['pagosOrden'] = pagosOrden   
                 }
+                
                 asigna['data_cliente'] = await  clientes.clienteUnico(id_cliente)
                 asigna['data_vehiculo'] = await  vehiculos.vehiculoUnico(id_vehiculo)
                 return asigna

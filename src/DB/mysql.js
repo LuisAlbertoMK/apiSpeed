@@ -353,7 +353,7 @@ function ObtenerDetallePaqueteModificadoRecep(id_recepcion, id_paquete, id_eleRe
 }
 function eliminaEleModPaqRecep(id_eleRecepcion){
     return new Promise((resolve, reject) =>{
-        conexion.query(`DELETE FROM elementos_mod_paquetes_recep WHERE id_eleRecepcion=${id_eleRecepcion}` , (error, result) =>{ 
+        conexion.query(`DELETE FROM elementosmodpaquetesrecep WHERE id_eleRecepcion=${id_eleRecepcion}` , (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -395,6 +395,14 @@ function PagosRecepcionUnica(id_recepcion){
         })
     })
 }
+function pagoRecepcion(data){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`INSERT INTO pagototalorden SET ? ON DUPLICATE KEY UPDATE ?`, [data, data], (error, result)  =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
 function sp_pagosTallerSucursal(id_taller, id_sucursal, start,end){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_pagosTallerSucursal(${id_taller}, ${id_sucursal},'${start}','${end}')`,
@@ -575,6 +583,7 @@ module.exports = {
     eliminar,
     eliminarQuery,
     query,
+    pagoRecepcion,
     queryEliminar,
     eliminaEleModPaqRecep,
     consultaModeloMarca,

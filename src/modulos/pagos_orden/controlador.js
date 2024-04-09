@@ -33,9 +33,13 @@ module.exports = function (dbIyectada){
     function pagoTotal(id_recepcion){
         return db.pagoTotal(id_recepcion)
     }
+    function pagoRecepcion(datos){
+        return db.pagoRecepcion(datos)
+    }
 
     return {
         todos,
+        pagoRecepcion,
         uno,
         PagosRecepcionUnica,
         agregar,
