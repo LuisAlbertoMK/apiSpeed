@@ -17,7 +17,6 @@ async function todos (req, res, next){
     try {
         const {correo} = req.query
         const newCorreo = correo || null
-        console.log({newCorreo});
         const items =  await controlador.todos(newCorreo)
         respuesta.success(req, res, items, 200)
     } catch (error) {

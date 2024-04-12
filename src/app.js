@@ -3,6 +3,7 @@ const morgan = require('morgan')
 const config = require('./config')
 const cors = require('cors')
 
+
 const clientes = require('./modulos/clientes/rutas')
 const correos = require('./modulos/correos/rutas')
 const usuarios = require('./modulos/usuarios/rutas')
@@ -91,6 +92,8 @@ app.use('/api/taller', taller)
 app.use('/api/reportes', reportes)
 app.use('/api/tecnicos', tecnicos)
 app.use(error)
+
+
 
 
 module.exports = app

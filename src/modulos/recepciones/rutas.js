@@ -74,7 +74,6 @@ async function uno(req, res, next){
         const newElementos = await Promise.all(elementos.map(async e => {
             if (e.id_paquete) {
                 const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificadoRecep(id_recepcion, e['id_paquete'],e['id_eleRecepcion'] )
-                // console.log(e.id_paquete, detallePaqueteResp);
                 e['elementos'] = [...detallePaqueteResp];
                 e.nombre = detallePaqueteResp[0].paquete
                 e['tipo'] = 'paquete'

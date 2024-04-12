@@ -53,13 +53,12 @@ async function vehiculosTallerSucursal (req, res, next){
         const {id_taller, id_sucursal}= req.query
         
         let  temps =  await controlador.vehiculosTallerSucursal(id_taller, id_sucursal)
-        // console.log({respuestas: respuestas[0]});
+        
         const respuestas = temps[0]
         // const vehiculos =  await controlador.todos()
             const promesas = respuestas.map(async element => {
                 let asigna ={ ...element };
                 const { id_cliente } = element;
-                console.log({id_cliente});
                 asigna['data_cliente'] = await  clientes.clienteUnico(id_cliente)
                 return asigna
             })
@@ -106,8 +105,10 @@ async function uno(req, res, next){
 }
 async function agregar(req, res, next){
     try {
+        const {id_vehiculo} = req.body
         const items = await controlador.agregar(req.body)
-        mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
+        mensaje  =  (items.insertId) ? items.insertId : id_vehiculo
+        // mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
         respuesta.success(req, res, mensaje, 201)
     } catch (error) { next(error) }
 }

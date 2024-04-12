@@ -66,7 +66,6 @@ async function uno(req, res, next){
     try {
         const {id_cotizacion} = req.params        
         const cotizacion = await controlador.consultaCotizacion(id_cotizacion)
-        console.log({cotizacion});
         const {id_cliente, id_sucursal, id_vehiculo, id_taller} = cotizacion
         const data_cliente = await clientes.clienteUnico(id_cliente)
         const sucursal = await sucursales.sucursalUnica(id_taller, id_sucursal)
@@ -75,7 +74,6 @@ async function uno(req, res, next){
         const newElementos = await Promise.all(elementos.map(async e => {
             if (e.id_paquete) {
                 const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificado(id_cotizacion, e['id_paquete'],e['id_eleCotizacion'] )
-                // console.log(e.id_paquete, detallePaqueteResp);
                 e['elementos'] = [...detallePaqueteResp];
                 e.nombre = detallePaqueteResp[0].paquete
                 e['tipo'] = 'paquete'

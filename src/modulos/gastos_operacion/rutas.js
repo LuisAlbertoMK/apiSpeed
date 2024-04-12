@@ -48,7 +48,6 @@ async function eliminar(req, res, next){
     try {
         const {id_gastoOperacion} = req.query
         const items = await controlador.eliminar(id_gastoOperacion)
-        console.log(items);
         respuesta.success(req, res, 'item eliminado', 200)
     } catch (error) {
         next(error)
