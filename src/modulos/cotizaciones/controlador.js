@@ -1,6 +1,9 @@
 
 const TABLA = 'cotizaciones'
 
+const clientes = require('../clientes')
+const vehiculos = require('../vehiculos')
+const reportes = require('../reportecotizacion')
 
 module.exports = function (dbIyectada){
 
@@ -10,8 +13,20 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
 
-    function todos(start, end){
-        return db.consultaCotizaciones(start, end)
+    async function todos(query){
+        const {id_taller,id_sucursal, start, end} = query
+         let resultados = []
+        const respuestas = await db.consultaCotizaciones(id_taller, id_sucursal, start, end)
+        const promesas = respuestas.map(async element => {
+            const {id_cotizacion, id_cliente, id_vehiculo } = element;
+            const reporte = await reportes.uno(id_cotizacion);
+            let asigna ={ ...element, reporte };
+            asigna['data_cliente'] = await  clientes.clienteUnico(id_cliente)
+            asigna['data_vehiculo'] = await  vehiculos.vehiculoUnico(id_vehiculo)
+            return asigna
+        })
+        resultados = await Promise.all(promesas);
+        return resultados
     }
     function consultaCotizacion(id_cotizacion){
         return db.consultaCotizacion(id_cotizacion)

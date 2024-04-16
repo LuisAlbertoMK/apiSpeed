@@ -230,9 +230,9 @@ function sucursalesEmpresas(id_sucursal){
     })
 }
 //CONSULTA DE COTIZACIONES
-function consultaCotizaciones(start, end){
+function consultaCotizaciones(id_taller, id_sucursal,start, end){
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_consultaCotizaciones(${start},${end})`, 
+        conexion.query(`CALL sp_consultaCotizaciones(${id_taller},${id_sucursal},'${start}','${end}')`, 
         (error, result) =>{
             return error ? reject(error) : resolve(result[0])
         })

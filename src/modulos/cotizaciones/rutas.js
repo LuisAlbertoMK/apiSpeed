@@ -20,8 +20,7 @@ router.get('/:id_cotizacion', uno)
 
 async function todos (req, res, next){
     try {
-        const {start, end} = req.query
-        const items =  await controlador.todos(start, end)
+        const items =  await controlador.todos(req.query)
         respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)
