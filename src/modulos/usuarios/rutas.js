@@ -42,9 +42,10 @@ async function uno(req, res, next){
 }
 async function agregar(req, res, next){
     try {
+        const {id_usuario} = req.body
         const items = await controlador.agregar(req.body)
-        mensaje  =  (req.body.id_usuario === 0) ? 'Item registrado' : 'Item actualizado'
-        respuesta.success(req, res, mensaje, 201)
+        const regresaID = items || id_usuario
+        respuesta.success(req, res, regresaID, 201)
     } catch (error) {
         next(error)
     }
@@ -52,6 +53,7 @@ async function agregar(req, res, next){
 async function eliminar(req, res, next){
     try {
         const items = await controlador.eliminar(req.body)
+        
         respuesta.success(req, res, 'item eliminado', 200)
     } catch (error) {
         next(error)

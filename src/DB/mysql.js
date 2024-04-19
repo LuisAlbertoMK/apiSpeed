@@ -481,7 +481,7 @@ function empresasTaller(id_taller){
 function morefaccionesTaller(id_taller){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_morefaccionesTaller(${id_taller})`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result)
+            return error ? reject(error) : resolve(result[0])
         })
     })
 }

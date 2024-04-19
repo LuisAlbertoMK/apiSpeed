@@ -23,9 +23,19 @@ async function todos (req, res, next){
 }
 async function morefaccionesTaller (req, res, next){
     try {
+        let resultados = []
         const { id_taller} = req.query
         const items =  await controlador.morefaccionesTaller(id_taller)
-        respuesta.success(req, res, items[0], 200)
+        
+        const promesas = items.map(async element => {
+            const {id_moRefaccion} = element
+            const asigna ={ ...element };
+            const compatibles = await controlador.getCompatibles(id_moRefaccion)
+            asigna['compatibles'] = compatibles[0]
+            return asigna
+        })
+        resultados = await Promise.all(promesas);
+        respuesta.success(req, res, resultados, 200)
     } catch (error) { next(error) }
 }
 async function uno(req, res, next){

@@ -40,7 +40,7 @@ module.exports = function (dbIyectada){
             })
         }
         
-        return respuesta2
+        return insertId
 
     }
     function eliminar(body){
