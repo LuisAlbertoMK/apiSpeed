@@ -43,7 +43,8 @@ async function uno(req, res, next){
 async function agregar(req, res, next){
     try {
         const {id_usuario} = req.body
-        const items = await controlador.agregar(req.body)
+        const {passwordUpdate} = req.query
+        const items = await controlador.agregar(req.body, passwordUpdate)
         const regresaID = items || id_usuario
         respuesta.success(req, res, regresaID, 201)
     } catch (error) {

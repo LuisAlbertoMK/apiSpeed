@@ -15,7 +15,7 @@ module.exports = function (dbIyectada){
     function uno(id){
         return db.uno(TABLA, id)
     }
-    async function agregar(body){
+    async function agregar(body, passwordUpdate){
         const usuario = {
             id_usuario: body.id_usuario,
             id_taller: body.id_taller,
@@ -32,7 +32,7 @@ module.exports = function (dbIyectada){
         const insertId = (body.id_usuario === 0) ? respuesta.insertId : body.id_usuario
         
         let respuesta2 = ''
-        if (body.usuario || body.password) {
+        if ((body.usuario || body.password) || passwordUpdate) {
             respuesta2 = await auth.agregar({
                 id_usuario: insertId,
                 correo: body.correo,
