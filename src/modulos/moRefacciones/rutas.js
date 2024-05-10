@@ -12,12 +12,20 @@ router.post('/', agregar)
 router.put('/', eliminar)
 router.post('/registraCompatible', registraCompatible)
 router.get('/morefaccionesTaller', morefaccionesTaller)
+router.get('/semejantes', semejantes)
 router.get('/getCompatibles/:id_moRefaccion', getCompatibles)
 router.get('/:id', uno)
 
 async function todos (req, res, next){
     try {
         const items =  await controlador.todos()
+        respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+async function semejantes (req, res, next){
+    try {
+        const {semejantes, id_taller} = req.query
+        const items =  await controlador.semejantesmorefacciones({semejantes, id_taller})
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }

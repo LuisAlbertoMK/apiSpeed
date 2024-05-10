@@ -33,6 +33,9 @@ module.exports = function (dbIyectada){
     function getCompatibles(body){
         return db.getCompatibles(body)
     }
+    function semejantesmorefacciones(semejantes){
+        return db.semejantesmorefacciones(semejantes)
+    }
 
     return {
         todos,
@@ -41,7 +44,8 @@ module.exports = function (dbIyectada){
         agregar,
         eliminar,
         registraCompatible,
-        getCompatibles
+        getCompatibles,
+        semejantesmorefacciones
     }
     
 }

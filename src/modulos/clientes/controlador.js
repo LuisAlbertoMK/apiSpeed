@@ -10,8 +10,11 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
 
-    function clientes(){
-        return db.clientes()
+    function clientesPaginacionTotales(data){
+        return db.clientesPaginacionTotales(data)
+    }
+    function clientesPaginacionClientes(data){
+        return db.clientesPaginacionClientes(data)
     }
     function clientesTallerSucursal(id_taller, id_sucursal){
         return db.clientesTallerSucursal(id_taller, id_sucursal)
@@ -31,17 +34,22 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
+    function semejantesClientes(semejantes){
+        return db.semejantesClientes(semejantes)
+    }
   
 
 
     return {
-        clientes,
+        semejantesClientes,
         clientesSucursal,
         agregar,
         eliminar,
         contadorClientesUsuario,
         clientesTallerSucursal,
-        clienteUnico
+        clienteUnico,
+        clientesPaginacionTotales,
+        clientesPaginacionClientes
     }
     
 }

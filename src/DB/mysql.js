@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -56,6 +56,13 @@ function uno(tabla, id){
     return new Promise((resolve, reject) =>{
         conexion.query(`SELECT * FROM ${tabla} WHERE id = ${id}`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function uno2(tabla, [clave, valor]){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT * FROM ${tabla} WHERE ${clave} = ${valor}`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
         })
     })
 }
@@ -148,6 +155,14 @@ function contador(tabla){
     })
 }
 // INFORMACION DE CLIENTES
+function semejantesClientes(data){
+    const {semejantes,limite, id_taller,id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL busquedaLikeClientes(${id_taller},${id_sucursal},${limite},'${semejantes}');`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function clientesTallerSucursal(id_taller, id_sucursal){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_clientesTallerSucursal(${id_taller},${id_sucursal})`, (error, result) =>{ 
@@ -185,6 +200,22 @@ function vehiculoUnico(id_vehiculo){
     })
 }
 //consulta informacion relacionado con clientes
+function clientesPaginacionTotales(data){
+    const {id_taller, id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT COUNT(*) as total FROM clientes WHERE id_taller = ${id_taller} AND id_sucursal = ${id_sucursal}`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function clientesPaginacionClientes(data){
+    const {id_taller, id_sucursal, limit, offset} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call spclientesPaginacionClientes(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function clientes(){
     return new Promise((resolve, reject) =>{
         conexion.query(`call sp_clientes()`, (error, result) =>{ 
@@ -218,6 +249,14 @@ function getCompatibles(id_moRefaccion){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_getCompatibles(${id_moRefaccion})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function semejantesmorefacciones(data){
+    const {semejantes, id_taller} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL busquedaLikiMoRefacciones('${semejantes}',${id_taller});`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
         })
     })
 }
@@ -632,5 +671,10 @@ module.exports = {
     sp_gastosOperacion,
     sp_gastosOrdenesTallerSucursal,
     sp_tecnicosTallerSucursal,
-    pagoTotal
+    pagoTotal,
+    uno2,
+    semejantesmorefacciones,
+    semejantesClientes,
+    clientesPaginacionTotales,
+    clientesPaginacionClientes
 }

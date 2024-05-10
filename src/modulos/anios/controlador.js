@@ -13,8 +13,8 @@ module.exports = function (dbIyectada){
     function todos(){
         return db.Todos(TABLA)
     }
-    function uno(id){
-        return db.uno(TABLA, id)
+    function uno(id_anio){
+        return db.uno2(TABLA, ['id_anio',id_anio])
     }
     function agregar(body){
         return db.agregar(TABLA, body)

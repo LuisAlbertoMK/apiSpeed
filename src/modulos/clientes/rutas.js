@@ -9,17 +9,29 @@ const recepciones = require('../recepciones')
 
 const router = express.Router()
 
-router.get('/', todos)
+router.get('/', clientes)
 router.post('/', agregar)
 router.put('/', eliminar)
 router.get('/clientesTallerSucursal', clientesTallerSucursal)
 router.get('/contadorClientesUsuario', contadorClientesUsuario)
+router.get('/semejantes', semejantes)
 router.get('/clientesSucursal/:id_sucursal', clientesSucursal)
 router.get('/:id_cliente', uno)
 
+    async function clientes(req, res, next){
+        try {
+            const {id_taller, id_sucursal, limit, offset} = req.query
+            const totalClientesResponse = await controlador.clientesPaginacionTotales({id_taller, id_sucursal})
+            const ClientesResponse = await controlador.clientesPaginacionClientes({id_taller, id_sucursal, limit, offset})
+            const clientes = ClientesResponse
+            const {total} = totalClientesResponse
+            respuesta.success(req, res, {total, clientes}, 200)
+        } catch (error) { next(error) }
+    }
+
 async function todos (req, res, next){
     try {
-        const {consulta, id_cliente, historial} = req.query
+        const {consulta, id_cliente, historial, } = req.query
         let items 
         if (consulta === 'uno') {
             items =  await controlador.clienteUnico(id_cliente)
@@ -88,6 +100,14 @@ async function eliminar(req, res, next){
     try {
         const items = await controlador.eliminar(req.body)
         respuesta.success(req, res, 'item eliminado', 200)
+    } catch (error) { next(error) }
+}
+async function semejantes (req, res, next){
+    try {
+        const {semejantes, id_taller, id_sucursal, limite: limiteQ} = req.query
+        const limite = limiteQ || 20
+        const items =  await controlador.semejantesClientes({semejantes, id_taller,id_sucursal, limite})
+        respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
 

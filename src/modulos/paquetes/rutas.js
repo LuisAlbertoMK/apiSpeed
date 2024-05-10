@@ -28,7 +28,15 @@ async function paquetesTaller (req, res, next){
     try {
         const {id_taller} = req.query
         const items =  await controlador.paquetesTaller(id_taller)
-        respuesta.success(req, res, items[0], 200)
+
+        const newPaquetes = await Promise.all(items[0].map(async e => {
+                const {id_paquete} = e 
+                const elementosPaquete = await controlador.ObtenerDetallePaquete(id_paquete)
+                e['elementos'] = elementosPaquete[0]
+                return e
+        }))
+        const filtro = newPaquetes.filter(e=>e.elementos)
+        respuesta.success(req, res, filtro, 200)
     } catch (error) { next(error) }
 }
 async function ObtenerDetallePaquete (req, res, next){
