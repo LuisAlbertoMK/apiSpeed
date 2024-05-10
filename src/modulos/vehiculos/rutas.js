@@ -10,7 +10,7 @@ const recepciones = require('../recepciones')
 
 const router = express.Router()
 
-router.get('/', todos)
+router.get('/', vehiculos)
 router.post('/', agregar)
 router.put('/', eliminar)
 router.get('/verificaPlacas', verificaPlacas)
@@ -19,6 +19,17 @@ router.get('/vehiculosCliente', vehiculosCliente)
 router.get('/vehiculosCiente/:id_cliente', vehiculosCiente)
 router.get('/:id_vehiculo', uno)
 
+
+async function vehiculos(req, res, next){
+    try {
+        const {id_taller, id_sucursal, limit, offset} = req.query
+        const totalVehiculosResponse = await controlador.VehiculosPaginacionTotales({id_taller, id_sucursal})
+        const vehiculosResponse = await controlador.vehiculosPaginacion({id_taller, id_sucursal, limit, offset})
+        const vehiculos = vehiculosResponse
+        const {total} = totalVehiculosResponse
+        respuesta.success(req, res, {total, vehiculos}, 200)
+    } catch (error) { next(error) }
+}
 
 async function todos (req, res, next){
     try {

@@ -10,6 +10,12 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
 
+    function VehiculosPaginacionTotales(data){
+        return db.VehiculosPaginacionTotales(data)
+    }
+    function vehiculosPaginacion(data){
+        return db.vehiculosPaginacion(data)
+    }
     function todos(){
         return db.Todos(TABLA)
     }
@@ -54,7 +60,9 @@ module.exports = function (dbIyectada){
         eliminar,
         placas,
         verificaPlacas,
-        vehiculosTallerSucursal
+        vehiculosTallerSucursal,
+        vehiculosPaginacion,
+        VehiculosPaginacionTotales
     }
     
 }

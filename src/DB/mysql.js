@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigmysql)
+    conexion = mysql.createConnection(dbconfigMariaDB)
 
     conexion.connect((err)=>{
         if (err) {
@@ -116,6 +116,22 @@ function consultaModeloMarca(tabla, id_marca){
         })
     })
 }
+function VehiculosPaginacionTotales(data){
+    const {id_taller, id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT COUNT(*) as total FROM vehiculos WHERE id_taller = ${id_taller} AND id_sucursal = ${id_sucursal}`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function vehiculosPaginacion(data){
+    const {id_taller,id_sucursal,limit,offset} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call spPaginacionVehiculos(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function VehiculosRelacionados(id_sucursal){
     return new Promise((resolve, reject) =>{
         conexion.query(`call sp_vehiculos(${id_sucursal})`, (error, result) =>{ 
@@ -158,7 +174,7 @@ function contador(tabla){
 function semejantesClientes(data){
     const {semejantes,limite, id_taller,id_sucursal} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL busquedaLikeClientes(${id_taller},${id_sucursal},${limite},'${semejantes}');`, (error, result) =>{ 
+        conexion.query(`CALL busquedaLikeClientes('${semejantes}',${id_taller},${id_sucursal},${limite});`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -676,5 +692,7 @@ module.exports = {
     semejantesmorefacciones,
     semejantesClientes,
     clientesPaginacionTotales,
-    clientesPaginacionClientes
+    clientesPaginacionClientes,
+    vehiculosPaginacion,
+    VehiculosPaginacionTotales
 }
