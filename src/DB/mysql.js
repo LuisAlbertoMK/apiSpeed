@@ -375,13 +375,32 @@ function recepcionesCliente(id_cliente){
     })
 }
 // consulta data paquetes
-function consultaPaquetes(){
+function consultaPaquetes(data){
+    const {id_taller, id_sucursal, limit, offset} = data
+    
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_paquetes()`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result)
+        conexion.query(`CALL spPaginacionPaquetes(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
         })
     })
 }
+function totalPaquetes(data){
+    const {id_taller, id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT COUNT(*) as total FROM paquetes WHERE id_taller = ${id_taller} `, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function busquedaLikePaquetes(data){
+    const {semejantes,id_taller, limit, id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call busquedaLikePaquetes('${semejantes}',${id_taller}, ${id_sucursal},${limit})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+
 function ObtenerDetallePaquete(id_paquete){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_detallesPaquete(${id_paquete})`, 
@@ -540,6 +559,23 @@ function morefaccionesTaller(id_taller){
         })
     })
 }
+function moRefacciones(data){
+    const {id_taller, id_sucursal, limit, offset } = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL spPaginacionmorefacciones(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function totalMoRefacciones(data){
+    const {id_taller, id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT COUNT(*) as total FROM morefacciones WHERE id_taller = ${id_taller}`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+
 // INFORMACION DE PAQUETES
 function paquetesTaller(id_taller){
     return new Promise((resolve, reject) =>{
@@ -694,5 +730,9 @@ module.exports = {
     clientesPaginacionTotales,
     clientesPaginacionClientes,
     vehiculosPaginacion,
-    VehiculosPaginacionTotales
+    VehiculosPaginacionTotales,
+    totalPaquetes,
+    busquedaLikePaquetes,
+    moRefacciones,
+    totalMoRefacciones
 }

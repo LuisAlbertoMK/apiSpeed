@@ -18,8 +18,11 @@ router.get('/:id', uno)
 
 async function todos (req, res, next){
     try {
-        const items =  await controlador.todos()
-        respuesta.success(req, res, items, 200)
+        const {id_taller, id_sucursal, limit, offset } = req.query
+        const totalMoRefacciones = await controlador.totalMoRefacciones({id_taller, id_sucursal})
+        const {total} = totalMoRefacciones
+        const items =  await controlador.todos({id_taller, id_sucursal, limit, offset })
+        respuesta.success(req, res, {total, morefacciones: items},200)
     } catch (error) { next(error) }
 }
 async function semejantes (req, res, next){

@@ -6,7 +6,7 @@ const controlador= require('./index')
 const clientes = require('../clientes')
 const cotizaciones = require('../cotizaciones')
 const recepciones = require('../recepciones')
-
+const elementos_recepcion = require('../elementos_recepcion')
 
 const router = express.Router()
 
@@ -105,9 +105,26 @@ async function uno(req, res, next){
             cotizaciones.cotizacionesCliente(id_cliente),
             recepciones.recepcionesCliente(id_cliente)
             ]);
+
+            const newRecepciones = await Promise.all(recepcionesCliente.map(async recepcion => {
+                const {id_recepcion} = recepcion
+                const elementos = await elementos_recepcion.uno(id_recepcion)
+                const newElementos = await Promise.all(elementos.map(async e => {
+                    if (e.id_paquete) {
+                        const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificadoRecep(id_recepcion, e['id_paquete'],e['id_eleRecepcion'] )
+                        e['elementos'] = [...detallePaqueteResp];
+                        e.nombre = detallePaqueteResp[0].paquete
+                        e['tipo'] = 'paquete'
+                    }
+                    return e
+                }))
+                recepcion['elementos'] = newElementos
+                return recepcion
+            }))
+
             items = { 
                 data_cliente, data_vehiculo, 
-                cotizaciones: cotizacionesCliente, recepciones: recepcionesCliente 
+                cotizaciones: cotizacionesCliente, recepciones: newRecepciones 
             }
         }
         respuesta.success(req, res, items, 200)

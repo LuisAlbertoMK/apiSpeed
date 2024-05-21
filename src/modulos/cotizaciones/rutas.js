@@ -21,7 +21,14 @@ router.get('/:id_cotizacion', uno)
 async function todos (req, res, next){
     try {
         const items =  await controlador.todos(req.query)
-        respuesta.success(req, res, items, 200)
+
+        const newElementos = await Promise.all(items.map(async e => {
+            const {id_cotizacion} = e
+            const elementos = await elementos_cotizacion.uno(id_cotizacion)
+            e['elementos'] = elementos
+            return e
+        }))
+        respuesta.success(req, res, newElementos, 200)
     } catch (error) {
         next(error)
     }

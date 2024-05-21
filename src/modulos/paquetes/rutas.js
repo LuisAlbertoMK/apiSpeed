@@ -10,6 +10,7 @@ const router = express.Router()
 router.get('/', todos)
 router.get('/ObtenerDetallePaquete', ObtenerDetallePaquete)
 router.get('/paquetesTaller', paquetesTaller)
+router.get('/semejantes', semejantes)
 router.post('/', agregar)
 router.put('/', eliminar)
 router.get('/:id', uno)
@@ -18,11 +19,36 @@ router.get('/:id', uno)
 
 async function todos (req, res, next){
     try {
-        const items =  await controlador.todos()
-        respuesta.success(req, res, items[0], 200)
+        const {id_taller, id_sucursal, limit, offset} = req.query
+        const items =  await controlador.todos({id_taller, id_sucursal, limit, offset})
+        const totalPaquetesResponse = await controlador.TotalPaquetes({id_taller, id_sucursal})
+        const {total} = totalPaquetesResponse
+
+        const newPaquetes = await Promise.all(items.map(async e => {
+            const {id_paquete} = e 
+            const elementosPaquete = await controlador.ObtenerDetallePaquete(id_paquete)
+            e['elementos'] = elementosPaquete[0]
+            return e
+        }))
+        respuesta.success(req, res, {total, paquetes: newPaquetes}, 200)
     } catch (error) {
         next(error)
     }
+}
+async function semejantes (req, res, next){
+    try {
+        const {semejantes, id_taller, id_sucursal, limit} = req.query
+        
+        const items =  await controlador.paquetesSemejantes({semejantes, id_taller,id_sucursal, limit})
+
+        const newPaquetes = await Promise.all(items.map(async e => {
+            const {id_paquete} = e 
+            const elementosPaquete = await controlador.ObtenerDetallePaquete(id_paquete)
+            e['elementos'] = elementosPaquete[0]
+            return e
+        }));
+        respuesta.success(req, res, newPaquetes, 200)
+    } catch (error) { next(error) }
 }
 async function paquetesTaller (req, res, next){
     try {

@@ -10,8 +10,8 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
 
-    function todos(){
-        return db.Todos(TABLA)
+    function todos(data){
+        return db.moRefacciones(data)
     }
     function morefaccionesTaller(id_taller){
         return db.morefaccionesTaller(id_taller)
@@ -36,6 +36,9 @@ module.exports = function (dbIyectada){
     function semejantesmorefacciones(semejantes){
         return db.semejantesmorefacciones(semejantes)
     }
+    function totalMoRefacciones(data){ 
+        return db.totalMoRefacciones(data)
+    }
 
     return {
         todos,
@@ -45,7 +48,8 @@ module.exports = function (dbIyectada){
         eliminar,
         registraCompatible,
         getCompatibles,
-        semejantesmorefacciones
+        semejantesmorefacciones,
+        totalMoRefacciones
     }
     
 }

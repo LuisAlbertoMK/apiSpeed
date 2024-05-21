@@ -10,8 +10,8 @@ module.exports = function (dbIyectada){
         db = require('../../DB/mysql')
     }
 
-    function todos(){
-        return db.consultaPaquetes()
+    function todos(data){
+        return db.consultaPaquetes(data)
     }
     function paquetesTaller(id_taller){
         return db.paquetesTaller(id_taller)
@@ -28,6 +28,12 @@ module.exports = function (dbIyectada){
     function ObtenerDetallePaquete(id_paquete){
         return db.ObtenerDetallePaquete(id_paquete)
     }
+    function TotalPaquetes(data){
+        return db.totalPaquetes(data)
+    }
+    function paquetesSemejantes(data){
+        return db.busquedaLikePaquetes(data)
+    }
 
     return {
         todos,
@@ -35,7 +41,9 @@ module.exports = function (dbIyectada){
         uno,
         agregar,
         eliminar,
-        ObtenerDetallePaquete
+        ObtenerDetallePaquete,
+        TotalPaquetes,
+        paquetesSemejantes
     }
     
 }

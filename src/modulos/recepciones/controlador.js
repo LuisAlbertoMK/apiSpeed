@@ -6,6 +6,7 @@ const gastos_orden = require('../gastos_orden')
 const pagos_orden = require('../pagos_orden')
 const clientes = require('../clientes')
 const vehiculos = require('../vehiculos')
+const elementos_recepcion = require('../elementos_recepcion')
 
 module.exports = function (dbIyectada){
 
@@ -42,15 +43,25 @@ module.exports = function (dbIyectada){
         if(conEstado !== 'cancelado'){
             const promesas = respuesta.map(async element => {
                 const { id_recepcion, id_cliente, id_vehiculo } = element;
-                const reporte = await reportes.uno(id_recepcion);
-                let asigna ={ ...element, reporte };
+                // const reporte = await reportes.uno(id_recepcion);
+                let asigna ={ ...element };
                 if (newGastos) {
                     const gastosOrden = await gastos_orden.todosOrden(id_recepcion)
                     asigna['gastosOrden'] = gastosOrden   
                     const pagosOrden = await pagos_orden.PagosRecepcionUnica(id_recepcion)
                     asigna['pagosOrden'] = pagosOrden   
                 }
-                
+                const elementos = await elementos_recepcion.uno(id_recepcion)
+                const newElementos = await Promise.all(elementos.map(async e => {
+                    if (e.id_paquete) {
+                        const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificadoRecep(id_recepcion, e['id_paquete'],e['id_eleRecepcion'] )
+                        e['elementos'] = [...detallePaqueteResp];
+                        e.nombre = detallePaqueteResp[0].paquete
+                        e['tipo'] = 'paquete'
+                    }
+                    return e
+                }))
+                asigna['elementos'] = newElementos
                 asigna['data_cliente'] = await  clientes.clienteUnico(id_cliente)
                 asigna['data_vehiculo'] = await  vehiculos.vehiculoUnico(id_vehiculo)
                 return asigna
