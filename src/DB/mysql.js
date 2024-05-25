@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -128,6 +128,14 @@ function vehiculosPaginacion(data){
     const {id_taller,id_sucursal,limit,offset} = data
     return new Promise((resolve, reject) =>{
         conexion.query(`call spPaginacionVehiculos(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function updateKilometraje(data){
+    const {id_vehiculo, kilometraje} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`UPDATE vehiculos SET kilometraje = ${kilometraje} WHERE id_vehiculo=${id_vehiculo};`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -730,6 +738,7 @@ module.exports = {
     clientesPaginacionTotales,
     clientesPaginacionClientes,
     vehiculosPaginacion,
+    updateKilometraje,
     VehiculosPaginacionTotales,
     totalPaquetes,
     busquedaLikePaquetes,

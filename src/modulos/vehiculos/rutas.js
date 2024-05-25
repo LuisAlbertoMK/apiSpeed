@@ -12,6 +12,7 @@ const router = express.Router()
 
 router.get('/', vehiculos)
 router.post('/', agregar)
+router.patch('/', updateKilometraje)
 router.put('/', eliminar)
 router.get('/verificaPlacas', verificaPlacas)
 router.get('/vehiculosTallerSucursal', vehiculosTallerSucursal)
@@ -19,6 +20,16 @@ router.get('/vehiculosCliente', vehiculosCliente)
 router.get('/vehiculosCiente/:id_cliente', vehiculosCiente)
 router.get('/:id_vehiculo', uno)
 
+
+async function updateKilometraje(data) {
+    const {id_vehiculo, kilometraje} = data
+    try {
+        const response = await controlador.updateKilometraje({id_vehiculo, kilometraje})
+        respuesta.success(req, res, response, 200)
+    } catch (error) {
+        
+    }
+}
 
 async function vehiculos(req, res, next){
     try {

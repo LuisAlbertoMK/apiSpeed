@@ -49,6 +49,9 @@ module.exports = function (dbIyectada){
     function vehiculosTallerSucursal(id_taller, id_sucursal){
         return db.vehiculosTallerSucursal(id_taller, id_sucursal)
     }
+    function updateKilometraje(data){
+        return db.updateKilometraje(data)
+    }
 
     return {
         todos,
@@ -62,7 +65,8 @@ module.exports = function (dbIyectada){
         verificaPlacas,
         vehiculosTallerSucursal,
         vehiculosPaginacion,
-        VehiculosPaginacionTotales
+        VehiculosPaginacionTotales,
+        updateKilometraje
     }
     
 }

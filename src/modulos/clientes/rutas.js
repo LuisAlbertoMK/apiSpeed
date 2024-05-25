@@ -77,12 +77,23 @@ async function uno(req, res, next) {
         shouldIncludeHistory ? recepciones.recepcionesCliente(id_cliente) : [],
       ]);
   
+
+      const newCotizaciones  = await Promise.all(cotizacionesCliente.map(async cotizacion => {
+        const {id_vehiculo} = cotizacion
+        const data_vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
+        return {...cotizacion, data_vehiculo}
+      }))
+      const newRecepciones  = await Promise.all(recepcionesCliente.map(async recepcion => {
+        const {id_vehiculo} = recepcion
+        const data_vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
+        return {...recepcion, data_vehiculo}
+      }))
       const items = shouldIncludeHistory
         ? {
             data_cliente,
             vehiculos: vehiculosCliente,
-            cotizaciones:cotizacionesCliente,
-            recepciones: recepcionesCliente,
+            cotizaciones:newCotizaciones,
+            recepciones: newRecepciones,
           }
         : data_cliente;
   
