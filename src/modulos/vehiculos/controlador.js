@@ -52,6 +52,9 @@ module.exports = function (dbIyectada){
     function updateKilometraje(data){
         return db.updateKilometraje(data)
     }
+    function semejantesVehiculos(semejantes){
+        return db.semejantesVehiculos(semejantes)
+    }
 
     return {
         todos,
@@ -66,7 +69,8 @@ module.exports = function (dbIyectada){
         vehiculosTallerSucursal,
         vehiculosPaginacion,
         VehiculosPaginacionTotales,
-        updateKilometraje
+        updateKilometraje,
+        semejantesVehiculos
     }
     
 }

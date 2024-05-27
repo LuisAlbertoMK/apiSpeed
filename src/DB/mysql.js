@@ -209,6 +209,14 @@ function verificaPlacas(placas){
         })
     })
 }
+function semejantesVehiculos(data){
+    const {semejantes,limite, id_taller,id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL busquedaLikeVehiculos('${semejantes}',${id_taller},${id_sucursal},${limite});`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function vehiculosTallerSucursal(id_taller, id_sucursal){
     return new Promise((resolve, reject) =>{
         conexion.query(`call sp_vehiculosTallerSucursal(${id_taller},${id_sucursal})`, (error, result) =>{ 
@@ -743,5 +751,6 @@ module.exports = {
     totalPaquetes,
     busquedaLikePaquetes,
     moRefacciones,
-    totalMoRefacciones
+    totalMoRefacciones,
+    semejantesVehiculos
 }

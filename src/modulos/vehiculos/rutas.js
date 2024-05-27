@@ -14,13 +14,21 @@ router.get('/', vehiculos)
 router.post('/', agregar)
 router.patch('/', updateKilometraje)
 router.put('/', eliminar)
+router.get('/semejantes', semejantes)
 router.get('/verificaPlacas', verificaPlacas)
 router.get('/vehiculosTallerSucursal', vehiculosTallerSucursal)
 router.get('/vehiculosCliente', vehiculosCliente)
 router.get('/vehiculosCiente/:id_cliente', vehiculosCiente)
 router.get('/:id_vehiculo', uno)
 
-
+async function semejantes (req, res, next){
+    try {
+        const {semejantes, id_taller, id_sucursal, limite: limiteQ} = req.query
+        const limite = limiteQ || 20
+        const items =  await controlador.semejantesVehiculos({semejantes, id_taller,id_sucursal, limite})
+        respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
 async function updateKilometraje(data) {
     const {id_vehiculo, kilometraje} = data
     try {
