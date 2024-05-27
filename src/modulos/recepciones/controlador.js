@@ -7,7 +7,7 @@ const pagos_orden = require('../pagos_orden')
 const clientes = require('../clientes')
 const vehiculos = require('../vehiculos')
 const elementos_recepcion = require('../elementos_recepcion')
-
+const mod_paquetes = require('../mod_paquetes')
 module.exports = function (dbIyectada){
 
     let db = dbIyectada
