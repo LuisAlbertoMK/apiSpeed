@@ -54,8 +54,9 @@ async function agregar(req, res, next){
     try {
 
         const items = await controlador.agregar(req.body)
+        const {insertId} = items
         mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
-        respuesta.success(req, res, items, 201)
+        respuesta.success(req, res, insertId, 201)
     } catch (error) {
         next(error)
     }

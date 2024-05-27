@@ -53,7 +53,7 @@ module.exports = function (dbIyectada){
                 }
                 const elementos = await elementos_recepcion.uno(id_recepcion)
                 const newElementos = await Promise.all(elementos.map(async e => {
-                    if (e.id_paquete) {
+                    if ( e['id_paquete'] ) {
                         const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificadoRecep(id_recepcion, e['id_paquete'],e['id_eleRecepcion'] )
                         e['elementos'] = [...detallePaqueteResp];
                         e.nombre = detallePaqueteResp[0].paquete

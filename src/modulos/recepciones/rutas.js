@@ -73,7 +73,8 @@ async function uno(req, res, next){
         const sucursal = await sucursales.sucursalUnica(id_taller, id_sucursal)
         const newElementos = await Promise.all(elementos.map(async e => {
             if (e.id_paquete) {
-                const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificadoRecep(id_recepcion, e['id_paquete'],e['id_eleRecepcion'] )
+                const detallePaqueteResp = 
+                await mod_paquetes.ObtenerDetallePaqueteModificadoRecep(id_recepcion, e['id_paquete'],e['id_eleRecepcion'] )
                 e['elementos'] = [...detallePaqueteResp];
                 e.nombre = detallePaqueteResp[0].paquete
                 e['tipo'] = 'paquete'
