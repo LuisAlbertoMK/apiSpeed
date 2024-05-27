@@ -22,13 +22,22 @@ async function todos (req, res, next){
     try {
         const items =  await controlador.todos(req.query)
 
-        const newElementos = await Promise.all(items.map(async e => {
+        const nuevasCotizaciones = await Promise.all(items.map(async e => {
             const {id_cotizacion} = e
             const elementos = await elementos_cotizacion.uno(id_cotizacion)
-            e['elementos'] = elementos
+            const newElementos = await Promise.all(elementos.map(async e => {
+                if (e.id_paquete) {
+                    const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificado(id_cotizacion, e['id_paquete'],e['id_eleCotizacion'] )
+                    e['elementos'] = [...detallePaqueteResp];
+                    e.nombre = detallePaqueteResp[0].paquete
+                    e['tipo'] = 'paquete'
+                }
+                return e
+            }))
+            e['elementos'] = newElementos
             return e
         }))
-        respuesta.success(req, res, newElementos, 200)
+        respuesta.success(req, res, nuevasCotizaciones, 200)
     } catch (error) {
         next(error)
     }
