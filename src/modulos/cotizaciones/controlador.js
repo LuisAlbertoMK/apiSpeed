@@ -44,6 +44,10 @@ module.exports = function (dbIyectada){
         return db.cotizacionesCliente(id_cliente)
     }
 
+    function patchDataCotizacion(id_cotizacion, data){
+        return db.patchDataCotizacion(id_cotizacion, data)
+    }
+
 
     return {
         todos,
@@ -51,7 +55,8 @@ module.exports = function (dbIyectada){
         eliminar,
         no_cotizacion,
         consultaCotizacion,
-        cotizacionesCliente
+        cotizacionesCliente,
+        patchDataCotizacion
     }
     
 }

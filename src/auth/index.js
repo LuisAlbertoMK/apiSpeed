@@ -7,7 +7,7 @@ function asignaToken(data) {
     return jwt.sign(data, secret)
 }
 function verificarToken(token) {
-    jwt.verify(token, secret)
+    return jwt.verify(token, secret)
 }
 
 const chequearToken =  {
@@ -34,5 +34,6 @@ function decodificarCabecera(req) {
 }
 module.exports = {
     asignaToken,
-    chequearToken
+    chequearToken,
+    verificarToken
 }

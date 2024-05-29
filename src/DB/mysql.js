@@ -309,6 +309,13 @@ function consultaCotizaciones(id_taller, id_sucursal,start, end){
         })
     })
 }
+function patchDataCotizacion(id_cotizacion, data) {
+    return new Promise((resolve, reject) => {
+      conexion.query(`UPDATE cotizaciones SET? WHERE id_cotizacion = ${id_cotizacion}`, data, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
 function consultaCotizacion(id_cotizacion){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_consultaCotizacion(${id_cotizacion})
@@ -701,6 +708,7 @@ module.exports = {
     consultaCotizaciones,
     consultaCotizacion,
     vehiculoUnico,
+    patchDataCotizacion,
     elementos_cotizaciones,
     RecepcionConsulta,
     RecepcionesVehiculoConsulta,

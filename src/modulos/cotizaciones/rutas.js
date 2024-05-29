@@ -13,10 +13,22 @@ const router = express.Router()
 
 router.get('/', todos)
 router.post('/', agregar)
+router.patch('/update/:id_cotizacion', actualizaData )
 router.put('/', eliminar)
 router.get('/no_cotizacion/:no_cotizacion', no_cotizacion)
 router.get('/:id_cotizacion', uno)
 
+
+async function actualizaData(req, res, next){
+    try {
+        const {id_cotizacion} = req.params
+        const data = req.body    
+        const items = await controlador.patchDataCotizacion(id_cotizacion, data)
+        respuesta.success(req, res, items, 200)
+    } catch (error) {
+        next(error)
+    }
+}
 
 async function todos (req, res, next){
     try {
