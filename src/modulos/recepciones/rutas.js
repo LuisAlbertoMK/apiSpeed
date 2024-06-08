@@ -81,7 +81,6 @@ async function uno(req, res, next){
             }
             return e
         }))
-
         const dataRecepcion = 
         {
             ...recepcion, data_cliente, data_vehiculo, reporte, 

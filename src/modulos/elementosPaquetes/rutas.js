@@ -10,6 +10,7 @@ const router = express.Router()
 router.get('/', todos)
 router.get('/:id', uno)
 router.post('/', agregar)
+router.post('/registraElementosVarios', registraElementosVarios)
 router.put('/', eliminar)
 // router.put('/categoria', categoria)
 
@@ -38,6 +39,13 @@ async function agregar(req, res, next){
     } catch (error) {
         next(error)
     }
+}
+async function registraElementosVarios(req, res, next){
+    try {
+        const items = await controlador.registraElementosVarios(req.body)
+        mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
+        respuesta.success(req, res, mensaje, 201)
+    } catch (error) { next(error) }
 }
 async function eliminar(req, res, next){
     try {

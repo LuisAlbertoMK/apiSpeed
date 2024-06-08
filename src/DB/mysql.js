@@ -242,6 +242,7 @@ function clientesPaginacionTotales(data){
 }
 function clientesPaginacionClientes(data){
     const {id_taller, id_sucursal, limit, offset} = data
+    console.log({id_taller, id_sucursal, limit, offset}, 'desde mysql' );
     return new Promise((resolve, reject) =>{
         conexion.query(`call spclientesPaginacionClientes(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
@@ -407,6 +408,38 @@ function consultaPaquetes(data){
         })
     })
 }
+function registraElementosPaquetes(data) {
+    
+    return new Promise((resolve, reject) => {
+        const values = data.map(item => [
+            item.id_elmenPaquete,
+            item.id_paquete,
+            item.id_moRefaccion,
+            item.activo,
+            item.costo,
+            item.cantidad
+          ]);
+        const query = `
+            INSERT INTO elementospaquetes (
+                id_elmenPaquete,
+                id_paquete,
+                id_moRefaccion,
+                activo,
+                costo,
+                cantidad
+            ) VALUES ${conexion.escape(values)}
+            ON DUPLICATE KEY UPDATE
+                id_paquete = VALUES(id_paquete),
+                id_moRefaccion = VALUES(id_moRefaccion),
+                activo = VALUES(activo),
+                costo = VALUES(costo),
+                cantidad = VALUES(cantidad)
+            `;
+            conexion.query(query, (error, result) =>{ 
+                return error ? reject(error) : resolve(result[0])
+            })
+    });
+  }
 function totalPaquetes(data){
     const {id_taller, id_sucursal} = data
     return new Promise((resolve, reject) =>{
@@ -551,6 +584,21 @@ function sucursalUnica(id_taller, id_sucursal){
     })
 }
 // USUARIOS
+
+function updateDataUsuario(id_usuario,data){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`UPDATE usuarios SET? WHERE id_usuario = ${id_usuario}`, data, (error, result) => {
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function consultacorreo(correo){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT * from usuarios WHERE correo = '${correo}'`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function usuariosRol(){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_usuariosRol()`, (error, result) =>{ 
@@ -566,6 +614,14 @@ function informaciontaller(id_usuario){
         })
     })
 }
+function UpdateDataParcial(id_taller, data){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`UPDATE taller SET? WHERE id_taller = ${id_taller}`, data, (error, result) => {
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+
 // INFORMACION DE EMPRESAS
 function empresasTaller(id_taller){
     return new Promise((resolve, reject) =>{
@@ -725,6 +781,8 @@ module.exports = {
     dataUsuario,
     sucursalesTaller,
     sucursalUnica,
+    updateDataUsuario,
+    consultacorreo,
     usuariosRol,
     informaciontaller,
     empresasTaller,
@@ -749,6 +807,7 @@ module.exports = {
     sp_tecnicosTallerSucursal,
     pagoTotal,
     uno2,
+    UpdateDataParcial,
     semejantesmorefacciones,
     semejantesClientes,
     clientesPaginacionTotales,
@@ -760,5 +819,6 @@ module.exports = {
     busquedaLikePaquetes,
     moRefacciones,
     totalMoRefacciones,
-    semejantesVehiculos
+    semejantesVehiculos,
+    registraElementosPaquetes
 }

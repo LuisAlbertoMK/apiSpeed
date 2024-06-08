@@ -22,10 +22,14 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
+    function UpdateDataParcial(id_taller, data){
+        return db.UpdateDataParcial(id_taller, data)
+    }
 
     return {
         todos,
         uno,
+        UpdateDataParcial,
         agregar,
         eliminar
     }

@@ -76,8 +76,15 @@ async function ObtenerDetallePaquete (req, res, next){
 }
 async function uno(req, res, next){
     try {
-        const items = await controlador.uno(req.params.id)
-        respuesta.success(req, res, items, 200)
+        const id_paquete = req.params.id
+        const items = await controlador.uno(id_paquete)
+        const elementosResponse =  await controlador.ObtenerDetallePaquete(id_paquete)
+        const dataPaquete = {
+            ...items,
+            elementos: elementosResponse[0]
+        }
+        console.log('elementos ',elementosResponse[0]);
+        respuesta.success(req, res, dataPaquete, 200)
     } catch (error) {
         next(error)
     }

@@ -49,13 +49,22 @@ module.exports = function (dbIyectada){
     function listaTecnicos( id_sucursal){
         return db.listaTecnicos( id_sucursal)
     }
+    function consultacorreo(correo){
+        return db.consultacorreo(correo)
+    }
+
+    function updateData(id_usuario, data){
+        return db.updateDataUsuario(id_usuario, data)
+    }
 
     return {
         todos,
         uno,
         agregar,
         eliminar,
-        listaTecnicos
+        updateData,
+        listaTecnicos,
+        consultacorreo
     }
     
 }

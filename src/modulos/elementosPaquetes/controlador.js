@@ -23,12 +23,16 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
+    function registraElementosVarios(data){
+        return db.registraElementosPaquetes(data)
+    }
 
     return {
         todos,
         uno,
         agregar,
-        eliminar
+        eliminar,
+        registraElementosVarios
     }
     
 }

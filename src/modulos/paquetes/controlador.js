@@ -16,8 +16,8 @@ module.exports = function (dbIyectada){
     function paquetesTaller(id_taller){
         return db.paquetesTaller(id_taller)
     }
-    function uno(id_categoria){
-        return db.query(TABLA, {id_categoria})
+    function uno(id_paquete){
+        return db.query(TABLA, {id_paquete})
     }
     function agregar(body){
         return db.agregar(TABLA, body)
