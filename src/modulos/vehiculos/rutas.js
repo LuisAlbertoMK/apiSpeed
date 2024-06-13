@@ -7,6 +7,7 @@ const clientes = require('../clientes')
 const cotizaciones = require('../cotizaciones')
 const recepciones = require('../recepciones')
 const elementos_recepcion = require('../elementos_recepcion')
+const mod_paquetes = require('../mod_paquetes')
 
 const router = express.Router()
 

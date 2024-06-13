@@ -576,6 +576,20 @@ function sucursalesTaller(id_taller){
         })
     })
 }
+function sucursalesTaller2(id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_sucursales2(${id_taller})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function patchDataSucursal(id_sucursal, data) {
+    return new Promise((resolve, reject) => {
+      conexion.query(`UPDATE sucursales SET? WHERE id_sucursal = ${id_sucursal}`, data, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
 function sucursalUnica(id_taller, id_sucursal){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_sucursalUnica(${id_taller}, ${id_sucursal})`, (error, result) =>{ 
@@ -626,7 +640,7 @@ function UpdateDataParcial(id_taller, data){
 function empresasTaller(id_taller){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_empresasTaller(${id_taller})`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result)
+            return error ? reject(error) : resolve(result[0])
         })
     })
 }
@@ -780,6 +794,8 @@ module.exports = {
     plancliente,
     dataUsuario,
     sucursalesTaller,
+    sucursalesTaller2,
+    patchDataSucursal,
     sucursalUnica,
     updateDataUsuario,
     consultacorreo,

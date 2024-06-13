@@ -16,6 +16,9 @@ module.exports = function (dbIyectada){
     function sucursalesTaller(id_taller){
         return db.sucursalesTaller(id_taller)
     }
+    function sucursalesTaller2(id_taller){
+        return db.sucursalesTaller2(id_taller)
+    }
     function sucursalUnica(id_taller, id_sucursal){
         return db.sucursalUnica(id_taller, id_sucursal)
     }
@@ -28,10 +31,15 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
+    function updateData(id_sucursal, data){
+        return db.patchDataSucursal(id_sucursal, data)
+    }
 
     return {
         todos,
+        updateData,
         sucursalesTaller,
+        sucursalesTaller2,
         sucursalUnica,
         uno,
         agregar,

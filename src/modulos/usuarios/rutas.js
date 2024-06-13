@@ -35,7 +35,6 @@ async function updateData(req, res, next) {
         const {id_usuario} = req.params
         const  data = req.body
         const items =  await controlador.updateData(id_usuario, data)
-        console.log({items});
         respuesta.success(req, res, items[0], 200)
     } catch (error) { next(error) }
 }
