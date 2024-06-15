@@ -83,11 +83,14 @@ async function uno(req, res, next){
         }))
         const dataRecepcion = 
         {
-            ...recepcion, data_cliente, data_vehiculo, reporte, 
+            ...recepcion, data_cliente, data_vehiculo:{}, reporte, 
             elementos: newElementos, gastosOrden, pagosOrden,
             data_sucursal: sucursal[0]
         }
-
+        const {id_cliente: idVOb} = data_vehiculo
+        if(idVOb === id_cliente){
+            dataRecepcion.data_vehiculo = data_vehiculo
+        }
         respuesta.success(req, res, dataRecepcion, 200)
     } catch (error) { next(error) }
 }

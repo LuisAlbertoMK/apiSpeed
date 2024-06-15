@@ -242,7 +242,6 @@ function clientesPaginacionTotales(data){
 }
 function clientesPaginacionClientes(data){
     const {id_taller, id_sucursal, limit, offset} = data
-    console.log({id_taller, id_sucursal, limit, offset}, 'desde mysql' );
     return new Promise((resolve, reject) =>{
         conexion.query(`call spclientesPaginacionClientes(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
