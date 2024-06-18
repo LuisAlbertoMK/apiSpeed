@@ -28,6 +28,9 @@ module.exports = function (dbIyectada){
     function empreasSucursal(id_sucursal){
         return db.sucursalesEmpresas(id_sucursal)
     }
+    function existeEmpresa(id_taller, empresa){
+        return db.existeEmpresa(id_taller, empresa)
+    }
 
     return {
         todos,
@@ -35,7 +38,8 @@ module.exports = function (dbIyectada){
         agregar,
         eliminar,
         empresasTaller,
-        empreasSucursal
+        empreasSucursal,
+        existeEmpresa
     }
     
 }

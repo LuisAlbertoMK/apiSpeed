@@ -643,6 +643,14 @@ function empresasTaller(id_taller){
         })
     })
 }
+function existeEmpresa(id_taller, empresa){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`select * from empresas where id_taller = ${id_taller} and empresa = '${empresa}'`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+
 // INFORMACION MO REFACCIONES
 function morefaccionesTaller(id_taller){
     return new Promise((resolve, reject) =>{
@@ -835,5 +843,6 @@ module.exports = {
     moRefacciones,
     totalMoRefacciones,
     semejantesVehiculos,
-    registraElementosPaquetes
+    registraElementosPaquetes,
+    existeEmpresa
 }
