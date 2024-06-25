@@ -339,6 +339,13 @@ function recepcionesTaller(id_taller, id_sucursal,start, end){
         })
     })
 }
+function patchRecepcion(id_recepcion, data) {
+    return new Promise((resolve, reject) => {
+      conexion.query(`UPDATE recepciones SET? WHERE id_recepcion = ${id_recepcion}`, data, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
 function recepcionesTaller2(id_taller, id_sucursal,start, end){
     return new Promise((resolve, reject) =>{
         conexion.query(`call sp_recepcionesTallerSucursal2(${id_taller}, ${id_sucursal},'${start}','${end}')
@@ -818,6 +825,7 @@ module.exports = {
     gastosOrdenTaller,
     gastosOperacionTaller,
     recepcionesTaller,
+    patchRecepcion,
     recepcionesTaller2,
     recepcionesTallerSucursal,
     gastosOperacionTallerReporte,

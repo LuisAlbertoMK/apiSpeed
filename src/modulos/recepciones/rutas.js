@@ -19,6 +19,7 @@ router.get('/recepcionesTaller', recepcionesTaller)
 router.get('/recepcionesTaller2', recepcionesTaller2)
 router.get('/aceptados', aceptados)
 router.post('/', agregar)
+router.patch('/update/:id_recepcion',updateRecepcion)
 router.get('/vehiculos', RecepcionesVehiculoConsulta)
 router.put('/', eliminar)
 router.get('/:id_recepcion', uno)
@@ -120,6 +121,17 @@ async function recepcionesCliente(id_cliente) {
         const items =  await controlador.recepcionesCliente(id_cliente)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
+}
+
+async function updateRecepcion(req, res, next){
+    try {
+        const {id_recepcion} = req.params
+        const data = req.body    
+        const items = await controlador.patchRecepcion(id_recepcion, data)
+        respuesta.success(req, res, items, 200)
+    } catch (error) {
+        next(error)
+    }
 }
 
 module.exports = router

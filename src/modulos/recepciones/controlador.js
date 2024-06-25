@@ -95,6 +95,9 @@ module.exports = function (dbIyectada){
     function recepcionesCliente(id_cliente){
         return db.recepcionesCliente(id_cliente)
     }
+    function patchRecepcion(id_recepcion, data){
+        return db.patchRecepcion(id_recepcion, data)
+    }
 
     return {
         recepcionesCliente,
@@ -107,7 +110,8 @@ module.exports = function (dbIyectada){
         aceptados,
         recepcionesTaller,
         recepcionesTaller2,
-        recepcionesTallerSucursal
+        recepcionesTallerSucursal,
+        patchRecepcion
     }
     
 }

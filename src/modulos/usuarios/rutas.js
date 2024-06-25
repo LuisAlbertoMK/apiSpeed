@@ -34,8 +34,8 @@ async function updateData(req, res, next) {
     try {
         const {id_usuario} = req.params
         const  data = req.body
-        const items =  await controlador.updateData(id_usuario, data)
-        respuesta.success(req, res, items[0], 200)
+        await controlador.updateData(id_usuario, data)
+        respuesta.success(req, res, 'actualización', 200)
     } catch (error) { next(error) }
 }
 async function uno(req, res, next){
