@@ -51,6 +51,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 //configuracion
 app.set('port', config.app.port)
+
 const whiteList=['http://localhost:4201','https://speed-pro-desarrollo.web.app','*'];
 
 app.use(cors({origin: whiteList}));
