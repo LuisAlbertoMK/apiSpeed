@@ -23,7 +23,6 @@ async function todos (req, res, next){
         const items =  await controlador.todos({id_taller, id_sucursal, limit, offset})
         const totalPaquetesResponse = await controlador.TotalPaquetes({id_taller, id_sucursal})
         const {total} = totalPaquetesResponse
-
         const newPaquetes = await Promise.all(items.map(async e => {
             const {id_paquete} = e 
             const elementosPaquete = await controlador.ObtenerDetallePaquete(id_paquete)

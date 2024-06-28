@@ -348,8 +348,15 @@ function patchRecepcion(id_recepcion, data) {
   }
 function recepcionesTaller2(id_taller, id_sucursal,start, end){
     return new Promise((resolve, reject) =>{
-        conexion.query(`call sp_recepcionesTallerSucursal2(${id_taller}, ${id_sucursal},'${start}','${end}')
-        `, (error, result) =>{ 
+        // sp_recepcionesTallerSucursal2
+        conexion.query(`call sp_recepcionesTallerBasica(${id_taller}, ${id_sucursal},'${start}','${end}')`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function sp_ordenlike(id_taller, search){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_ordenlike(${id_taller},${search})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -827,6 +834,7 @@ module.exports = {
     recepcionesTaller,
     patchRecepcion,
     recepcionesTaller2,
+    sp_ordenlike,
     recepcionesTallerSucursal,
     gastosOperacionTallerReporte,
     depositosTallerSucursal,

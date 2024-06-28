@@ -17,6 +17,7 @@ const router = express.Router()
 router.get('/', servicios)
 router.get('/recepcionesTaller', recepcionesTaller)
 router.get('/recepcionesTaller2', recepcionesTaller2)
+router.get('/coincidencias', coincidencias)
 router.get('/aceptados', aceptados)
 router.post('/', agregar)
 router.patch('/update/:id_recepcion',updateRecepcion)
@@ -58,6 +59,13 @@ async function aceptados (req, res, next){
         const {id_taller, id_sucursal } = req.query
         const items =  await controlador.aceptados(id_taller,id_sucursal)
         respuesta.success(req, res, items[0], 200)
+    } catch (error) { next(error) }
+}
+async function coincidencias (req, res, next){
+    try {
+        const {id_taller, search } = req.query
+        const items =  await controlador.sp_ordenlike(id_taller,search)
+        respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
 async function uno(req, res, next){
