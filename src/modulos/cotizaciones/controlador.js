@@ -47,6 +47,9 @@ module.exports = function (dbIyectada){
     function patchDataCotizacion(id_cotizacion, data){
         return db.patchDataCotizacion(id_cotizacion, data)
     }
+    function cotizacionesBasicas(data){
+        return db.cotizacionesBasicas(data)
+    }
 
 
     return {
@@ -56,7 +59,8 @@ module.exports = function (dbIyectada){
         no_cotizacion,
         consultaCotizacion,
         cotizacionesCliente,
-        patchDataCotizacion
+        patchDataCotizacion,
+        cotizacionesBasicas
     }
     
 }

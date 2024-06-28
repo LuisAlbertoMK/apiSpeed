@@ -12,6 +12,7 @@ const sucursales = require('../sucursales')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/basicas', basicas)
 router.post('/', agregar)
 router.patch('/update/:id_cotizacion', actualizaData )
 router.put('/', eliminar)
@@ -25,9 +26,13 @@ async function actualizaData(req, res, next){
         const data = req.body    
         const items = await controlador.patchDataCotizacion(id_cotizacion, data)
         respuesta.success(req, res, items, 200)
-    } catch (error) {
-        next(error)
-    }
+    } catch (error) { next(error) }
+}
+async function basicas(req, res, next){
+    try {
+        const items = await controlador.cotizacionesBasicas(req.query)
+        respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
 }
 
 async function todos (req, res, next){

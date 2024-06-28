@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -309,6 +309,14 @@ function consultaCotizaciones(id_taller, id_sucursal,start, end){
         })
     })
 }
+function cotizacionesBasicas(data) {
+    return new Promise((resolve, reject) => {
+        const {id_taller, id_sucursal, start, end} = data
+      conexion.query(`call sp_cotizacionesTallerBasica(${id_taller},${id_sucursal},'${start}','${end}')`, data, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
 function patchDataCotizacion(id_cotizacion, data) {
     return new Promise((resolve, reject) => {
       conexion.query(`UPDATE cotizaciones SET? WHERE id_cotizacion = ${id_cotizacion}`, data, (error, result) => {
@@ -797,6 +805,7 @@ module.exports = {
     getCompatibles,
     sucursalesEmpresas,
     consultaCotizaciones,
+    cotizacionesBasicas,
     consultaCotizacion,
     vehiculoUnico,
     patchDataCotizacion,
