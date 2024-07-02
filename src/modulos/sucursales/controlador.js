@@ -34,12 +34,16 @@ module.exports = function (dbIyectada){
     function updateData(id_sucursal, data){
         return db.patchDataSucursal(id_sucursal, data)
     }
+    function contadorSucursalesTaller(id_taller){
+        return db.contadorSucursalesTaller(id_taller)
+    }
 
     return {
         todos,
         updateData,
         sucursalesTaller,
         sucursalesTaller2,
+        contadorSucursalesTaller,
         sucursalUnica,
         uno,
         agregar,

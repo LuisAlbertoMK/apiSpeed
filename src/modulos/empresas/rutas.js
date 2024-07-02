@@ -10,6 +10,7 @@ const router = express.Router()
 router.get('/', todos)
 router.get('/empresasTaller', empresasTaller)
 router.get('/existeEmpresa', existeEmpresa)
+router.get('/contadorEmpresasTaller', contadorEmpresasTaller)
 router.get('/:id', uno)
 router.post('/', agregar)
 router.put('/', eliminar)
@@ -19,6 +20,13 @@ async function todos (req, res, next){
     try {
         const items =  await controlador.todos()
         respuesta.success(req, res, items, 200)
+    } catch (error) { next(error)    }
+}
+async function contadorEmpresasTaller (req, res, next){
+    try {
+        const {id_taller} = req.query
+        const items =  await controlador.contadorEmpresasTaller(id_taller)
+        respuesta.success(req, res, items[0], 200)
     } catch (error) { next(error)    }
 }
 async function existeEmpresa (req, res, next){
@@ -43,8 +51,9 @@ async function uno(req, res, next){
 async function agregar(req, res, next){
     try {
         const items = await controlador.agregar(req.body)
-        mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
-        respuesta.success(req, res, mensaje, 201)
+        // mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
+        const insertId  = items['insertId'] ? items['insertId'] : req.body.id_empresa
+        respuesta.success(req, res, insertId, 201)
     } catch (error) { next(error)    }
 }
 async function eliminar(req, res, next){

@@ -300,6 +300,30 @@ function sucursalesEmpresas(id_sucursal){
         })
     })
 }
+function contadorEmpresasTaller(id_sucursal){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT COUNT(*) as empTotales FROM empresas WHERE id_taller = ${id_sucursal}`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+// CONSULTA MARCAS
+function contadorMarcasTaller(id_sucursal){
+
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT COUNT(*) as marTotales FROM marcas`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+// CONSULTA CATEGORIAS
+function contadorCategorias(){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT COUNT(*) as categTotales FROM categorias`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
 //CONSULTA DE COTIZACIONES
 function consultaCotizaciones(id_taller, id_sucursal,start, end){
     return new Promise((resolve, reject) =>{
@@ -590,6 +614,13 @@ function plancliente(id_usuario){
     })
 }
 // SUCURSALES
+function contadorSucursalesTaller(id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT COUNT(*) as sucursalesTotales FROM sucursales where id_taller = ${id_taller} and activa`, 
+            (error, result) =>{  return error ? reject(error) : resolve(result)
+        })
+    })
+}
 function sucursalesTaller(id_taller){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_sucursales(${id_taller})`, (error, result) =>{ 
@@ -804,6 +835,9 @@ module.exports = {
     vehiculosCliente,
     getCompatibles,
     sucursalesEmpresas,
+    contadorEmpresasTaller,
+    contadorMarcasTaller,
+    contadorCategorias,
     consultaCotizaciones,
     cotizacionesBasicas,
     consultaCotizacion,
@@ -823,6 +857,7 @@ module.exports = {
     listaTecnicos,
     plancliente,
     dataUsuario,
+    contadorSucursalesTaller,
     sucursalesTaller,
     sucursalesTaller2,
     patchDataSucursal,

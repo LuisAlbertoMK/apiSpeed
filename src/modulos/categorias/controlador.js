@@ -23,12 +23,16 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
+    function contadorCategorias(){
+        return db.contadorCategorias()
+    }
 
     return {
         todos,
         uno,
         agregar,
-        eliminar
+        eliminar,
+        contadorCategorias
     }
     
 }

@@ -31,6 +31,9 @@ module.exports = function (dbIyectada){
     function existeEmpresa(id_taller, empresa){
         return db.existeEmpresa(id_taller, empresa)
     }
+    function contadorEmpresasTaller(id_taller){
+        return db.contadorEmpresasTaller(id_taller)
+    }
 
     return {
         todos,
@@ -39,7 +42,8 @@ module.exports = function (dbIyectada){
         eliminar,
         empresasTaller,
         empreasSucursal,
-        existeEmpresa
+        existeEmpresa,
+        contadorEmpresasTaller
     }
     
 }

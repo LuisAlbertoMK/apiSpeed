@@ -16,6 +16,9 @@ module.exports = function (dbIyectada){
     function uno(id){
         return db.uno(TABLA, id)
     }
+    function contadorMarcasTaller(id_taller){
+        return db.contadorMarcasTaller(id_taller)
+    }
     async function agregar(body){
         const respuesta = await db.agregar(TABLA, body)
         const insertId = (body.id_ === 0) ? respuesta.insertId : body.id
@@ -29,7 +32,8 @@ module.exports = function (dbIyectada){
         todos,
         uno,
         agregar,
-        eliminar
+        eliminar,
+        contadorMarcasTaller
     }
     
 }
