@@ -29,9 +29,17 @@ router.get('/:id_recepcion', uno)
 async function servicios(req, res, next) {
     try {
         const items =  await controlador.recepcionesTaller2(req.query)
-        respuesta.success(req, res, items, 200)
+        const conReportes = await Promise.all(items.map(async e => {
+            const {id_recepcion} = e
+            const reporteResponse = await controlador.reporteRecepcion(id_recepcion)
+            const reporte = reporteResponse
+            return {...e, reporte}
+        }))
+        // console.log({conReportes})
+        respuesta.success(req, res, conReportes, 200)
     } catch (error) { next(error) }
 }
+
 
 async function todos (req, res, next){
     try {

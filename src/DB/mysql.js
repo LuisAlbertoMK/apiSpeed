@@ -393,6 +393,13 @@ function sp_ordenlike(id_taller, search){
         })
     })
 }
+function reporteRecepcion(id_recepcion){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT * FROM reportes WHERE id_recepcion = ${id_recepcion}`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function sp_ordenesAbiertas(id_taller, id_sucursal){
     return new Promise((resolve, reject) =>{
         conexion.query(`call sp_ordenesAbiertas(${id_taller}, ${id_sucursal})`, 
@@ -443,6 +450,14 @@ function recepcionesCliente(id_cliente){
         })
     })
 }
+function basicasConReporte(id_taller, id_sucursal, start, end) {
+    return new Promise((resolve, reject) => {
+        const {id_taller, id_sucursal, start, end} = data
+      conexion.query(`call sp_cotizacionesTallerBasica(${id_taller},${id_sucursal},'${start}','${end}')`, data, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
 // consulta data paquetes
 function consultaPaquetes(data){
     const {id_taller, id_sucursal, limit, offset} = data
@@ -812,6 +827,7 @@ function sp_tecnicosTallerSucursal(id_taller, id_sucursal){
 
 module.exports = {
     recepcionesCliente,
+    basicasConReporte,
     correosClientes,
     cotizacionesCliente,
     serviciosEntregado,
@@ -879,6 +895,7 @@ module.exports = {
     patchRecepcion,
     recepcionesTaller2,
     sp_ordenlike,
+    reporteRecepcion,
     recepcionesTallerSucursal,
     gastosOperacionTallerReporte,
     depositosTallerSucursal,

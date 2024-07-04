@@ -101,6 +101,10 @@ module.exports = function (dbIyectada){
     function sp_ordenlike(id_recepcion, search){
         return db.sp_ordenlike(id_recepcion, search)
     }
+    function reporteRecepcion(id_recepcion) {
+        return db.reporteRecepcion(id_recepcion)
+    }
+   
 
     return {
         recepcionesCliente,
@@ -115,7 +119,8 @@ module.exports = function (dbIyectada){
         recepcionesTaller2,
         recepcionesTallerSucursal,
         patchRecepcion,
-        sp_ordenlike
+        sp_ordenlike,
+        reporteRecepcion
     }
     
 }
