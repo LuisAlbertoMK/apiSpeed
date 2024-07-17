@@ -15,6 +15,7 @@ const sucursales = require('../sucursales')
 const router = express.Router()
 
 router.get('/', servicios)
+router.get('/pagRecepClientes', pagRecepClientes)
 router.get('/recepcionesTaller', recepcionesTaller)
 router.get('/recepcionesTaller2', recepcionesTaller2)
 router.get('/coincidencias', coincidencias)
@@ -37,6 +38,14 @@ async function servicios(req, res, next) {
         }))
         // console.log({conReportes})
         respuesta.success(req, res, conReportes, 200)
+    } catch (error) { next(error) }
+}
+async function pagRecepClientes(req, res, next) {
+    try {
+        const recepciones = await controlador.pagOdenesCliente(req.query)
+        const totalResponse = await controlador.pagOdenesClienteContador(req.query)
+        const {total} = totalResponse
+        respuesta.success(req, res, {total, recepciones}, 200)
     } catch (error) { next(error) }
 }
 

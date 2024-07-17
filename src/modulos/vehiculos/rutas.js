@@ -19,6 +19,7 @@ router.get('/semejantes', semejantes)
 router.get('/verificaPlacas', verificaPlacas)
 router.get('/vehiculosTallerSucursal', vehiculosTallerSucursal)
 router.get('/vehiculosCliente', vehiculosCliente)
+router.get('/clienteVehiculos', clienteVehiculos)
 router.get('/vehiculosCiente/:id_cliente', vehiculosCiente)
 router.get('/:id_vehiculo', uno)
 
@@ -28,6 +29,15 @@ async function semejantes (req, res, next){
         const limite = limiteQ || 20
         const items =  await controlador.semejantesVehiculos({semejantes, id_taller,id_sucursal, limite})
         respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+async function clienteVehiculos (req, res, next){
+    try {
+        const {id_cliente, limit, offset} = req.query
+        const vehiculos = await controlador.clienteVehiculos({id_cliente, limit, offset})
+        const totalVehiculosResponse = await controlador.VehiculosPaginacionTotalesCliente(id_cliente)
+        const {total} = totalVehiculosResponse
+        respuesta.success(req, res, {total, vehiculos}, 200)
     } catch (error) { next(error) }
 }
 async function updateKilometraje(data) {

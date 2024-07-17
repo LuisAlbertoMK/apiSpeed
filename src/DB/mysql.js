@@ -132,6 +132,21 @@ function vehiculosPaginacion(data){
         })
     })
 }
+function clienteVehiculos(data){
+    const {id_cliente,limit,offset} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call spPaginacionVehiculosCliente(${id_cliente},${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function VehiculosPaginacionTotalesCliente(id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT COUNT(*) as total FROM vehiculos WHERE id_cliente = ${id_cliente}`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function updateKilometraje(data){
     const {id_vehiculo, kilometraje} = data
     return new Promise((resolve, reject) =>{
@@ -178,6 +193,24 @@ function contador(tabla){
         })
     })
 }
+function cotizacinesCliente(data){
+    const {id_taller, id_sucursal, id_cliente, limit, offset} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query( 
+            `call sp_pagCotizacionesCliente(${id_taller}, ${id_sucursal}, ${id_cliente}, ${limit},${ offset})`
+        , (error, result) =>{ return error ? reject(error) : resolve(result[0]) })
+    })
+}
+function cotizacinesClienteContador(data){
+    const {id_taller, id_sucursal, id_cliente} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query( 
+            `select count(*) as  total from cotizaciones where id_taller = ${id_taller} and id_sucursal = ${id_sucursal} and 
+            id_cliente = ${id_cliente}`
+        , (error, result) =>{ return error ? reject(error) : resolve(result[0]) })
+    })
+}
+
 // INFORMACION DE CLIENTES
 function semejantesClientes(data){
     const {semejantes,limite, id_taller,id_sucursal} = data
@@ -454,6 +487,23 @@ function basicasConReporte(id_taller, id_sucursal, start, end) {
     return new Promise((resolve, reject) => {
         const {id_taller, id_sucursal, start, end} = data
       conexion.query(`call sp_cotizacionesTallerBasica(${id_taller},${id_sucursal},'${start}','${end}')`, data, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
+function pagOdenesCliente(data) {
+    const {id_taller, id_sucursal,id_cliente, limit, offset} = data
+    return new Promise((resolve, reject) => {
+      conexion.query(`call sp_pagRecepcionesCliente(${id_taller},${id_sucursal},${id_cliente},${limit},${offset})`, data, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
+function pagOdenesClienteContador(data) {
+    const {id_taller, id_sucursal, id_cliente} = data
+    return new Promise((resolve, reject) => {
+      conexion.query(`select count(*) as total from recepciones where id_taller = ${id_taller}
+        and id_sucursal = ${id_sucursal} and id_cliente = ${id_cliente}`, data, (error, result) => {
         return error? reject(error) : resolve(result[0])
       })
     })
@@ -865,6 +915,8 @@ module.exports = {
     seriviciosAceptados,
     RecepcionElementos,
     ObtenerDetallePaquete,
+    pagOdenesCliente,
+    pagOdenesClienteContador,
     consultaPaquetes,
     ObtenerDetallePaqueteModificado,
     ObtenerDetallePaqueteModificadoRecep,
@@ -909,10 +961,14 @@ module.exports = {
     uno2,
     UpdateDataParcial,
     semejantesmorefacciones,
+    cotizacinesCliente,
+    cotizacinesClienteContador,
     semejantesClientes,
     clientesPaginacionTotales,
     clientesPaginacionClientes,
     vehiculosPaginacion,
+    clienteVehiculos,
+    VehiculosPaginacionTotalesCliente,
     updateKilometraje,
     VehiculosPaginacionTotales,
     totalPaquetes,

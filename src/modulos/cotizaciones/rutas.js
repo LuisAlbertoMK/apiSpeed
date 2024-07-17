@@ -13,6 +13,7 @@ const router = express.Router()
 
 router.get('/', todos)
 router.get('/basicas', basicas)
+router.get('/pagCotCliente', pagCotCliente)
 router.post('/', agregar)
 router.patch('/update/:id_cotizacion', actualizaData )
 router.put('/', eliminar)
@@ -32,6 +33,14 @@ async function basicas(req, res, next){
     try {
         const items = await controlador.cotizacionesBasicas(req.query)
         respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+async function pagCotCliente(req, res, next){
+    try {
+        const cotizaciones = await controlador.pagCotCliente(req.query)
+        const totalResponse = await controlador.pagCotClienteContador(req.query)
+        const {total} = totalResponse
+        respuesta.success(req, res, {total, cotizaciones}, 200)
     } catch (error) { next(error) }
 }
 

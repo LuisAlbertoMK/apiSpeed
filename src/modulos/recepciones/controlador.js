@@ -104,6 +104,12 @@ module.exports = function (dbIyectada){
     function reporteRecepcion(id_recepcion) {
         return db.reporteRecepcion(id_recepcion)
     }
+    function pagOdenesCliente(data) {
+        return db.pagOdenesCliente(data)
+    }
+    function pagOdenesClienteContador(data) {
+        return db.pagOdenesClienteContador(data)
+    }
    
 
     return {
@@ -120,7 +126,9 @@ module.exports = function (dbIyectada){
         recepcionesTallerSucursal,
         patchRecepcion,
         sp_ordenlike,
-        reporteRecepcion
+        reporteRecepcion,
+        pagOdenesCliente,
+        pagOdenesClienteContador
     }
     
 }
