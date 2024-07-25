@@ -25,19 +25,17 @@ router.get('/:id_vehiculo', uno)
 
 async function semejantes (req, res, next){
     try {
-        const {semejantes, id_taller, id_sucursal, limite: limiteQ} = req.query
-        const limite = limiteQ || 20
-        const items =  await controlador.semejantesVehiculos({semejantes, id_taller,id_sucursal, limite})
+        const items =  await controlador.semejantesVehiculos(req.query)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
 async function clienteVehiculos (req, res, next){
     try {
         const {id_cliente, limit, offset} = req.query
-        const vehiculos = await controlador.clienteVehiculos({id_cliente, limit, offset})
+        const datos = await controlador.clienteVehiculos({id_cliente, limit, offset})
         const totalVehiculosResponse = await controlador.VehiculosPaginacionTotalesCliente(id_cliente)
         const {total} = totalVehiculosResponse
-        respuesta.success(req, res, {total, vehiculos}, 200)
+        respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }
 async function updateKilometraje(data) {
@@ -52,12 +50,10 @@ async function updateKilometraje(data) {
 
 async function vehiculos(req, res, next){
     try {
-        const {id_taller, id_sucursal, limit, offset} = req.query
-        const totalVehiculosResponse = await controlador.VehiculosPaginacionTotales({id_taller, id_sucursal})
-        const vehiculosResponse = await controlador.vehiculosPaginacion({id_taller, id_sucursal, limit, offset})
-        const vehiculos = vehiculosResponse
+        const totalVehiculosResponse = await controlador.VehiculosPaginacionTotales(req.query)
+        const vehiculos = await controlador.vehiculosPaginacion(req.query)
         const {total} = totalVehiculosResponse
-        respuesta.success(req, res, {total, vehiculos}, 200)
+        respuesta.success(req, res, {total, datos:vehiculos}, 200)
     } catch (error) { next(error) }
 }
 

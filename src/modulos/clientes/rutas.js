@@ -23,9 +23,9 @@ router.get('/:id_cliente', uno)
             const {id_taller, id_sucursal, limit, offset} = req.query
             const totalClientesResponse = await controlador.clientesPaginacionTotales({id_taller, id_sucursal})
             const ClientesResponse = await controlador.clientesPaginacionClientes({id_taller, id_sucursal, limit, offset})
-            const clientes = ClientesResponse
+            const datos = ClientesResponse
             const {total} = totalClientesResponse
-            respuesta.success(req, res, {total, clientes}, 200)
+            respuesta.success(req, res, {total, datos}, 200)
         } catch (error) { next(error) }
     }
 
@@ -81,12 +81,12 @@ async function uno(req, res, next) {
       const newCotizaciones  = await Promise.all(cotizacionesCliente.map(async cotizacion => {
         const {id_vehiculo} = cotizacion
         const data_vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
-        return {...cotizacion, data_vehiculo}
+        return {...cotizacion, data_vehiculo, data_cliente}
       }))
       const newRecepciones  = await Promise.all(recepcionesCliente.map(async recepcion => {
         const {id_vehiculo} = recepcion
         const data_vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
-        return {...recepcion, data_vehiculo}
+        return {...recepcion, data_vehiculo, data_cliente}
       }))
       const items = shouldIncludeHistory
         ? {
@@ -115,9 +115,8 @@ async function eliminar(req, res, next){
 }
 async function semejantes (req, res, next){
     try {
-        const {semejantes, id_taller, id_sucursal, limite: limiteQ} = req.query
-        const limite = limiteQ || 20
-        const items =  await controlador.semejantesClientes({semejantes, id_taller,id_sucursal, limite})
+        // const {semejantes, id_taller, id_sucursal, limit} = req.query
+        const items =  await controlador.semejantesClientes(req.query)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }

@@ -213,9 +213,9 @@ function cotizacinesClienteContador(data){
 
 // INFORMACION DE CLIENTES
 function semejantesClientes(data){
-    const {semejantes,limite, id_taller,id_sucursal} = data
+    const {semejantes,limit, id_taller,id_sucursal, offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL busquedaLikeClientes('${semejantes}',${id_taller},${id_sucursal},${limite});`, (error, result) =>{ 
+        conexion.query(`CALL busquedaLikeClientes('${semejantes}',${id_taller},${id_sucursal},${limit},${offset});`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -243,9 +243,9 @@ function verificaPlacas(placas){
     })
 }
 function semejantesVehiculos(data){
-    const {semejantes,limite, id_taller,id_sucursal} = data
+    const {semejantes, id_taller,id_sucursal, limit, offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL busquedaLikeVehiculos('${semejantes}',${id_taller},${id_sucursal},${limite});`, (error, result) =>{ 
+        conexion.query(`CALL busquedaLikeVehiculos('${semejantes}',${id_taller},${id_sucursal},${limit});`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -367,9 +367,17 @@ function consultaCotizaciones(id_taller, id_sucursal,start, end){
     })
 }
 function cotizacionesBasicas(data) {
+    const {id_taller, id_sucursal, start, end, limit, offset} = data
     return new Promise((resolve, reject) => {
-        const {id_taller, id_sucursal, start, end} = data
-      conexion.query(`call sp_cotizacionesTallerBasica(${id_taller},${id_sucursal},'${start}','${end}')`, data, (error, result) => {
+      conexion.query(`call sp_cotizacionesTallerBasica(${id_taller},${id_sucursal},'${start}','${end}',${limit},${offset})`, data, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
+function cotizacionesBasicasContador(data) {
+    const {id_taller, id_sucursal, start, end} = data
+    return new Promise((resolve, reject) => {
+      conexion.query(`select count(*) as total from cotizaciones where id_taller = ${id_taller} and id_sucursal = ${id_sucursal} AND createCotizacion_at BETWEEN  '${start}' AND '${end}' `, data, (error, result) => {
         return error? reject(error) : resolve(result[0])
       })
     })
@@ -411,10 +419,28 @@ function patchRecepcion(id_recepcion, data) {
       })
     })
   }
-function recepcionesTaller2(id_taller, id_sucursal,start, end){
+function recepcionesTaller2(data){
+    const {id_taller, id_sucursal,start, end, limit, offset} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_recepcionesTallerBasica(${id_taller}, ${id_sucursal},'${start}','${end}',${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function recepcionesTaller2contador(data){
+    const {id_taller, id_sucursal,start, end} = data
     return new Promise((resolve, reject) =>{
         // sp_recepcionesTallerSucursal2
-        conexion.query(`call sp_recepcionesTallerBasica(${id_taller}, ${id_sucursal},'${start}','${end}')`, (error, result) =>{ 
+        conexion.query(`select count(*) as total from recepciones where id_taller = ${id_taller} and id_sucursal = ${id_sucursal} AND createRecepciones_at BETWEEN  '${start}' AND '${end}'`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function administracion(data){
+    const {id_taller, id_sucursal,start, end,estado} = data
+    return new Promise((resolve, reject) =>{
+        // sp_recepcionesTallerSucursal2
+        conexion.query(`call sp_recepcionesTallerBasicaAdministracion(${id_taller},${id_sucursal},'${start}', '${end}', '${estado}')`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -906,6 +932,7 @@ module.exports = {
     contadorCategorias,
     consultaCotizaciones,
     cotizacionesBasicas,
+    cotizacionesBasicasContador,
     consultaCotizacion,
     vehiculoUnico,
     patchDataCotizacion,
@@ -946,7 +973,9 @@ module.exports = {
     recepcionesTaller,
     patchRecepcion,
     recepcionesTaller2,
+    recepcionesTaller2contador,
     sp_ordenlike,
+    administracion,
     reporteRecepcion,
     recepcionesTallerSucursal,
     gastosOperacionTallerReporte,

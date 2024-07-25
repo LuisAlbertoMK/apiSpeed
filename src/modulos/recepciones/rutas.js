@@ -15,6 +15,8 @@ const sucursales = require('../sucursales')
 const router = express.Router()
 
 router.get('/', servicios)
+router.get('/recepcionesFechas', recepcionesFechas)
+router.get('/administracion', administracion)
 router.get('/pagRecepClientes', pagRecepClientes)
 router.get('/recepcionesTaller', recepcionesTaller)
 router.get('/recepcionesTaller2', recepcionesTaller2)
@@ -26,7 +28,14 @@ router.get('/vehiculos', RecepcionesVehiculoConsulta)
 router.put('/', eliminar)
 router.get('/:id_recepcion', uno)
 
-
+async function recepcionesFechas(req, res, next){
+    try {
+        const items =  await controlador.recepcionesFechas(req.query)
+        const totalResponse = await controlador.recepcionesFechasContador(req.query)
+        const {total} = totalResponse
+        respuesta.success(req, res, {total,  datos:items}, 200)
+    } catch (error) { next(error) }
+}
 async function servicios(req, res, next) {
     try {
         const items =  await controlador.recepcionesTaller2(req.query)
@@ -36,16 +45,30 @@ async function servicios(req, res, next) {
             const reporte = reporteResponse
             return {...e, reporte}
         }))
+        const totalResponse = await controlador.recepcionesTaller2contador(req.query)
+        const {total} = totalResponse
         // console.log({conReportes})
+        respuesta.success(req, res, {total,  datos:conReportes}, 200)
+    } catch (error) { next(error) }
+}
+async function administracion(req, res, next) {
+    try {
+        const items =  await controlador.administracion(req.query)
+        const conReportes = await Promise.all(items.map(async e => {
+            const {id_recepcion} = e
+            const reporteResponse = await controlador.reporteRecepcion(id_recepcion)
+            const reporte = reporteResponse
+            return {...e, reporte}
+        }))
         respuesta.success(req, res, conReportes, 200)
     } catch (error) { next(error) }
 }
 async function pagRecepClientes(req, res, next) {
     try {
-        const recepciones = await controlador.pagOdenesCliente(req.query)
+        const datos = await controlador.pagOdenesCliente(req.query)
         const totalResponse = await controlador.pagOdenesClienteContador(req.query)
         const {total} = totalResponse
-        respuesta.success(req, res, {total, recepciones}, 200)
+        respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }
 

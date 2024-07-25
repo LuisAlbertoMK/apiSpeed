@@ -31,16 +31,18 @@ async function actualizaData(req, res, next){
 }
 async function basicas(req, res, next){
     try {
-        const items = await controlador.cotizacionesBasicas(req.query)
-        respuesta.success(req, res, items, 200)
+        const datos = await controlador.cotizacionesBasicas(req.query)
+        const totalResponse = await controlador.cotizacionesBasicasContador(req.query)
+        const {total} = totalResponse
+        respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }
 async function pagCotCliente(req, res, next){
     try {
-        const cotizaciones = await controlador.pagCotCliente(req.query)
+        const datos = await controlador.pagCotCliente(req.query)
         const totalResponse = await controlador.pagCotClienteContador(req.query)
         const {total} = totalResponse
-        respuesta.success(req, res, {total, cotizaciones}, 200)
+        respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }
 

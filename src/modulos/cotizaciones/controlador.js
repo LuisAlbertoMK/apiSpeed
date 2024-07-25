@@ -50,6 +50,9 @@ module.exports = function (dbIyectada){
     function cotizacionesBasicas(data){
         return db.cotizacionesBasicas(data)
     }
+    function cotizacionesBasicasContador(data){
+        return db.cotizacionesBasicasContador(data)
+    }
     function pagCotCliente(data){
         return db.cotizacinesCliente(data)
     }
@@ -67,6 +70,7 @@ module.exports = function (dbIyectada){
         cotizacionesCliente,
         patchDataCotizacion,
         cotizacionesBasicas,
+        cotizacionesBasicasContador,
         pagCotCliente,
         pagCotClienteContador
     }
