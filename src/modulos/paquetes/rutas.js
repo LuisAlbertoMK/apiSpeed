@@ -82,7 +82,7 @@ async function uno(req, res, next){
             ...items,
             elementos: elementosResponse[0]
         }
-        console.log('elementos ',elementosResponse[0]);
+        
         respuesta.success(req, res, dataPaquete, 200)
     } catch (error) {
         next(error)

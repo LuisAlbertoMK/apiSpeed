@@ -6,6 +6,7 @@ const controlador= require('./index')
 const vehiculos = require('../vehiculos')
 const cotizaciones = require('../cotizaciones')
 const recepciones = require('../recepciones')
+const reportes = require('../reportes')
 
 const router = express.Router()
 
@@ -79,14 +80,16 @@ async function uno(req, res, next) {
   
 
       const newCotizaciones  = await Promise.all(cotizacionesCliente.map(async cotizacion => {
-        const {id_vehiculo} = cotizacion
+        const {id_vehiculo, id_cotizacion} = cotizacion
         const data_vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
-        return {...cotizacion, data_vehiculo, data_cliente}
+        const reporte = await reportes.uno(id_cotizacion);
+        return {...cotizacion, data_vehiculo,reporte, data_cliente}
       }))
       const newRecepciones  = await Promise.all(recepcionesCliente.map(async recepcion => {
-        const {id_vehiculo} = recepcion
+        const {id_vehiculo, id_recepcion} = recepcion
         const data_vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)
-        return {...recepcion, data_vehiculo, data_cliente}
+        const reporte = await reportes.uno(id_recepcion);
+        return {...recepcion, data_vehiculo,reporte, data_cliente}
       }))
       const items = shouldIncludeHistory
         ? {
@@ -115,7 +118,6 @@ async function eliminar(req, res, next){
 }
 async function semejantes (req, res, next){
     try {
-        // const {semejantes, id_taller, id_sucursal, limit} = req.query
         const items =  await controlador.semejantesClientes(req.query)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }

@@ -7,6 +7,7 @@ const vehiculos = require('../vehiculos')
 const elementos_cotizacion = require('../elementos_cotizacion')
 const mod_paquetes = require('../mod_paquetes')
 const sucursales = require('../sucursales')
+const reportes = require('../reportecotizacion')
 
 
 const router = express.Router()
@@ -33,8 +34,13 @@ async function basicas(req, res, next){
     try {
         const datos = await controlador.cotizacionesBasicas(req.query)
         const totalResponse = await controlador.cotizacionesBasicasContador(req.query)
+        const conReportes = await Promise.all(datos.map(async e => {
+            const {id_cotizacion} = e
+            const reporte = await reportes.uno(id_cotizacion);
+            return {...e, reporte}
+        }))
         const {total} = totalResponse
-        respuesta.success(req, res, {total, datos}, 200)
+        respuesta.success(req, res, {total, datos: conReportes}, 200)
     } catch (error) { next(error) }
 }
 async function pagCotCliente(req, res, next){

@@ -31,9 +31,15 @@ router.get('/:id_recepcion', uno)
 async function recepcionesFechas(req, res, next){
     try {
         const items =  await controlador.recepcionesFechas(req.query)
+        const conReportes = await Promise.all(items.map(async e => {
+            const {id_recepcion} = e
+            const reporteResponse = await controlador.reporteRecepcion(id_recepcion)
+            const reporte = reporteResponse
+            return {...e, reporte}
+        }))
         const totalResponse = await controlador.recepcionesFechasContador(req.query)
         const {total} = totalResponse
-        respuesta.success(req, res, {total,  datos:items}, 200)
+        respuesta.success(req, res, {total,  datos:conReportes}, 200)
     } catch (error) { next(error) }
 }
 async function servicios(req, res, next) {
@@ -47,7 +53,6 @@ async function servicios(req, res, next) {
         }))
         const totalResponse = await controlador.recepcionesTaller2contador(req.query)
         const {total} = totalResponse
-        // console.log({conReportes})
         respuesta.success(req, res, {total,  datos:conReportes}, 200)
     } catch (error) { next(error) }
 }

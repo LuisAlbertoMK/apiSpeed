@@ -439,8 +439,7 @@ function recepcionesTaller2contador(data){
 function administracion(data){
     const {id_taller, id_sucursal,start, end,estado} = data
     return new Promise((resolve, reject) =>{
-        // sp_recepcionesTallerSucursal2
-        conexion.query(`call sp_recepcionesTallerBasicaAdministracion(${id_taller},${id_sucursal},'${start}', '${end}', '${estado}')`, (error, result) =>{ 
+        conexion.query(`call sp_recepcionesTallerBasicaAdministracion(${id_taller},${id_sucursal},'${start}','${end}','${estado}')`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
