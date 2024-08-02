@@ -43,7 +43,7 @@ async function semejantes (req, res, next){
         const newPaquetes = await Promise.all(items.map(async e => {
             const {id_paquete} = e 
             const elementosPaquete = await controlador.ObtenerDetallePaquete(id_paquete)
-            e['elementos'] = elementosPaquete[0]
+            e['elementos'] = elementosPaquete[0] || []
             return e
         }));
         respuesta.success(req, res, newPaquetes, 200)

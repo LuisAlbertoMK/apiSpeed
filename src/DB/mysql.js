@@ -147,6 +147,13 @@ function VehiculosPaginacionTotalesCliente(id_cliente){
         })
     })
 }
+function listaVehiculosClienteUnico(id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_vehiculosBasicaClienteUnico(${id_cliente})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function updateKilometraje(data){
     const {id_vehiculo, kilometraje} = data
     return new Promise((resolve, reject) =>{
@@ -997,6 +1004,7 @@ module.exports = {
     vehiculosPaginacion,
     clienteVehiculos,
     VehiculosPaginacionTotalesCliente,
+    listaVehiculosClienteUnico,
     updateKilometraje,
     VehiculosPaginacionTotales,
     totalPaquetes,

@@ -61,6 +61,9 @@ module.exports = function (dbIyectada){
     function VehiculosPaginacionTotalesCliente(id_cliente){
         return db.VehiculosPaginacionTotalesCliente(id_cliente)
     }
+    function listaVehiculosClienteUnico(id_cliente){
+        return db.listaVehiculosClienteUnico(id_cliente)
+    }
 
     return {
         todos,
@@ -78,7 +81,8 @@ module.exports = function (dbIyectada){
         updateKilometraje,
         semejantesVehiculos,
         clienteVehiculos,
-        VehiculosPaginacionTotalesCliente
+        VehiculosPaginacionTotalesCliente,
+        listaVehiculosClienteUnico
     }
     
 }
