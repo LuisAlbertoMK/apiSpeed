@@ -64,6 +64,12 @@ module.exports = function (dbIyectada){
     function listaVehiculosClienteUnico(id_cliente){
         return db.listaVehiculosClienteUnico(id_cliente)
     }
+    function ventaVehiculo(body){
+        return db.agregar('datosvehiculoventa', body)
+    }
+    function ventaVehiculoUnico(id_vehiculo){
+        return db.query('datosvehiculoventa', id_vehiculo)
+    }
 
     return {
         todos,
@@ -82,7 +88,9 @@ module.exports = function (dbIyectada){
         semejantesVehiculos,
         clienteVehiculos,
         VehiculosPaginacionTotalesCliente,
-        listaVehiculosClienteUnico
+        listaVehiculosClienteUnico,
+        ventaVehiculo,
+        ventaVehiculoUnico
     }
     
 }

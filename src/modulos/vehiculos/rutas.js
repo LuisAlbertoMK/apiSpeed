@@ -13,9 +13,11 @@ const router = express.Router()
 
 router.get('/', vehiculos)
 router.post('/', agregar)
+router.post('/ventaVehiculo', ventaVehiculo)
 router.patch('/', updateKilometraje)
 router.put('/', eliminar)
 router.get('/semejantes', semejantes)
+router.get('/ventaVehiculoUnico/:id_vehiculo', ventaVehiculoUnico)
 router.get('/listaVehiculosClienteUnico/:id_cliente', listaVehiculosClienteUnico)
 router.get('/verificaPlacas', verificaPlacas)
 router.get('/vehiculosTallerSucursal', vehiculosTallerSucursal)
@@ -27,6 +29,13 @@ router.get('/:id_vehiculo', uno)
 async function semejantes (req, res, next){
     try {
         const items =  await controlador.semejantesVehiculos(req.query)
+        respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+async function ventaVehiculoUnico (req, res, next){
+    try {
+        const {id_vehiculo} = req.params
+        const items =  await controlador.ventaVehiculoUnico(id_vehiculo)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
@@ -171,7 +180,14 @@ async function agregar(req, res, next){
         const {id_vehiculo} = req.body
         const items = await controlador.agregar(req.body)
         mensaje  =  (items.insertId) ? items.insertId : id_vehiculo
-        // mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
+        respuesta.success(req, res, mensaje, 201)
+    } catch (error) { next(error) }
+}
+async function ventaVehiculo(req, res, next){
+    try {
+        const {id_vehiculo} = req.body
+        const items = await controlador.ventaVehiculo(req.body)
+        mensaje  =  (items.insertId) ? items.insertId : id_vehiculo
         respuesta.success(req, res, mensaje, 201)
     } catch (error) { next(error) }
 }

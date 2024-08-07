@@ -140,6 +140,14 @@ function clienteVehiculos(data){
         })
     })
 }
+function ventaVehiculo(data){
+    const {id_cliente,limit,offset} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call spPaginacionVehiculosCliente(${id_cliente},${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function VehiculosPaginacionTotalesCliente(id_cliente){
     return new Promise((resolve, reject) =>{
         conexion.query(`SELECT COUNT(*) as total FROM vehiculos WHERE id_cliente = ${id_cliente}`, (error, result) =>{ 
