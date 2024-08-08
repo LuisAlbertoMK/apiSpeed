@@ -74,8 +74,10 @@ async function uno(req, res, next){
 async function agregar(req, res, next){
     try {
         const items = await controlador.agregar(req.body)
-        mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
-        respuesta.success(req, res, mensaje, 201)
+        // mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
+        const id_sucursal  =  (items.insertId) ? items.insertId : req.body.id
+        // console.log({items,mensaje, mensaje2})
+        respuesta.success(req, res, id_sucursal, 201)
     } catch (error) {
         next(error)
     }
