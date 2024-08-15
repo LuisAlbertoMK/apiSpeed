@@ -59,6 +59,9 @@ module.exports = function (dbIyectada){
     function pagCotClienteContador(data){
         return db.cotizacinesClienteContador(data)
     }
+    function cotizacionesVehiculo(id_vehiculo){
+        return db.cotizacionesVehiculo(id_vehiculo)
+    }
 
 
     return {
@@ -72,7 +75,8 @@ module.exports = function (dbIyectada){
         cotizacionesBasicas,
         cotizacionesBasicasContador,
         pagCotCliente,
-        pagCotClienteContador
+        pagCotClienteContador,
+        cotizacionesVehiculo
     }
     
 }

@@ -8,6 +8,7 @@ const cotizaciones = require('../cotizaciones')
 const recepciones = require('../recepciones')
 const elementos_recepcion = require('../elementos_recepcion')
 const mod_paquetes = require('../mod_paquetes')
+const reportes = require('../reportes')
 
 const router = express.Router()
 
@@ -23,7 +24,9 @@ router.get('/verificaPlacas', verificaPlacas)
 router.get('/vehiculosTallerSucursal', vehiculosTallerSucursal)
 router.get('/vehiculosCliente', vehiculosCliente)
 router.get('/clienteVehiculos', clienteVehiculos)
+router.get('/vehiculosenventa', vehiculosenventa)
 router.get('/vehiculosCiente/:id_cliente', vehiculosCiente)
+router.get('/historialVehiculo/:id_vehiculo', historialVehiculo)
 router.get('/:id_vehiculo', uno)
 
 async function semejantes (req, res, next){
@@ -52,6 +55,15 @@ async function clienteVehiculos (req, res, next){
         const {id_cliente, limit, offset} = req.query
         const datos = await controlador.clienteVehiculos({id_cliente, limit, offset})
         const totalVehiculosResponse = await controlador.VehiculosPaginacionTotalesCliente(id_cliente)
+        const {total} = totalVehiculosResponse
+        respuesta.success(req, res, {total, datos}, 200)
+    } catch (error) { next(error) }
+}
+async function vehiculosenventa (req, res, next){
+    try {
+        const {limit, offset} = req.query
+        const datos = await controlador.sp_pagVehiculosVenta({limit, offset})
+        const totalVehiculosResponse = await controlador.contadorVehiculosVenta()
         const {total} = totalVehiculosResponse
         respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
@@ -133,6 +145,30 @@ async function vehiculosCiente (req, res, next){
     try {
         const items =  await controlador.vehiculosCiente(req.params.id_cliente)
         respuesta.success(req, res, items, 200)
+    } catch (error) { next(error)}
+}
+async function historialVehiculo (req, res, next){
+    try {
+        const {id_vehiculo} = req.params
+        const data_vehiculo =  await controlador.vehiculoUnico(id_vehiculo)
+        const id_cliente = data_vehiculo.id_cliente;
+        const data_cliente =  await clientes.clienteUnico(id_cliente)
+        const ansCotizaciones = await cotizaciones.cotizacionesVehiculo(id_vehiculo)
+        const asnRecepciones = await recepciones.recepcionesVehiculo(id_vehiculo)
+        const conReportes = await Promise.all(ansCotizaciones.map(async e => {
+            const {id_cotizacion} = e
+            const reporte = await reportes.uno(id_cotizacion);
+            return {...e, reporte}
+        }))
+        const conReportesRecepciones = await Promise.all(asnRecepciones.map(async e => {
+            const {id_recepcion} = e
+            const reporteResponse = await recepciones.reporteRecepcion(id_recepcion)
+            const reporte = reporteResponse
+            return {...e, reporte}
+        }))
+        respuesta.success(req, res, 
+            {data_vehiculo, data_cliente, cotizaciones: conReportes, recepciones: conReportesRecepciones},
+            200)
     } catch (error) { next(error)}
 }
 async function uno(req, res, next){

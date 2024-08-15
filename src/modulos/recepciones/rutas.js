@@ -25,6 +25,7 @@ router.get('/aceptados', aceptados)
 router.post('/', agregar)
 router.patch('/update/:id_recepcion',updateRecepcion)
 router.get('/vehiculos', RecepcionesVehiculoConsulta)
+router.get('/recepcionesVehiculo/:id_vehiculo', recepcionesVehiculo)
 router.put('/', eliminar)
 router.get('/:id_recepcion', uno)
 
@@ -168,6 +169,15 @@ async function RecepcionesVehiculoConsulta(req, res, next){
         mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
         respuesta.success(req, res, items, 201)
     } catch (error) { next(error) }
+}
+async function recepcionesVehiculo(req, res, next){
+    try {
+        const {id_vehiculo} = req.params
+        const items = await controlador.recepcionesVehiculo(id_vehiculo)
+        respuesta.success(req, res, items, 200)
+    } catch (error) {
+        next(error)
+    }
 }
 async function recepcionesCliente(id_cliente) {
     try {

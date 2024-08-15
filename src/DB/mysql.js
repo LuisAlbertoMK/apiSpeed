@@ -116,6 +116,8 @@ function consultaModeloMarca(tabla, id_marca){
         })
     })
 }
+// VEHICULOS
+
 function VehiculosPaginacionTotales(data){
     const {id_taller, id_sucursal} = data
     return new Promise((resolve, reject) =>{
@@ -144,6 +146,21 @@ function ventaVehiculo(data){
     const {id_cliente,limit,offset} = data
     return new Promise((resolve, reject) =>{
         conexion.query(`call spPaginacionVehiculosCliente(${id_cliente},${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function sp_pagVehiculosVenta(data){
+    const {limit,offset} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_pagVehiculosVenta(${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function contadorVehiculosVenta(){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT COUNT(*) as total FROM datosvehiculoventa where activo = 1`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -200,6 +217,7 @@ function elementos_cotizaciones(id_cotizacion){
         })
     })
 }
+
 function contador(tabla){
     return new Promise((resolve, reject) =>{
         conexion.query( `SELECT COUNT(*) as total FROM ${tabla}`
@@ -276,6 +294,20 @@ function vehiculoUnico(id_vehiculo){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_vehiculoUnico(${id_vehiculo})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0][0])
+        })
+    })
+}
+function cotizacionesVehiculo(id_vehiculo){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL cotizacionesVehiculo(${id_vehiculo})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function recepcionesVehiculo(id_vehiculo){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL recepcionesVehiculo(${id_vehiculo})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
         })
     })
 }
@@ -949,6 +981,8 @@ module.exports = {
     cotizacionesBasicasContador,
     consultaCotizacion,
     vehiculoUnico,
+    cotizacionesVehiculo,
+    recepcionesVehiculo,
     patchDataCotizacion,
     elementos_cotizaciones,
     RecepcionConsulta,
@@ -1011,6 +1045,8 @@ module.exports = {
     clientesPaginacionClientes,
     vehiculosPaginacion,
     clienteVehiculos,
+    sp_pagVehiculosVenta,
+    contadorVehiculosVenta,
     VehiculosPaginacionTotalesCliente,
     listaVehiculosClienteUnico,
     updateKilometraje,

@@ -76,6 +76,9 @@ module.exports = function (dbIyectada){
     function recepcionesFechasContador(data){
         return db.recepcionesTaller2contador(data)
     }
+    function recepcionesVehiculo(data){
+        return db.recepcionesVehiculo(data)
+    }
    
 
     return {
@@ -98,7 +101,8 @@ module.exports = function (dbIyectada){
         pagOdenesClienteContador,
         administracion,
         recepcionesFechas,
-        recepcionesFechasContador
+        recepcionesFechasContador,
+        recepcionesVehiculo
 
     }
     

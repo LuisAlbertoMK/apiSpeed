@@ -70,6 +70,12 @@ module.exports = function (dbIyectada){
     function ventaVehiculoUnico(id_vehiculo){
         return db.query('datosvehiculoventa', id_vehiculo)
     }
+    function sp_pagVehiculosVenta(data){
+        return db.sp_pagVehiculosVenta(data)
+    }
+    function contadorVehiculosVenta(){
+        return db.contadorVehiculosVenta()
+    }
 
     return {
         todos,
@@ -90,7 +96,9 @@ module.exports = function (dbIyectada){
         VehiculosPaginacionTotalesCliente,
         listaVehiculosClienteUnico,
         ventaVehiculo,
-        ventaVehiculoUnico
+        ventaVehiculoUnico,
+        sp_pagVehiculosVenta,
+        contadorVehiculosVenta
     }
     
 }

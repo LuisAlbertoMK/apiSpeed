@@ -19,6 +19,7 @@ router.post('/', agregar)
 router.patch('/update/:id_cotizacion', actualizaData )
 router.put('/', eliminar)
 router.get('/no_cotizacion/:no_cotizacion', no_cotizacion)
+router.get('/cotizacionesVehiculo/:id_vehiculo', cotizacionesVehiculo )
 router.get('/:id_cotizacion', uno)
 
 
@@ -84,6 +85,16 @@ async function no_cotizacion(req, res, next){
         next(error)
     }
 }
+async function cotizacionesVehiculo(req, res, next){
+    try {
+        const {id_vehiculo} = req.params
+        const items = await controlador.cotizacionesVehiculo(id_vehiculo)
+        respuesta.success(req, res, items, 200)
+    } catch (error) {
+        next(error)
+    }
+}
+
 async function consultaCotizacion(req, res, next){
     try {
         const {id_cotizacion} = req.params
