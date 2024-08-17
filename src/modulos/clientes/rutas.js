@@ -67,10 +67,14 @@ async function uno(req, res, next) {
       const { id_cliente } = req.params;
       const shouldIncludeHistory = historial === 'true';
       const data_cliente = await controlador.clienteUnico(id_cliente)
-      const mismoTaller = parseInt(id_taller) !== parseInt(data_cliente.id_taller)
-      const vehiculosCliente = await vehiculos.vehiculosCiente(id_cliente)
+      const mismoTaller = parseInt(id_taller) === parseInt(data_cliente.id_taller)
+      let vehiculosCliente
       let cotizacionesCliente=[], recepcionesCliente=[], newCotizaciones=[]
     
+      if(shouldIncludeHistory){
+        vehiculosCliente = await vehiculos.vehiculosCiente(id_cliente)
+      }
+
       if(shouldIncludeHistory && mismoTaller){
         cotizacionesCliente = await cotizaciones.cotizacionesCliente(id_cliente)
       }
