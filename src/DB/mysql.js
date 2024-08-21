@@ -267,6 +267,20 @@ function clienteUnico(id_cliente){
         })
     })
 }
+function historialTallerescliente(id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_tallersCliente(${id_cliente})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function tallerActualCliente(id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_tallerActualCliente(${id_cliente})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 //CONSULTA DE VEHICULOS
 function verificaPlacas(placas){
     return new Promise((resolve, reject) =>{
@@ -413,6 +427,14 @@ function consultaCotizaciones(id_taller, id_sucursal,start, end){
         })
     })
 }
+function sp_cotizacionesClienteBasic(id_cliente, id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_cotizacionesClienteBasic(${id_cliente},${id_taller})`, 
+        (error, result) =>{
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function cotizacionesBasicas(data) {
     const {id_taller, id_sucursal, start, end, limit, offset} = data
     return new Promise((resolve, reject) => {
@@ -551,6 +573,20 @@ function serviciosEntregado(id_taller, id_sucursal, start, end){
 function recepcionesCliente(id_cliente){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_recepcionesCliente(${id_cliente})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function recepcionesBasicasOtroTaller(id_cliente, id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_recepcionesOtroTaller(${id_cliente},${id_taller})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function sp_recepcionesMismoTaller(id_cliente, id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_recepcionesMismoTaller(${id_cliente},${id_taller})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -824,6 +860,13 @@ function UpdateDataParcial(id_taller, data){
         })
     })
 }
+function listaTalleresB(id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_consultaTalleres(${id_taller})`, (error, result) => {
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 
 // INFORMACION DE EMPRESAS
 function empresasTaller(id_taller){
@@ -949,6 +992,8 @@ function sp_tecnicosTallerSucursal(id_taller, id_sucursal){
 
 module.exports = {
     recepcionesCliente,
+    recepcionesBasicasOtroTaller,
+    sp_recepcionesMismoTaller,
     basicasConReporte,
     correosClientes,
     cotizacionesCliente,
@@ -956,6 +1001,8 @@ module.exports = {
     clienteUnico,
     contador,
     clientes,
+    historialTallerescliente,
+    tallerActualCliente,
     clientesSucursal,
     contadorClientesUsuario,
     cliente,
@@ -977,6 +1024,7 @@ module.exports = {
     contadorMarcasTaller,
     contadorCategorias,
     consultaCotizaciones,
+    sp_cotizacionesClienteBasic,
     cotizacionesBasicas,
     cotizacionesBasicasContador,
     consultaCotizacion,
@@ -1037,6 +1085,7 @@ module.exports = {
     pagoTotal,
     uno2,
     UpdateDataParcial,
+    listaTalleresB,
     semejantesmorefacciones,
     cotizacinesCliente,
     cotizacinesClienteContador,

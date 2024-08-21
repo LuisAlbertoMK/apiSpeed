@@ -80,9 +80,9 @@ async function updateKilometraje(data) {
 
 async function vehiculos(req, res, next){
     try {
-        const totalVehiculosResponse = await controlador.VehiculosPaginacionTotales(req.query)
+        const  {total} = await controlador.VehiculosPaginacionTotales(req.query)
         const vehiculos = await controlador.vehiculosPaginacion(req.query)
-        const {total} = totalVehiculosResponse
+        
         respuesta.success(req, res, {total, datos:vehiculos}, 200)
     } catch (error) { next(error) }
 }

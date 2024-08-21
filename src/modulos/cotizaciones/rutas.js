@@ -20,6 +20,7 @@ router.patch('/update/:id_cotizacion', actualizaData )
 router.put('/', eliminar)
 router.get('/no_cotizacion/:no_cotizacion', no_cotizacion)
 router.get('/cotizacionesVehiculo/:id_vehiculo', cotizacionesVehiculo )
+router.get('/cotizacionesClienteBasic', cotizacionesClienteBasic )
 router.get('/:id_cotizacion', uno)
 
 
@@ -34,14 +35,8 @@ async function actualizaData(req, res, next){
 async function basicas(req, res, next){
     try {
         const datos = await controlador.cotizacionesBasicas(req.query)
-        const totalResponse = await controlador.cotizacionesBasicasContador(req.query)
-        const conReportes = await Promise.all(datos.map(async e => {
-            const {id_cotizacion} = e
-            const reporte = await reportes.uno(id_cotizacion);
-            return {...e, reporte}
-        }))
-        const {total} = totalResponse
-        respuesta.success(req, res, {total, datos: conReportes}, 200)
+        const {total} = await controlador.cotizacionesBasicasContador(req.query)
+        respuesta.success(req, res, {total, datos: datos}, 200)
     } catch (error) { next(error) }
 }
 async function pagCotCliente(req, res, next){
@@ -89,6 +84,15 @@ async function cotizacionesVehiculo(req, res, next){
     try {
         const {id_vehiculo} = req.params
         const items = await controlador.cotizacionesVehiculo(id_vehiculo)
+        respuesta.success(req, res, items, 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function cotizacionesClienteBasic(req, res, next){
+    try {
+        const {id_cliente, id_taller} = req.query
+        const items = await controlador.cotizacionesClienteBasic(id_cliente, id_taller)
         respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)

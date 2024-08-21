@@ -79,6 +79,12 @@ module.exports = function (dbIyectada){
     function recepcionesVehiculo(data){
         return db.recepcionesVehiculo(data)
     }
+    function recepcionesBasicasOtroTaller(id_cliente, id_taller){
+        return db.recepcionesBasicasOtroTaller(id_cliente, id_taller)
+    }
+    function sp_recepcionesMismoTaller(id_cliente, id_taller){
+        return db.sp_recepcionesMismoTaller(id_cliente, id_taller)
+    }
    
 
     return {
@@ -102,8 +108,9 @@ module.exports = function (dbIyectada){
         administracion,
         recepcionesFechas,
         recepcionesFechasContador,
-        recepcionesVehiculo
-
+        recepcionesVehiculo,
+        recepcionesBasicasOtroTaller,
+        sp_recepcionesMismoTaller
     }
     
 }

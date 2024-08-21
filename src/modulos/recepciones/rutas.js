@@ -26,21 +26,15 @@ router.post('/', agregar)
 router.patch('/update/:id_recepcion',updateRecepcion)
 router.get('/vehiculos', RecepcionesVehiculoConsulta)
 router.get('/recepcionesVehiculo/:id_vehiculo', recepcionesVehiculo)
+router.get('/recepcionesClienteB/:id_cliente', recepcionesClienteB)
 router.put('/', eliminar)
 router.get('/:id_recepcion', uno)
 
 async function recepcionesFechas(req, res, next){
     try {
         const items =  await controlador.recepcionesFechas(req.query)
-        const conReportes = await Promise.all(items.map(async e => {
-            const {id_recepcion} = e
-            const reporteResponse = await controlador.reporteRecepcion(id_recepcion)
-            const reporte = reporteResponse
-            return {...e, reporte}
-        }))
-        const totalResponse = await controlador.recepcionesFechasContador(req.query)
-        const {total} = totalResponse
-        respuesta.success(req, res, {total,  datos:conReportes}, 200)
+        const {total} = await controlador.recepcionesFechasContador(req.query)
+        respuesta.success(req, res, {total,  datos:items}, 200)
     } catch (error) { next(error) }
 }
 async function servicios(req, res, next) {
@@ -84,6 +78,19 @@ async function todos (req, res, next){
         const {id_taller, id_sucursal, start, end, gastos} = req.query
         const items =  await controlador.recepcionesTallerSucursal(id_taller, id_sucursal, start, end)
         respuesta.success(req, res, items[0], 200)
+    } catch (error) { next(error) }
+}
+async function recepcionesClienteB (req, res, next){
+    try {
+        const {id_cliente} = req.params
+        const {id_taller, mismo} = req.query
+        let items = []
+        if(mismo){
+            items =  await controlador.sp_recepcionesMismoTaller(id_cliente, id_taller)
+        }else{
+            items =  await controlador.recepcionesBasicasOtroTaller(id_cliente, id_taller)
+        }
+        respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
 async function recepcionesTaller (req, res, next){

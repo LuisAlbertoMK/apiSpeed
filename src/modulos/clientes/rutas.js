@@ -17,7 +17,26 @@ router.get('/clientesTallerSucursal', clientesTallerSucursal)
 router.get('/contadorClientesUsuario', contadorClientesUsuario)
 router.get('/semejantes', semejantes)
 router.get('/clientesSucursal/:id_sucursal', clientesSucursal)
+router.get('/histoTalleres/:id_cliente', histoTalleres)
+router.get('/tallerActualCliente/:id_cliente', tallerActualCliente)
+router.get('/unicamentevehiculos/:id_cliente', unicamentevehiculos)
+router.get('/onlyDataCliente/:id_cliente', onlyDataCliente)
 router.get('/:id_cliente', uno)
+
+    async function histoTalleres (req, res, next){
+        try {
+            const {id_cliente} = req.params
+            const items = await controlador.historialTallerescliente(id_cliente)
+            respuesta.success(req, res, items, 200)
+        } catch (error) { next(error) }
+    }
+    async function tallerActualCliente (req, res, next){
+        try {
+            const {id_cliente} = req.params
+            const items = await controlador.tallerActualCliente(id_cliente)
+            respuesta.success(req, res, items[0], 200)
+        } catch (error) { next(error) }
+    }
 
     async function clientes(req, res, next){
         try {
@@ -68,45 +87,60 @@ async function uno(req, res, next) {
       const shouldIncludeHistory = historial === 'true';
       const data_cliente = await controlador.clienteUnico(id_cliente)
       const mismoTaller = parseInt(id_taller) === parseInt(data_cliente.id_taller)
-      let vehiculosCliente
+      
       let cotizacionesCliente=[], recepcionesCliente=[], newCotizaciones=[]
     
       if(shouldIncludeHistory){
-        vehiculosCliente = await vehiculos.vehiculosCiente(id_cliente)
-      }
 
-      if(shouldIncludeHistory && mismoTaller){
-        cotizacionesCliente = await cotizaciones.cotizacionesCliente(id_cliente)
-      }
-      const recepcionesAns = await recepciones.recepcionesCliente(id_cliente)
-      recepcionesCliente = recepcionesAns
-      newCotizaciones = cotizacionesCliente
-      if(mismoTaller){
-        recepcionesCliente  = await Promise.all(recepcionesAns.map(async recepcion => {
-            const {id_recepcion} = recepcion
-            const reporte = await reportes.uno(id_recepcion);
-            return {...recepcion, reporte, data_cliente}
-        }))
-        newCotizaciones  = await Promise.all(cotizacionesCliente.map(async cotizacion => {
-            const { id_cotizacion} = cotizacion
-            const reporte = await reportecotizacion.uno(id_cotizacion);
-            return {...cotizacion,reporte, data_cliente}
-          }))
+        if(mismoTaller){
+            cotizacionesCliente = await cotizaciones.cotizacionesCliente(id_cliente)
+        }
+        const recepcionesAns = await recepciones.recepcionesCliente(id_cliente)
+        recepcionesCliente = recepcionesAns
+        newCotizaciones = cotizacionesCliente
+        if(mismoTaller){
+            recepcionesCliente  = await Promise.all(recepcionesAns.map(async recepcion => {
+                const {id_recepcion} = recepcion
+                const reporte = await reportes.uno(id_recepcion);
+                return {...recepcion, reporte, data_cliente}
+            }))
+            newCotizaciones  = await Promise.all(cotizacionesCliente.map(async cotizacion => {
+                const { id_cotizacion} = cotizacion
+                const reporte = await reportecotizacion.uno(id_cotizacion);
+                return {...cotizacion,reporte, data_cliente}
+            }))
+        }
       }
      
       respuesta.success(req, res, 
-        {data_cliente, vehiculos: vehiculosCliente, 
-            recepciones: recepcionesCliente, cotizaciones: newCotizaciones,mismoTaller },
+        {data_cliente, recepciones: recepcionesCliente, cotizaciones: newCotizaciones,mismoTaller },
         200);
     } catch (error) { next(error); }
   }
-async function agregar(req, res, next){
-    try {
-        const items = await controlador.agregar(req.body)
-        mensaje  =  (items.insertId) ? items.insertId : 'Item actualizado'
-        respuesta.success(req, res, mensaje, 201)
-    } catch (error) { next(error) }
-}
+
+    
+    async function unicamentevehiculos(req, res, next){
+        try {
+            const { id_cliente } = req.params;
+            const vehiculosCliente = await vehiculos.vehiculosCiente(id_cliente)
+            respuesta.success(req, res, vehiculosCliente, 200)
+        } catch (error) { next(error) }
+    }
+    async function onlyDataCliente(req, res, next){
+        try {
+            const { id_cliente } = req.params;
+            const data_cliente = await controlador.clienteUnico(id_cliente)
+            respuesta.success(req, res, data_cliente, 200)
+        } catch (error) { next(error) }
+    }
+    
+    async function agregar(req, res, next){
+        try {
+            const items = await controlador.agregar(req.body)
+            mensaje  =  (items.insertId) ? items.insertId : 'Item actualizado'
+            respuesta.success(req, res, mensaje, 201)
+        } catch (error) { next(error) }
+    }
 async function eliminar(req, res, next){
     try {
         const items = await controlador.eliminar(req.body)

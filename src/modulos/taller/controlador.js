@@ -25,12 +25,16 @@ module.exports = function (dbIyectada){
     function UpdateDataParcial(id_taller, data){
         return db.UpdateDataParcial(id_taller, data)
     }
+    function listaTalleresB(id_taller){
+        return db.listaTalleresB(id_taller)
+    }
 
     return {
         todos,
         uno,
         UpdateDataParcial,
         agregar,
+        listaTalleresB,
         eliminar
     }
     

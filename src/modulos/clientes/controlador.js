@@ -37,6 +37,12 @@ module.exports = function (dbIyectada){
     function semejantesClientes(semejantes){
         return db.semejantesClientes(semejantes)
     }
+    function historialTallerescliente(id_cliente){
+        return db.historialTallerescliente(id_cliente)
+    }
+    function tallerActualCliente(id_cliente){
+        return db.tallerActualCliente(id_cliente)
+    }
   
 
 
@@ -49,7 +55,9 @@ module.exports = function (dbIyectada){
         clientesTallerSucursal,
         clienteUnico,
         clientesPaginacionTotales,
-        clientesPaginacionClientes
+        clientesPaginacionClientes,
+        historialTallerescliente,
+        tallerActualCliente
     }
     
 }
