@@ -284,8 +284,8 @@ function tallerActualCliente(id_cliente){
 //CONSULTA DE VEHICULOS
 function verificaPlacas(placas){
     return new Promise((resolve, reject) =>{
-        conexion.query(`call sp_consultaPlacas('${placas}')`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result)
+        conexion.query(`call verificaPlacas('${placas}')`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
         })
     })
 }
