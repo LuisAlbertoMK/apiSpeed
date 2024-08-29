@@ -87,13 +87,28 @@ function agregar(tabla, data){
         })
     })
 }
-function query(tabla, consulta){
-    return new Promise((resolve, reject) =>{
-        conexion.query(`SELECT * FROM ${tabla} WHERE ?`, consulta, (error, result) =>{ 
-            return error ? reject(error) : resolve(result[0])
-        })
-    })
-}
+function query(tabla, consulta) {
+    console.log({ tabla, consulta });
+    const key = Object.keys(consulta)[0];
+    const value = consulta[key];
+    const query = `SELECT * FROM ${tabla} WHERE ${key} = ${value}`  
+    return new Promise((resolve, reject) => {
+      conexion.query(`${query}`, (error, result) => {
+        return error ? reject(error) : resolve(result[0]);
+      });
+    });
+  }
+function query2(tabla, consulta, id_ocupar) {
+    console.log({ tabla, consulta });
+    // const key = Object.keys(consulta)[0];
+    const value = consulta['id_ocupar'];
+    const query = `SELECT * FROM ${tabla} WHERE ${id_ocupar} = ${value}`  
+    return new Promise((resolve, reject) => {
+      conexion.query(`${query}`, (error, result) => {
+        return error ? reject(error) : resolve(result[0]);
+      });
+    });
+  }
 // login
 function dataUsuario(id_usuario){
     return new Promise((resolve, reject) =>{
@@ -197,6 +212,13 @@ function VehiculosRelacionados(id_sucursal){
 function vehiculosCliente(id){
     return new Promise((resolve, reject) =>{
         conexion.query(`call sp_vehiculosCliente(${id})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function vehiculo(id_vehiculo){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_vehiculo(${id_vehiculo})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -1012,12 +1034,14 @@ module.exports = {
     eliminar,
     eliminarQuery,
     query,
+    query2,
     pagoRecepcion,
     queryEliminar,
     eliminaEleModPaqRecep,
     consultaModeloMarca,
     VehiculosRelacionados,
     vehiculosCliente,
+    vehiculo,
     getCompatibles,
     sucursalesEmpresas,
     contadorEmpresasTaller,

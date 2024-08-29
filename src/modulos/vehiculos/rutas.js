@@ -27,12 +27,20 @@ router.get('/clienteVehiculos', clienteVehiculos)
 router.get('/vehiculosenventa', vehiculosenventa)
 router.get('/vehiculosCiente/:id_cliente', vehiculosCiente)
 router.get('/historialVehiculo/:id_vehiculo', historialVehiculo)
+router.get('/fulldata/:id_vehiculo', vehiculo)
 router.get('/:id_vehiculo', uno)
 
 async function semejantes (req, res, next){
     try {
         const items =  await controlador.semejantesVehiculos(req.query)
         respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+async function vehiculo (req, res, next){
+    try {
+        const {id_vehiculo} = req.params
+        const items =  await controlador.vehiculo(id_vehiculo)
+        respuesta.success(req, res, items[0], 200)
     } catch (error) { next(error) }
 }
 async function ventaVehiculoUnico (req, res, next){

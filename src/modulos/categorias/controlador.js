@@ -15,7 +15,9 @@ module.exports = function (dbIyectada){
     }
     function uno(id_categoria){
         return db.query(TABLA, {id_categoria})
-        return db.uno(TABLA, id)
+    }
+    function query(id_categoria, id_ocupado){
+        return db.query2(TABLA, {id_categoria}, id_ocupado)
     }
     function agregar(body){
         return db.agregar(TABLA, body)
@@ -30,6 +32,7 @@ module.exports = function (dbIyectada){
     return {
         todos,
         uno,
+        query,
         agregar,
         eliminar,
         contadorCategorias

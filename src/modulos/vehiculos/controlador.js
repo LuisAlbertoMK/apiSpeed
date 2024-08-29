@@ -76,6 +76,9 @@ module.exports = function (dbIyectada){
     function contadorVehiculosVenta(){
         return db.contadorVehiculosVenta()
     }
+    function vehiculo(id_vehiculo){
+        return db.vehiculo(id_vehiculo)
+    }
 
     return {
         todos,
@@ -83,6 +86,7 @@ module.exports = function (dbIyectada){
         vehiculosCiente,
         vehiculoUnico,
         uno,
+        vehiculo,
         agregar,
         eliminar,
         placas,
