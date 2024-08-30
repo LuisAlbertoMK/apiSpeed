@@ -88,7 +88,6 @@ function agregar(tabla, data){
     })
 }
 function query(tabla, consulta) {
-    console.log({ tabla, consulta });
     const key = Object.keys(consulta)[0];
     const value = consulta[key];
     const query = `SELECT * FROM ${tabla} WHERE ${key} = '${value}'`  
