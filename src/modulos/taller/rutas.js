@@ -10,6 +10,8 @@ const router = express.Router()
 router.get('/', todos)
 router.get('/listaTalleresB', listaTalleresB)
 router.get('/:id_usuario', uno)
+router.post('/tallerActual', agregaTallerActual)
+router.post('/historialclientetaller', historialclientetaller)
 router.post('/', agregar)
 router.put('/', eliminar)
 router.patch('/:id_taller', UpdateDataParcial)
@@ -42,6 +44,20 @@ async function agregar(req, res, next){
         const items = await controlador.agregar(req.body)
         const insertId = !id_taller ? items.insertId : id_taller
         respuesta.success(req, res, insertId, 201)
+    } catch (error) { next(error) }
+}
+async function agregaTallerActual(req, res, next){
+    try {
+        const items = await controlador.agregaTallerActual(req.body)
+        const mensaje  =  (req.body.id_cliente === 0) ? 'Item registrado' : 'Item actualizado'
+        respuesta.success(req, res, mensaje, 201)
+    } catch (error) { next(error) }
+}
+async function historialclientetaller(req, res, next){
+    try {
+        const items = await controlador.historialclientetaller(req.body)
+        const mensaje  =  (req.body.id_hist_cli_taller === 0) ? 'Item registrado' : 'Item actualizado'
+        respuesta.success(req, res, mensaje, 201)
     } catch (error) { next(error) }
 }
 async function UpdateDataParcial(req, res, next){

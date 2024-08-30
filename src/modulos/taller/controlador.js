@@ -28,12 +28,20 @@ module.exports = function (dbIyectada){
     function listaTalleresB(id_taller){
         return db.listaTalleresB(id_taller)
     }
+    function agregaTallerActual(body){
+        return db.agregar('talleractualcliente', body)
+    }
+    function historialclientetaller(body){
+        return db.agregar('historialclientetaller', body)
+    }
 
     return {
         todos,
         uno,
         UpdateDataParcial,
         agregar,
+        agregaTallerActual,
+        historialclientetaller,
         listaTalleresB,
         eliminar
     }
