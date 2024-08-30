@@ -91,7 +91,7 @@ function query(tabla, consulta) {
     console.log({ tabla, consulta });
     const key = Object.keys(consulta)[0];
     const value = consulta[key];
-    const query = `SELECT * FROM ${tabla} WHERE ${key} = ${value}`  
+    const query = `SELECT * FROM ${tabla} WHERE ${key} = '${value}'`  
     return new Promise((resolve, reject) => {
       conexion.query(`${query}`, (error, result) => {
         return error ? reject(error) : resolve(result[0]);
