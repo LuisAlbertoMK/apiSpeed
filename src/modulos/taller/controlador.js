@@ -28,6 +28,9 @@ module.exports = function (dbIyectada){
     function listaTalleresB(id_taller){
         return db.listaTalleresB(id_taller)
     }
+    function talleresSemejantes(data){
+        return db.talleresSemejantes(data)
+    }
     function agregaTallerActual(body){
         return db.agregar('talleractualcliente', body)
     }
@@ -43,6 +46,7 @@ module.exports = function (dbIyectada){
         agregaTallerActual,
         historialclientetaller,
         listaTalleresB,
+        talleresSemejantes,
         eliminar
     }
     

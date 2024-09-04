@@ -15,6 +15,7 @@ router.get('/:id', uno)
 router.post('/', agregar)
 // router.put('/', seguridad(), eliminar)
 router.put('/', eliminar)
+router.patch('/updateDataUsuarioIDcliente/:id_usuario', updateDataUsuarioIDcliente)
 router.patch('/:id_usuario', updateData)
 
 
@@ -65,6 +66,13 @@ async function consultacorreo(req, res, next){
     try {
         const {correo} = req.query
         const items = await controlador.consultacorreo(correo)
+        respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+async function updateDataUsuarioIDcliente(req, res, next){
+    try {
+        const {id_cliente} = req.params
+        const items = await controlador.updateDataUsuarioIDcliente(id_cliente, req.body)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }

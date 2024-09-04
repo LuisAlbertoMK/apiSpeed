@@ -21,6 +21,7 @@ router.get('/histoTalleres/:id_cliente', histoTalleres)
 router.get('/tallerActualCliente/:id_cliente', tallerActualCliente)
 router.get('/unicamentevehiculos/:id_cliente', unicamentevehiculos)
 router.get('/onlyDataCliente/:id_cliente', onlyDataCliente)
+router.patch('/patchDataCliente/:id_cliente', patchDataCliente)
 router.get('/:id_cliente', uno)
 
     async function histoTalleres (req, res, next){
@@ -84,6 +85,7 @@ async function uno(req, res, next) {
     try {
       const { historial, id_taller } = req.query;
       const { id_cliente } = req.params;
+      
       const shouldIncludeHistory = historial === 'true';
       const data_cliente = await controlador.clienteUnico(id_cliente)
       const mismoTaller = parseInt(id_taller) === parseInt(data_cliente.id_taller)
@@ -130,6 +132,13 @@ async function uno(req, res, next) {
         try {
             const { id_cliente } = req.params;
             const data_cliente = await controlador.clienteUnico(id_cliente)
+            respuesta.success(req, res, data_cliente, 200)
+        } catch (error) { next(error) }
+    }
+    async function patchDataCliente(req, res, next){
+        try {
+            const { id_cliente } = req.params;
+            const data_cliente = await controlador.patchDataCliente(id_cliente, req.body)
             respuesta.success(req, res, data_cliente, 200)
         } catch (error) { next(error) }
     }

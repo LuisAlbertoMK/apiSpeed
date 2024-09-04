@@ -8,6 +8,7 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/sucursalesBasicaTaller', sucursalesBasicaTaller)
 router.get('/contadorSucursalesTaller', contadorSucursalesTaller)
 router.get('/sucursalesTaller', sucursalesTaller)
 router.get('/:id_sucursal', sucursalUnica)
@@ -29,6 +30,13 @@ async function contadorSucursalesTaller (req, res, next){
         const {id_taller} = req.query
         const items =  await controlador.contadorSucursalesTaller(id_taller)
         respuesta.success(req, res, items[0], 200)
+    } catch (error) { next(error) }
+}
+async function sucursalesBasicaTaller (req, res, next){
+    try {
+        const {id_taller} = req.query
+        const items =  await controlador.sucursalesBasicaTaller(id_taller)
+        respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
 async function updateData(req, res, next) {

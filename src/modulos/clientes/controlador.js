@@ -43,6 +43,9 @@ module.exports = function (dbIyectada){
     function tallerActualCliente(id_cliente){
         return db.tallerActualCliente(id_cliente)
     }
+    function patchDataCliente(id_cliente, body){
+        return db.patchDataCliente(id_cliente, body)
+    }
   
 
 
@@ -54,6 +57,7 @@ module.exports = function (dbIyectada){
         contadorClientesUsuario,
         clientesTallerSucursal,
         clienteUnico,
+        patchDataCliente,
         clientesPaginacionTotales,
         clientesPaginacionClientes,
         historialTallerescliente,

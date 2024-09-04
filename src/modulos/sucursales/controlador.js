@@ -37,6 +37,9 @@ module.exports = function (dbIyectada){
     function contadorSucursalesTaller(id_taller){
         return db.contadorSucursalesTaller(id_taller)
     }
+    function sucursalesBasicaTaller(id_taller){
+        return db.sucursalesBasicaTaller(id_taller)
+    }
 
     return {
         todos,
@@ -44,6 +47,7 @@ module.exports = function (dbIyectada){
         sucursalesTaller,
         sucursalesTaller2,
         contadorSucursalesTaller,
+        sucursalesBasicaTaller,
         sucursalUnica,
         uno,
         agregar,

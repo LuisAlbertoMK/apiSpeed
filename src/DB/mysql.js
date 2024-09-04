@@ -281,6 +281,13 @@ function clientesTallerSucursal(id_taller, id_sucursal){
         })
     })
 }
+function patchDataCliente(id_cliente, data) {
+    return new Promise((resolve, reject) => {
+      conexion.query(`UPDATE clientes SET? WHERE id_cliente = ${id_cliente}`, data, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
 function clienteUnico(id_cliente){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_clienteUnico(${id_cliente})`, (error, result) =>{ 
@@ -829,6 +836,13 @@ function sucursalesTaller2(id_taller){
         })
     })
 }
+function sucursalesBasicaTaller(id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sucursalesBasicaTaller(${id_taller})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function patchDataSucursal(id_sucursal, data) {
     return new Promise((resolve, reject) => {
       conexion.query(`UPDATE sucursales SET? WHERE id_sucursal = ${id_sucursal}`, data, (error, result) => {
@@ -848,6 +862,13 @@ function sucursalUnica(id_taller, id_sucursal){
 function updateDataUsuario(id_usuario,data){
     return new Promise((resolve, reject) =>{
         conexion.query(`UPDATE usuarios SET? WHERE id_usuario = ${id_usuario}`, data, (error, result) => {
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function updateDataUsuarioIDcliente(id_cliente,data){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`UPDATE usuarios SET? WHERE id_cliente = ${id_cliente}`, data, (error, result) => {
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -884,6 +905,14 @@ function UpdateDataParcial(id_taller, data){
 function listaTalleresB(id_taller){
     return new Promise((resolve, reject) =>{
         conexion.query(`call sp_consultaTalleres(${id_taller})`, (error, result) => {
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function talleresSemejantes(data){
+    const {semejantes, id_taller, limit} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call busquedaLikeTaller('${semejantes}',${id_taller},${limit})`, (error, result) => {
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -1074,14 +1103,17 @@ module.exports = {
     contadorSucursalesTaller,
     sucursalesTaller,
     sucursalesTaller2,
+    sucursalesBasicaTaller,
     patchDataSucursal,
     sucursalUnica,
     updateDataUsuario,
+    updateDataUsuarioIDcliente,
     consultacorreo,
     usuariosRol,
     informaciontaller,
     empresasTaller,
     clientesTallerSucursal,
+    patchDataCliente,
     verificaPlacas,
     vehiculosTallerSucursal,
     morefaccionesTaller,
@@ -1109,6 +1141,7 @@ module.exports = {
     uno2,
     UpdateDataParcial,
     listaTalleresB,
+    talleresSemejantes,
     semejantesmorefacciones,
     cotizacinesCliente,
     cotizacinesClienteContador,

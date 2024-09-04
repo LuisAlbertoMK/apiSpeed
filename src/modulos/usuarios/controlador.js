@@ -56,6 +56,9 @@ module.exports = function (dbIyectada){
     function updateData(id_usuario, data){
         return db.updateDataUsuario(id_usuario, data)
     }
+    function updateDataUsuarioIDcliente(id_cliente, data){
+        return db.updateDataUsuarioIDclienteUsuario(id_cliente, data)
+    }
 
     return {
         todos,
@@ -63,6 +66,7 @@ module.exports = function (dbIyectada){
         agregar,
         eliminar,
         updateData,
+        updateDataUsuarioIDcliente,
         listaTecnicos,
         consultacorreo
     }
