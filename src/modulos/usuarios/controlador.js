@@ -57,7 +57,7 @@ module.exports = function (dbIyectada){
         return db.updateDataUsuario(id_usuario, data)
     }
     function updateDataUsuarioIDcliente(id_cliente, data){
-        return db.updateDataUsuarioIDclienteUsuario(id_cliente, data)
+        return db.updateDataUsuario(id_cliente, data)
     }
 
     return {

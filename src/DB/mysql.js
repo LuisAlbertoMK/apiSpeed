@@ -201,6 +201,14 @@ function updateKilometraje(data){
         })
     })
 }
+function updateTallerSucursalVehiculos(data){
+    const {id_cliente, id_taller, id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call updateTallerSucursalVehiculos(${id_taller}, ${id_sucursal}, ${id_cliente})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function VehiculosRelacionados(id_sucursal){
     return new Promise((resolve, reject) =>{
         conexion.query(`call sp_vehiculos(${id_sucursal})`, (error, result) =>{ 
@@ -1155,6 +1163,7 @@ module.exports = {
     VehiculosPaginacionTotalesCliente,
     listaVehiculosClienteUnico,
     updateKilometraje,
+    updateTallerSucursalVehiculos,
     VehiculosPaginacionTotales,
     totalPaquetes,
     busquedaLikePaquetes,

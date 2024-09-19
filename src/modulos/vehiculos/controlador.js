@@ -52,6 +52,9 @@ module.exports = function (dbIyectada){
     function updateKilometraje(data){
         return db.updateKilometraje(data)
     }
+    function updateTallerSucursalVehiculos(data){
+        return db.updateTallerSucursalVehiculos(data)
+    }
     function semejantesVehiculos(semejantes){
         return db.semejantesVehiculos(semejantes)
     }
@@ -88,6 +91,7 @@ module.exports = function (dbIyectada){
         uno,
         vehiculo,
         agregar,
+        updateTallerSucursalVehiculos,
         eliminar,
         placas,
         verificaPlacas,

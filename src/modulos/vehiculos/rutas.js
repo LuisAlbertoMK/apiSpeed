@@ -16,6 +16,7 @@ router.get('/', vehiculos)
 router.post('/', agregar)
 router.post('/ventaVehiculo', ventaVehiculo)
 router.patch('/', updateKilometraje)
+router.patch('/updateTallerSucursalVehiculos/:id_cliente', updateTallerSucursalVehiculos)
 router.put('/', eliminar)
 router.get('/semejantes', semejantes)
 router.get('/ventaVehiculoUnico/:id_vehiculo', ventaVehiculoUnico)
@@ -84,6 +85,14 @@ async function updateKilometraje(data) {
     } catch (error) {
         
     }
+}
+async function updateTallerSucursalVehiculos(req, res, next) {
+    const {id_cliente} = req.params
+    const {id_taller, id_sucursal} = req.query
+    try {
+        const response = await controlador.updateTallerSucursalVehiculos({id_cliente, id_taller, id_sucursal})
+        respuesta.success(req, res, response, 200)
+    } catch (error) {  next(error) }
 }
 
 async function vehiculos(req, res, next){
