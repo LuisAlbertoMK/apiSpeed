@@ -33,8 +33,10 @@ router.get('/:id_vehiculo', uno)
 
 async function semejantes (req, res, next){
     try {
-        const items =  await controlador.semejantesVehiculos(req.query)
-        respuesta.success(req, res, items, 200)
+        const datos =  await controlador.semejantesVehiculos(req.query)
+        const response =  await controlador.semejantesVehiculosContador(req.query)
+        const {total} = response[0]
+        respuesta.success(req, res, {datos, total}, 200)
     } catch (error) { next(error) }
 }
 async function vehiculo (req, res, next){

@@ -282,6 +282,14 @@ function semejantesClientes(data){
         })
     })
 }
+function semejantesClientesContador(data){
+    const {semejantes, id_taller,id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call busquedaLikeClientesContador('${semejantes}',${id_taller},${id_sucursal});`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function clientesTallerSucursal(id_taller, id_sucursal){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_clientesTallerSucursal(${id_taller},${id_sucursal})`, (error, result) =>{ 
@@ -329,6 +337,15 @@ function semejantesVehiculos(data){
     const {semejantes, id_taller,id_sucursal, limit, offset} = data
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL busquedaLikeVehiculos('${semejantes}',${id_taller},${id_sucursal},${limit});`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+
+function semejantesVehiculosContador(data){
+    const {semejantes, id_taller,id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL busquedaLikeVehiculosContador('${semejantes}',${id_taller},${id_sucursal});`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -1154,6 +1171,7 @@ module.exports = {
     cotizacinesCliente,
     cotizacinesClienteContador,
     semejantesClientes,
+    semejantesClientesContador,
     clientesPaginacionTotales,
     clientesPaginacionClientes,
     vehiculosPaginacion,
@@ -1170,6 +1188,7 @@ module.exports = {
     moRefacciones,
     totalMoRefacciones,
     semejantesVehiculos,
+    semejantesVehiculosContador,
     registraElementosPaquetes,
     existeEmpresa
 }

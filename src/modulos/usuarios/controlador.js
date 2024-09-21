@@ -27,9 +27,12 @@ module.exports = function (dbIyectada){
             correo: body.correo,
             activo: body.activo
         }
+        if(body.id_usuario) usuario.id_usuario = body.id_usuario
         const respuesta = await db.agregar(TABLA, usuario)
+       
+        const  { insertId:getID} = respuesta
 
-        const insertId = (body.id_usuario === 0) ? respuesta.insertId : body.id_usuario
+        const insertId = (body.id_usuario === 0 || !body.id_usuario) ? getID : body.id_usuario
         
         let respuesta2 = ''
         if ((body.usuario || body.password) || passwordUpdate) {

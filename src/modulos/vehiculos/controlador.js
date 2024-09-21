@@ -58,6 +58,9 @@ module.exports = function (dbIyectada){
     function semejantesVehiculos(semejantes){
         return db.semejantesVehiculos(semejantes)
     }
+    function semejantesVehiculosContador(semejantes){
+        return db.semejantesVehiculosContador(semejantes)
+    }
     function clienteVehiculos(data){
         return db.clienteVehiculos(data)
     }
@@ -100,6 +103,7 @@ module.exports = function (dbIyectada){
         VehiculosPaginacionTotales,
         updateKilometraje,
         semejantesVehiculos,
+        semejantesVehiculosContador,
         clienteVehiculos,
         VehiculosPaginacionTotalesCliente,
         listaVehiculosClienteUnico,

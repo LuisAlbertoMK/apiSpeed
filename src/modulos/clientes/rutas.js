@@ -158,8 +158,11 @@ async function eliminar(req, res, next){
 }
 async function semejantes (req, res, next){
     try {
-        const items =  await controlador.semejantesClientes(req.query)
-        respuesta.success(req, res, items, 200)
+        const datos =  await controlador.semejantesClientes(req.query)
+        const response =  await controlador.semejantesClientesContador(req.query)
+        const {total} = response[0]
+        
+        respuesta.success(req, res, {datos, total}, 200)
     } catch (error) { next(error) }
 }
 
