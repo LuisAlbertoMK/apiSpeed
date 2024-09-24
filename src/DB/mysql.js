@@ -336,7 +336,7 @@ function verificaPlacas(placas){
 function semejantesVehiculos(data){
     const {semejantes, id_taller,id_sucursal, limit, offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL busquedaLikeVehiculos('${semejantes}',${id_taller},${id_sucursal},${limit}, ${offset});`, (error, result) =>{ 
+        conexion.query(`CALL busquedaLikeVehiculos('${semejantes}',${id_taller},${id_sucursal},${limit},${offset});`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
