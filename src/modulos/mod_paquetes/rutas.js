@@ -46,6 +46,7 @@ async function ObtenerDetallePaqueteModificadoRecep (req, res, next){
 }
 async function uno(req, res, next){
     try {
+        console.log(req.params.id)
         const items = await controlador.uno(req.params.id)
         respuesta.success(req, res, items, 200)
     } catch (error) {

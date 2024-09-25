@@ -134,12 +134,13 @@ async function uno(req, res, next){
         const gastosOrden = await gastos_orden.todosOrden(id_recepcion)
         const pagosOrden = await pagos_orden.PagosRecepcionUnica(id_recepcion)
         const sucursal = await sucursales.sucursalUnica(id_taller, id_sucursal)
+        // console.log({elementos})
         const newElementos = await Promise.all(elementos.map(async e => {
-            if (e.id_paquete) {
+            if (e.id_paquete > 0) {
                 const detallePaqueteResp = 
                 await mod_paquetes.ObtenerDetallePaqueteModificadoRecep(id_recepcion, e['id_paquete'],e['id_eleRecepcion'] )
                 e['elementos'] = [...detallePaqueteResp];
-                e.nombre = detallePaqueteResp[0].paquete
+                e.nombre = detallePaqueteResp[0]?.paquete
                 e['tipo'] = 'paquete'
             }
             return e
