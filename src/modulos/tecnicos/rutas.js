@@ -17,7 +17,8 @@ async function todos (req, res, next){
     try {
         const {id_taller, id_sucursal} = req.query
         const items =  await controlador.todos(id_taller, id_sucursal)
-        respuesta.success(req, res, items, 200)
+        const contador = [...items]
+        respuesta.success(req, res, {datos: items, total: contador.length}, 200)
     } catch (error) {
         next(error)
     }

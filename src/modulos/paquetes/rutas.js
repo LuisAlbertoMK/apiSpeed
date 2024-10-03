@@ -77,13 +77,13 @@ async function uno(req, res, next){
     try {
         const id_paquete = req.params.id
         const items = await controlador.uno(id_paquete)
-        const elementosResponse =  await controlador.ObtenerDetallePaquete(id_paquete)
-        const dataPaquete = {
-            ...items,
-            elementos: elementosResponse[0]
-        }
+        // const elementosResponse =  await controlador.ObtenerDetallePaquete(id_paquete)
+        // const dataPaquete = {
+        //     ...items,
+        //     elementos: elementosResponse[0]
+        // }
         
-        respuesta.success(req, res, dataPaquete, 200)
+        respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)
     }
