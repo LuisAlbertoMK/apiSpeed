@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -711,6 +711,60 @@ function registraElementosPaquetes(data) {
             })
     });
   }
+
+  function patchElementoPaquete(data) {
+    return new Promise((resolve, reject) => {
+      if (!Array.isArray(data) || data.length === 0) {
+        return reject(new Error('Data debe ser un array no vacío'));
+      }
+  
+      // Crear las consultas individuales para cada elemento
+      const queries = data.map(elemento => {
+        const { id_elmenPaquete, id_paquete, id_moRefaccion, activo, costo, cantidad } = elemento;
+        
+        // Creamos el objeto de actualización excluyendo id_elmenPaquete
+        const updateData = { id_paquete, id_moRefaccion, activo, costo, cantidad };
+        
+        // Generamos los campos y valores para la consulta
+        const campos = Object.keys(updateData)
+          .map(campo => `${campo} = ?`)
+          .join(', ');
+        const valores = [...Object.values(updateData), id_elmenPaquete];
+        
+        return {
+          sql: `UPDATE elementospaquetes SET ${campos} WHERE id_elmenPaquete = ?`,
+          valores
+        };
+      });
+  
+      // Ejecutar todas las consultas en una transacción
+      conexion.beginTransaction(err => {
+        if (err) return reject(err);
+  
+        const executeQueries = queries.map(query => {
+          return new Promise((resolveQuery, rejectQuery) => {
+            conexion.query(query.sql, query.valores, (error, result) => {
+              if (error) rejectQuery(error);
+              else resolveQuery(result);
+            });
+          });
+        });
+  
+        Promise.all(executeQueries)
+          .then(results => {
+            conexion.commit(err => {
+              if (err) {
+                return conexion.rollback(() => reject(err));
+              }
+              resolve(results);
+            });
+          })
+          .catch(error => {
+            conexion.rollback(() => reject(error));
+          });
+      });
+    });
+  }
 function totalPaquetes(data){
     const {id_taller, id_sucursal} = data
     return new Promise((resolve, reject) =>{
@@ -1190,5 +1244,6 @@ module.exports = {
     semejantesVehiculos,
     semejantesVehiculosContador,
     registraElementosPaquetes,
+    patchElementoPaquete,
     existeEmpresa
 }

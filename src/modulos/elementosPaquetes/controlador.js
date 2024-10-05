@@ -26,13 +26,17 @@ module.exports = function (dbIyectada){
     function registraElementosVarios(data){
         return db.registraElementosPaquetes(data)
     }
+    function patchElementoPaquete(elementos){
+        return db.patchElementoPaquete(elementos)
+    }
 
     return {
         todos,
         uno,
         agregar,
         eliminar,
-        registraElementosVarios
+        registraElementosVarios,
+        patchElementoPaquete
     }
     
 }

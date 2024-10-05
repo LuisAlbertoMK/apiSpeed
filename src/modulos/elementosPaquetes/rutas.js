@@ -12,6 +12,7 @@ router.get('/:id', uno)
 router.post('/', agregar)
 router.post('/registraElementosVarios', registraElementosVarios)
 router.put('/', eliminar)
+router.patch('/update', updateelemento)
 // router.put('/categoria', categoria)
 
 
@@ -50,6 +51,14 @@ async function registraElementosVarios(req, res, next){
 async function eliminar(req, res, next){
     try {
         const items = await controlador.eliminar(req.body)
+        respuesta.success(req, res, 'item eliminado', 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function updateelemento(req, res, next){
+    try {
+        const items = await controlador.patchElementoPaquete(req.body)
         respuesta.success(req, res, 'item eliminado', 200)
     } catch (error) {
         next(error)
