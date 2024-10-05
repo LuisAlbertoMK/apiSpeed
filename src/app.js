@@ -52,9 +52,14 @@ app.use(express.urlencoded({extended: true}))
 //configuracion
 app.set('port', config.app.port)
 
-const whiteList=['http://localhost:4200','*'];
+const whiteList=['*'];
 
-app.use(cors({origin: whiteList}));
+// app.use(cors({origin: whiteList}));
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+  });
 //rutas
 app.use('/api/clientes', clientes)
 app.use('/api/correos', correos)
