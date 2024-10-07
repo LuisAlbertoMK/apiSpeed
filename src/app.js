@@ -52,9 +52,9 @@ app.use(express.urlencoded({extended: true}))
 //configuracion
 app.set('port', config.app.port)
 
-const whiteList=['*'];
+const whiteList=['http://localhost:4200','https://speed-pro-desarrollo.web.app','*'];
 
-// app.use(cors({origin: whiteList}));
+app.use(cors({origin: whiteList}));
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
