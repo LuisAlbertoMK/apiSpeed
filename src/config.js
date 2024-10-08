@@ -7,9 +7,9 @@ module.exports = {
         secret: process.env.JET_SECRET || 'notaSecreta'
     },
     mariadb:{
-        host: process.env.MYSQL_HOST || 'speed-pruebas.czaakkaa6tcs.us-east-2.rds.amazonaws.com',
+        host: process.env.MYSQL_HOST || 'speed-desarrollo.c9uymykace33.us-east-2.rds.amazonaws.com',
         user: process.env.MYSQL_USER || 'admin',
-        password: process.env.MYSQL_PASSWORD || 'Psw54(03)1_sp3eD_-',
+        password: process.env.MYSQL_PASSWORD || 'Des4rroll0_1-+',
         db: process.env.MYSQL_DB || 'desarrollo',
     },
     mysql:{
