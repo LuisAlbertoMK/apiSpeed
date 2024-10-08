@@ -143,7 +143,7 @@ function VehiculosPaginacionTotales(data){
 function vehiculosPaginacion(data){
     const {id_taller,id_sucursal,limit,offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`call spPaginacionVehiculos(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+        conexion.query(`call spPaginacionVehiculos(${id_taller},${id_sucursal},${limit},${offset},'','marca','asc')`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })

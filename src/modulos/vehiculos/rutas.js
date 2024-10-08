@@ -102,7 +102,13 @@ async function vehiculos(req, res, next){
         const  {total} = await controlador.VehiculosPaginacionTotales(req.query)
         const vehiculos = await controlador.vehiculosPaginacion(req.query)
         
-        respuesta.success(req, res, {total, datos:vehiculos}, 200)
+        const datos = await Promise.all(vehiculos.map(async vehiculo => {
+            const {id_cliente} = vehiculo
+            const data_cliente = await clientes.clienteUnico(id_cliente)
+            return {...vehiculo, data_cliente}
+        }))
+        
+        respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }
 
