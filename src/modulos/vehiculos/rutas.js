@@ -33,8 +33,13 @@ router.get('/:id_vehiculo', uno)
 
 async function semejantes (req, res, next){
     try {
-        const datos =  await controlador.semejantesVehiculos(req.query)
         const response =  await controlador.semejantesVehiculosContador(req.query)
+        const vehiculos =  await controlador.semejantesVehiculos(req.query)
+        const datos = await Promise.all(vehiculos.map(async vehiculo => {
+            const {id_cliente} = vehiculo
+            const data_cliente = await clientes.clienteUnico(id_cliente)
+            return {...vehiculo, data_cliente}
+        }))
         const {total} = response[0]
         respuesta.success(req, res, {datos, total}, 200)
     } catch (error) { next(error) }
