@@ -29,6 +29,7 @@ router.get('/vehiculosenventa', vehiculosenventa)
 router.get('/vehiculosCiente/:id_cliente', vehiculosCiente)
 router.get('/historialVehiculo/:id_vehiculo', historialVehiculo)
 router.get('/fulldata/:id_vehiculo', vehiculo)
+router.get('/semejantesVehiculosCliente', semejantesVehiculosCliente)
 router.get('/:id_vehiculo', uno)
 
 async function semejantes (req, res, next){
@@ -42,6 +43,12 @@ async function semejantes (req, res, next){
         }))
         const {total} = response[0]
         respuesta.success(req, res, {datos, total}, 200)
+    } catch (error) { next(error) }
+}
+async function semejantesVehiculosCliente (req, res, next){
+    try {
+        const vehiculos =  await controlador.semejantesVehiculos(req.query)
+        respuesta.success(req, res, {datos: vehiculos, total:0}, 200)
     } catch (error) { next(error) }
 }
 async function vehiculo (req, res, next){
@@ -95,7 +102,7 @@ async function updateKilometraje(data) {
 }
 async function updateTallerSucursalVehiculos(req, res, next) {
     const {id_cliente} = req.params
-    const {id_taller, id_sucursal} = req.query
+    const {id_taller, id_sucursal} = req.body
     try {
         const response = await controlador.updateTallerSucursalVehiculos({id_cliente, id_taller, id_sucursal})
         respuesta.success(req, res, response, 200)

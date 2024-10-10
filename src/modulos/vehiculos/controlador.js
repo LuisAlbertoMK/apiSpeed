@@ -55,6 +55,9 @@ module.exports = function (dbIyectada){
     function updateTallerSucursalVehiculos(data){
         return db.updateTallerSucursalVehiculos(data)
     }
+    function semejantesVehiculosCliente(data){
+        return db.semejantesVehiculosCliente(data)
+    }
     function semejantesVehiculos(semejantes){
         return db.semejantesVehiculos(semejantes)
     }
@@ -95,6 +98,7 @@ module.exports = function (dbIyectada){
         vehiculo,
         agregar,
         updateTallerSucursalVehiculos,
+        semejantesVehiculosCliente,
         eliminar,
         placas,
         verificaPlacas,
