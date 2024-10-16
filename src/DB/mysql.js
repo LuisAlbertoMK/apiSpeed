@@ -953,6 +953,14 @@ function updateDataUsuario(id_usuario,data){
         })
     })
 }
+function sp_usuariosrol(data){
+    const {id_taller, rol} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call listausuariosRol(${id_taller},${rol})`, (error, result) => {
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function updateDataUsuarioIDcliente(id_cliente,data){
     return new Promise((resolve, reject) =>{
         conexion.query(`UPDATE usuarios SET? WHERE id_cliente = ${id_cliente}`, data, (error, result) => {
@@ -1194,6 +1202,7 @@ module.exports = {
     patchDataSucursal,
     sucursalUnica,
     updateDataUsuario,
+    sp_usuariosrol,
     updateDataUsuarioIDcliente,
     consultacorreo,
     usuariosRol,

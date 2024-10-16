@@ -8,6 +8,7 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/rol', usuariosrol)
 router.get('/listaTecnicos/:id_sucursal', listaTecnicos)
 router.get('/consultacorreo', consultacorreo )
 router.get('/:id', uno)
@@ -23,6 +24,12 @@ async function todos (req, res, next){
     try {
         const items =  await controlador.todos()
         respuesta.success(req, res, items[0], 200)
+    } catch (error) { next(error) }
+}
+async function usuariosrol (req, res, next){
+    try {
+        const items =  await controlador.usuariosrol(req.query)
+        respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
 async function listaTecnicos (req, res, next){
