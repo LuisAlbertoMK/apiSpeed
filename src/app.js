@@ -52,7 +52,7 @@ app.use(express.urlencoded({extended: true}))
 //configuracion
 app.set('port', config.app.port)
 
-const whiteList=['http://localhost:4200'];
+const whiteList=['http://localhost:4200','https://speed-pro-desarrollo.web.app'];
 
 const corsOptions = {
   origin: whiteList, // Cambia esto por el origen que deseas permitir
