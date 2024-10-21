@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigmysql)
+    conexion = mysql.createConnection(dbconfigMariaDB)
 
     conexion.connect((err)=>{
         if (err) {
@@ -122,9 +122,12 @@ function queryEliminar(tabla, consulta){
     const key = keys[0]
     const valor = consulta[key]
     console.log({key, valor})
+    console.log(`DELETE FROM ${tabla} WHERE ${key} = ${valor}`)
+
+    
     return new Promise((resolve, reject) =>{
-        conexion.query(`DELETE FROM ${tabla} WHERE ${key} = ${valor}`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result[0])
+        conexion.query(`DELETE FROM ${tabla} WHERE ${key} = ?`, valor, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
         })
     })
 }
