@@ -10,7 +10,7 @@ const router = express.Router()
 router.get('/', todos)
 router.get('/:id_recepcion', uno)
 router.post('/', agregar)
-router.put('/', eliminar)
+router.put('/', eliminar);
 
 
 async function todos (req, res, next){
@@ -41,7 +41,8 @@ async function agregar(req, res, next){
 }
 async function eliminar(req, res, next){
     try {
-        const items = await controlador.eliminar(req.body.id_eleRecepcion)
+        const {id_eleRecepcion} = req.body
+        const items = await controlador.eliminar(id_eleRecepcion)
         respuesta.success(req, res, 'item eliminado', 200)
     } catch (error) {
         next(error)

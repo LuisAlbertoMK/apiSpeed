@@ -52,11 +52,16 @@ app.use(express.urlencoded({extended: true}))
 //configuracion
 app.set('port', config.app.port)
 
-const whiteList=['*'];
+const whiteList=['http://localhost:4200'];
 
-// app.use(cors({origin: whiteList}));
+const corsOptions = {
+  origin: whiteList, // Cambia esto por el origen que deseas permitir
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Asegúrate de incluir DELETE
+  allowedHeaders: ['Content-Type', 'Authorization'], // Agrega otros encabezados si es necesario
+};
+app.use(cors(corsOptions));
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', whiteList);
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
   });

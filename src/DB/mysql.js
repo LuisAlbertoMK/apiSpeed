@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -117,8 +117,13 @@ function dataUsuario(id_usuario){
     })
 }
 function queryEliminar(tabla, consulta){
+    console.log({tabla, consulta})
+    const keys = Object.keys(consulta);
+    const key = keys[0]
+    const valor = consulta[key]
+    console.log({key, valor})
     return new Promise((resolve, reject) =>{
-        conexion.query(`DELETE FROM ${tabla} WHERE ?`, consulta, (error, result) =>{ 
+        conexion.query(`DELETE FROM ${tabla} WHERE ${key} = ${valor}`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -143,7 +148,7 @@ function VehiculosPaginacionTotales(data){
 function vehiculosPaginacion(data){
     const {id_taller,id_sucursal,limit,offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`call spPaginacionVehiculos(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+        conexion.query(`call spPaginacionVehiculos(${id_taller},${id_sucursal},${limit},${offset},'','','')`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
