@@ -55,7 +55,14 @@ app.set('port', config.app.port)
 const whiteList=['http://localhost:4200','https://speed-pro-desarrollo.web.app'];
 
 const corsOptions = {
-  origin: whiteList, // Cambia esto por el origen que deseas permitir
+  origin: (origin, callback) => {
+    // Permitir solicitudes sin origen (como Postman)
+    if (!origin || whiteList.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Asegúrate de incluir DELETE
   allowedHeaders: ['Content-Type', 'Authorization'], // Agrega otros encabezados si es necesario
 };
