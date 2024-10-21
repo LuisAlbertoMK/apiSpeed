@@ -52,7 +52,7 @@ app.use(express.urlencoded({extended: true}))
 //configuracion
 app.set('port', config.app.port)
 
-const whiteList=['http://localhost:4200','https://speed-pro-desarrollo.web.app'];
+const whiteList=['https://speed-pro-desarrollo.web.app','http://localhost:4200'];
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -68,9 +68,8 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', whiteList);
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
   });
 //rutas
 app.use('/api/clientes', clientes)
