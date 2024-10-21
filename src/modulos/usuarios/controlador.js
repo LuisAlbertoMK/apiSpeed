@@ -12,6 +12,9 @@ module.exports = function (dbIyectada){
     function todos(){
         return db.usuariosRol()
     }
+    function usuariosrol(data){
+        return db.sp_usuariosrol(data)
+    }
     function uno(id){
         return db.uno(TABLA, id)
     }
@@ -65,6 +68,7 @@ module.exports = function (dbIyectada){
 
     return {
         todos,
+        usuariosrol,
         uno,
         agregar,
         eliminar,
