@@ -54,23 +54,53 @@ app.set('port', config.app.port)
 
 const whiteList=['https://speed-pro-desarrollo.web.app','http://localhost:4200'];
 
+// Configuración de CORS
 const corsOptions = {
-  origin: (origin, callback) => {
-    // Permitir solicitudes sin origen (como Postman)
-    if (!origin || whiteList.indexOf(origin) !== -1) {
-      callback(null, true);
+  origin: function (origin, callback) {
+    // Permitir requests sin origin (como Postman)
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    if (whiteList.includes(origin)) {
+      callback(null, origin);  // Retornamos el origen específico, no todos
     } else {
       callback(new Error('No permitido por CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Asegúrate de incluir DELETE
-  allowedHeaders: ['Content-Type', 'Authorization'], // Agrega otros encabezados si es necesario
+  methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization'
+  ],
+  credentials: true
 };
+// Aplicar CORS
 app.use(cors(corsOptions));
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-  });
+// Middleware para opciones de CORS adicionales
+
+// Agregar esto temporalmente para debug
+// app.use((req, res, next) => {
+//   console.log('Request Origin:', req.headers.origin);
+//   console.log('Request Method:', req.method);
+//   console.log('Request Headers:', req.headers);
+//   next();
+// });
+// Manejador de errores de CORS
+app.use((err, req, res, next) => {
+  if (err.message === 'No permitido por CORS') {
+    res.status(403).json({
+      error: true,
+      message: 'Origen no permitido',
+      origin: req.headers.origin
+    });
+  } else {
+    next(err);
+  }
+});
 //rutas
 app.use('/api/clientes', clientes)
 app.use('/api/correos', correos)

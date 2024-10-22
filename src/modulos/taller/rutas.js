@@ -26,7 +26,6 @@ async function todos (req, res, next){
 }
 async function listaTalleresB (req, res, next){
     try {
-        // console.log(req.query)
         const {id_taller} = req.query
         const items =  await controlador.listaTalleresB(id_taller)
         
@@ -58,7 +57,6 @@ async function agregar(req, res, next){
 async function agregaTallerActual(req, res, next){
     try {
         const items = await controlador.agregaTallerActual(req.body)
-        console.log({body: req.body, items})
         const mensaje  =  (req.body.id_cliente === 0) ? 'Item registrado' : 'Item actualizado'
         respuesta.success(req, res, mensaje, 201)
     } catch (error) { next(error) }

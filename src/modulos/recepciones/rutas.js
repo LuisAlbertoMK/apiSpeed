@@ -117,7 +117,6 @@ async function aceptados (req, res, next){
 async function coincidencias (req, res, next){
     try {
         const {id_taller, semejantes } = req.query
-        console.log(req.query)
         const items =  await controlador.sp_ordenlike(id_taller,semejantes)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
@@ -134,7 +133,7 @@ async function uno(req, res, next){
         const gastosOrden = await gastos_orden.todosOrden(id_recepcion)
         const pagosOrden = await pagos_orden.PagosRecepcionUnica(id_recepcion)
         const sucursal = await sucursales.sucursalUnica(id_taller, id_sucursal)
-        // console.log({elementos})
+        
         const newElementos = await Promise.all(elementos.map(async e => {
             if (e.id_paquete > 0) {
                 const detallePaqueteResp = 

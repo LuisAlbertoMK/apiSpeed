@@ -79,7 +79,6 @@ async function consultacorreo(req, res, next){
 async function updateDataUsuarioIDcliente(req, res, next){
     try {
         const {id_usuario} = req.params
-        console.log({cuerpo: req.body})
         const items = await controlador.updateDataUsuarioIDcliente(id_usuario, req.body)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }

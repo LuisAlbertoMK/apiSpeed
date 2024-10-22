@@ -42,8 +42,6 @@ async function agregar(req, res, next){
 async function eliminar(req, res, next){
     try {
         const {id_eleRecepcion} = req.params
-        console.log({id_eleRecepcion})
-        
         const items = await controlador.eliminar(id_eleRecepcion)
         respuesta.success(req, res, 'item eliminado', 200)
     } catch (error) {
