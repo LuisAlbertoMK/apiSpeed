@@ -9,6 +9,7 @@ const elementos_recepcion = require('../elementos_recepcion')
 const mod_paquetes = require('../mod_paquetes')
 const gastos_orden = require('../gastos_orden')
 const pagos_orden = require('../pagos_orden')
+const tecnicos = require('../tecnicos')
 const sucursales = require('../sucursales')
 
 
@@ -125,6 +126,11 @@ async function uno(req, res, next){
     try {
         const {id_recepcion} = req.params        
         const recepcion = await controlador.getRecepcion(id_recepcion)
+        const {id_tecnico} = recepcion
+        if(id_tecnico){
+            const {usuario} = await tecnicos.uno(id_tecnico)
+            recepcion.tecnico = usuario
+        }
         const {id_cliente, id_sucursal, id_vehiculo,id_taller} = recepcion
         const data_cliente = await clientes.clienteUnico(id_cliente)
         const data_vehiculo = await vehiculos.vehiculoUnico(id_vehiculo)

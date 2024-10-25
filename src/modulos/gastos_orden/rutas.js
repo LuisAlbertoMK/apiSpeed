@@ -13,6 +13,7 @@ router.get('/gastosOrdenTaller', gastosOrdenTaller)
 router.get('/recepcion/:id_recepcion', gastosRecepcion)
 router.post('/', agregar)
 // router.put('/', eliminar)
+router.patch('/:id_gastoOrden', updategastoOrden)
 router.get('/:id_recepcion', uno)
 router.delete('/', eliminar)
 
@@ -61,6 +62,14 @@ async function agregar(req, res, next){
         const {id_pagoOrden} = req.body
         mensaje  =  insertId ? insertId : id_pagoOrden
         respuesta.success(req, res, items.insertId, 201)
+    } catch (error) { next(error) }
+}
+async function updategastoOrden(req, res, next){
+    try {
+        const {id_gastoOrden} = req.params
+        const body = req.body
+        const items = await controlador.updateGastoOrden(id_gastoOrden, body)
+        respuesta.success(req, res, 'item actualizado', 200)
     } catch (error) { next(error) }
 }
 async function eliminar(req, res, next){

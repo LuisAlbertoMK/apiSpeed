@@ -117,14 +117,9 @@ function dataUsuario(id_usuario){
     })
 }
 function queryEliminar(tabla, consulta){
-    console.log({tabla, consulta})
     const keys = Object.keys(consulta);
     const key = keys[0]
     const valor = consulta[key]
-    console.log({key, valor})
-    console.log(`DELETE FROM ${tabla} WHERE ${key} = ${valor}`)
-
-    
     return new Promise((resolve, reject) =>{
         conexion.query(`DELETE FROM ${tabla} WHERE ${key} = ?`, valor, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
@@ -858,6 +853,15 @@ function sp_gastosOrdenesTallerSucursal(id_taller, id_sucursal, start,end){
         })
     })
 }
+function updateGastoOrden(id_gastoOrden,data){
+    console.log(data);
+    
+    return new Promise((resolve, reject) =>{
+        conexion.query(`UPDATE gastosorden SET ? WHERE id_gastoOrden = ${id_gastoOrden}`, data, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 // PAGOS DE ORDEN
 function PagosRecepcionUnica(id_recepcion){
     return new Promise((resolve, reject) =>{
@@ -878,6 +882,14 @@ function sp_pagosTallerSucursal(id_taller, id_sucursal, start,end){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_pagosTallerSucursal(${id_taller}, ${id_sucursal},'${start}','${end}')`,
          (error, result) =>{ return error ? reject(error) : resolve(result[0]) })
+    })
+}
+
+function updatepagoOrden(id_pagoOrden,data){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`UPDATE pagosorden SET? WHERE id_pagoOrden = ${id_pagoOrden}`, data, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
     })
 }
 function listaTecnicos(id_sucursal){
@@ -1142,8 +1154,15 @@ function sp_tecnicosTallerSucursal(id_taller, id_sucursal){
         , (error, result) =>{ return error ? reject(error) : resolve(result[0]) })
     })
 }
+function tecnicoUnico(id_tecnico){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`select usuario from usuarios where id_usuario = ${id_tecnico}`
+        , (error, result) =>{ return error ? reject(error) : resolve(result[0]) })
+    })
+}
 
 module.exports = {
+    tecnicoUnico,
     recepcionesCliente,
     recepcionesBasicasOtroTaller,
     sp_recepcionesMismoTaller,
@@ -1199,6 +1218,7 @@ module.exports = {
     ObtenerDetallePaqueteModificado,
     ObtenerDetallePaqueteModificadoRecep,
     gastosRecepcionUnica,
+    updateGastoOrden,
     PagosRecepcionUnica,
     listaTecnicos,
     plancliente,
@@ -1238,6 +1258,7 @@ module.exports = {
     sp_gastosOrdenEspecifica,
     sp_ordenesAbiertas,
     sp_pagosTallerSucursal,
+    updatepagoOrden,
     sp_gastosOperacion,
     sp_gastosOrdenesTallerSucursal,
     sp_tecnicosTallerSucursal,

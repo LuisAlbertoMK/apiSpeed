@@ -26,6 +26,9 @@ module.exports = function (dbIyectada){
     function agregar(body){
         return db.agregar(TABLA, body)
     }
+    function updateGastoOrden(id_gastoOrden,body){
+        return db.updateGastoOrden(id_gastoOrden, body)
+    }
     function eliminar(id_gastoOrden){
         return db.eliminarQuery(TABLA, {id_gastoOrden})
     }
@@ -43,6 +46,7 @@ module.exports = function (dbIyectada){
         todos,
         todosFechas,
         uno,
+        updateGastoOrden,
         gastosRecepcion,
         agregar,
         eliminar,

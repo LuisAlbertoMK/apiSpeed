@@ -12,7 +12,8 @@ router.get('/ObtenerDetallePaqueteModificado', ObtenerDetallePaqueteModificado)
 router.get('/ObtenerDetallePaqueteModificadoRecep', ObtenerDetallePaqueteModificadoRecep)
 router.post('/recep', agregar2)
 router.post('/', agregar)
-router.put('/eliminaRelacionados', eliminaRelacionados)
+router.delete('/eliminaRelacionados', eliminaRelacionados)
+router.delete('/subelementosPaquete/:id_modificacion', subelementosPaquete)
 router.put('/', eliminar)
 router.get('/:id', uno)
 
@@ -81,6 +82,16 @@ async function eliminar(req, res, next){
 async function eliminaRelacionados(req, res, next){
     try {
         const items = await controlador.eliminaRelacionados(req.body.id_eleRecepcion)
+        respuesta.success(req, res, 'item eliminado', 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function subelementosPaquete(req, res, next){
+    try {
+        console.log({params: req.params})
+        const {id_modificacion} = req.params
+        const items = await controlador.subelementosPaquete(id_modificacion)
         respuesta.success(req, res, 'item eliminado', 200)
     } catch (error) {
         next(error)

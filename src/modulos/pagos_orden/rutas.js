@@ -13,6 +13,7 @@ router.get('/recepcion/:id_recepcion', PagosRecepcionUnica)
 router.get('/:id_recepcion', uno)
 router.post('/pagoRecepcion', pagoRecepcion)
 router.post('/', agregar)
+router.patch('/:id_pagoOrden', updatepagoOrden)
 // router.put('/', eliminar)
 router.delete('/', eliminar)
 
@@ -26,6 +27,15 @@ async function pagoRecepcion (req, res, next){
     try {
         const items =  await controlador.pagoRecepcion(req.body)
         respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+
+async function updatepagoOrden(req, res, next){
+    try {
+        const {id_pagoOrden} = req.params
+        const body = req.body
+        const items = await controlador.updatepagoOrden(id_pagoOrden, body)
+        respuesta.success(req, res, 'item actualizado', 200)
     } catch (error) { next(error) }
 }
 async function pagosTaller (req, res, next){

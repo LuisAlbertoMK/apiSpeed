@@ -27,6 +27,9 @@ module.exports = function (dbIyectada){
     function eliminaRelacionados(id_eleRecepcion){
         return db.eliminaEleModPaqRecep(id_eleRecepcion)
     }
+    function subelementosPaquete(id_modificacion){
+        return db.queryEliminar('elementosmodpaquetesrecep',{id_modificacion})
+    }
     function ObtenerDetallePaqueteModificado(id_cotizacion, id_paquete ) {
         return db.ObtenerDetallePaqueteModificado(id_cotizacion, id_paquete)
     }
@@ -41,7 +44,8 @@ module.exports = function (dbIyectada){
         eliminar,
         ObtenerDetallePaqueteModificado,
         ObtenerDetallePaqueteModificadoRecep,
-        eliminaRelacionados
+        eliminaRelacionados,
+        subelementosPaquete
     }
     
 }

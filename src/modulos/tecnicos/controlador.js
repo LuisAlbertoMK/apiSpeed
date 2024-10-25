@@ -1,5 +1,5 @@
 
-const TABLA = 'anios'
+const TABLA = 'usuarios'
 
 
 module.exports = function (dbIyectada){
@@ -14,7 +14,7 @@ module.exports = function (dbIyectada){
         return db.sp_tecnicosTallerSucursal(id_taller, id_sucursal)
     }
     function uno(id){
-        return db.uno(TABLA, id)
+        return db.tecnicoUnico(id)
     }
     function agregar(body){
         return db.agregar(TABLA, body)

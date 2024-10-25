@@ -27,6 +27,9 @@ module.exports = function (dbIyectada){
     function agregar(body){
         return db.agregar(TABLA, body)
     }
+    function updatepagoOrden(id_pagoOrden, data){
+        return db.updatepagoOrden( id_pagoOrden, data)
+    }
     function eliminar(id_pagoOrden){
         return db.eliminarQuery(TABLA, {id_pagoOrden})
     }
@@ -44,6 +47,7 @@ module.exports = function (dbIyectada){
         PagosRecepcionUnica,
         agregar,
         eliminar,
+        updatepagoOrden,
         pagosTaller,
         pagoTotal
     }
