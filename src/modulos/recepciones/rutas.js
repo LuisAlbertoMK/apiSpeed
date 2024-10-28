@@ -117,8 +117,8 @@ async function aceptados (req, res, next){
 }
 async function coincidencias (req, res, next){
     try {
-        const {id_taller, semejantes } = req.query
-        const items =  await controlador.sp_ordenlike(id_taller,semejantes)
+        const {id_taller, semejantes,id_sucursal } = req.query
+        const items =  await controlador.sp_ordenlike(id_taller,id_sucursal,semejantes)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }

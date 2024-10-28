@@ -55,8 +55,8 @@ module.exports = function (dbIyectada){
     function patchRecepcion(id_recepcion, data){
         return db.patchRecepcion(id_recepcion, data)
     }
-    function sp_ordenlike(id_recepcion, search){
-        return db.sp_ordenlike(id_recepcion, search)
+    function sp_ordenlike(id_taller, id_sucursal, search){
+        return db.sp_ordenlike(id_taller, id_sucursal, search)
     }
     function reporteRecepcion(id_recepcion) {
         return db.reporteRecepcion(id_recepcion)

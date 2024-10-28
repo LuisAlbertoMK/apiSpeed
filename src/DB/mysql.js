@@ -577,9 +577,9 @@ function administracion(data){
         })
     })
 }
-function sp_ordenlike(id_taller, search){
+function sp_ordenlike(id_taller, id_sucursal, search){
     return new Promise((resolve, reject) =>{
-        conexion.query(`call sp_ordenlike(${id_taller},${search})`, (error, result) =>{ 
+        conexion.query(`call sp_ordenlike(${id_taller},${id_sucursal},${search})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
