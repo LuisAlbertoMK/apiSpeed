@@ -88,9 +88,13 @@ module.exports = function (dbIyectada){
     function vehiculo(id_vehiculo){
         return db.vehiculo(id_vehiculo)
     }
+    function vehiculosPlacas(id_cliente){
+        return db.vehiculosPlacas(id_cliente)
+    }
 
     return {
         todos,
+        vehiculosPlacas,
         vehiculosCliente,
         vehiculosCiente,
         vehiculoUnico,

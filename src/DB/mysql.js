@@ -159,6 +159,13 @@ function clienteVehiculos(data){
         })
     })
 }
+function vehiculosPlacas(id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call vehiculosPlacas(${id_cliente})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function ventaVehiculo(data){
     const {id_cliente,limit,offset} = data
     return new Promise((resolve, reject) =>{
@@ -385,6 +392,13 @@ function cotizacionesVehiculo(id_vehiculo){
 function recepcionesVehiculo(id_vehiculo){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL recepcionesVehiculo(${id_vehiculo})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function recepcionesIDs(ids, startDate, endDate){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL ObtenerRecepcionesPorID('${ids}','${startDate}','${endDate}')`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -1205,6 +1219,7 @@ module.exports = {
     vehiculoUnico,
     cotizacionesVehiculo,
     recepcionesVehiculo,
+    recepcionesIDs,
     patchDataCotizacion,
     elementos_cotizaciones,
     RecepcionConsulta,
@@ -1277,6 +1292,7 @@ module.exports = {
     vehiculosPaginacion,
     clienteVehiculos,
     sp_pagVehiculosVenta,
+    vehiculosPlacas,
     contadorVehiculosVenta,
     VehiculosPaginacionTotalesCliente,
     listaVehiculosClienteUnico,

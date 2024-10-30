@@ -10,7 +10,7 @@ const router = express.Router()
 router.get('/', todos)
 router.get('/sucursalesBasicaTaller', sucursalesBasicaTaller)
 router.get('/contadorSucursalesTaller', contadorSucursalesTaller)
-router.get('/sucursalesTaller', sucursalesTaller)
+router.get('/sucursalesTaller/:id_taller', sucursalesTaller)
 router.get('/:id_sucursal', sucursalUnica)
 router.patch('/:id_sucursal', updateData)
 router.post('/', agregar)
@@ -49,13 +49,9 @@ async function updateData(req, res, next) {
 }
 async function sucursalesTaller (req, res, next){
     try {
-        const {todas} = req.query
-        let items 
-        if(todas === 'true'){
-            items= await controlador.sucursalesTaller2(req.query.id_taller)
-        }else{
-            items= await controlador.sucursalesTaller(req.query.id_taller)
-        }
+        const {id_taller}= req.params
+        const items= await controlador.sucursalesTaller(id_taller)
+        // }
         respuesta.success(req, res, items[0], 200)
     } catch (error) {
         next(error)

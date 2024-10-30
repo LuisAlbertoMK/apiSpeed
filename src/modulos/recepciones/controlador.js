@@ -79,6 +79,9 @@ module.exports = function (dbIyectada){
     function recepcionesVehiculo(data){
         return db.recepcionesVehiculo(data)
     }
+    function recepcionesIDs(ids, startDate, endDate){
+        return db.recepcionesIDs(ids, startDate, endDate)
+    }
     function recepcionesBasicasOtroTaller(id_cliente, id_taller){
         return db.recepcionesBasicasOtroTaller(id_cliente, id_taller)
     }
@@ -93,6 +96,7 @@ module.exports = function (dbIyectada){
         uno,
         agregar,
         eliminar,
+        recepcionesIDs,
         RecepcionesVehiculoConsulta,
         getRecepcion,
         aceptados,

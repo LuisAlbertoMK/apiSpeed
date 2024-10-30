@@ -23,6 +23,7 @@ router.get('/recepcionesTaller', recepcionesTaller)
 router.get('/recepcionesTaller2', recepcionesTaller2)
 router.get('/coincidencias', coincidencias)
 router.get('/aceptados', aceptados)
+router.get('/recepcionesIDs', recepcionesIDs)
 router.post('/', agregar)
 router.patch('/update/:id_recepcion',updateRecepcion)
 router.get('/vehiculos', RecepcionesVehiculoConsulta)
@@ -36,6 +37,14 @@ async function recepcionesFechas(req, res, next){
         const items =  await controlador.recepcionesFechas(req.query)
         const {total} = await controlador.recepcionesFechasContador(req.query)
         respuesta.success(req, res, {total,  datos:items}, 200)
+    } catch (error) { next(error) }
+}
+async function recepcionesIDs(req, res, next){
+    try {
+        const  {ids, startDate, endDate} = req.query
+        console.log(req.query)
+        const items =  await controlador.recepcionesIDs(ids,startDate, endDate)
+        respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
 async function servicios(req, res, next) {

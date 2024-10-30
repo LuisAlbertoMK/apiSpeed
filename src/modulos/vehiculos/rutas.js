@@ -19,6 +19,7 @@ router.patch('/', updateKilometraje)
 router.patch('/updateTallerSucursalVehiculos/:id_cliente', updateTallerSucursalVehiculos)
 router.put('/', eliminar)
 router.get('/semejantes', semejantes)
+router.get('/vehiculosPlacas/:id_cliente', vehiculosPlacas)
 router.get('/ventaVehiculoUnico/:id_vehiculo', ventaVehiculoUnico)
 router.get('/listaVehiculosClienteUnico/:id_cliente', listaVehiculosClienteUnico)
 router.get('/verificaPlacas', verificaPlacas)
@@ -43,6 +44,14 @@ async function semejantes (req, res, next){
         }))
         const {total} = response[0]
         respuesta.success(req, res, {datos, total}, 200)
+    } catch (error) { next(error) }
+}
+async function vehiculosPlacas (req, res, next){
+    try {
+        const {id_cliente}  = req.params
+        const vehiculos =  await controlador.vehiculosPlacas(id_cliente)
+       
+        respuesta.success(req, res, vehiculos, 200)
     } catch (error) { next(error) }
 }
 async function semejantesVehiculosCliente (req, res, next){
