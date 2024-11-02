@@ -21,6 +21,7 @@ router.get('/histoTalleres/:id_cliente', histoTalleres)
 router.get('/tallerActualCliente/:id_cliente', tallerActualCliente)
 router.get('/unicamentevehiculos/:id_cliente', unicamentevehiculos)
 router.get('/onlyDataCliente/:id_cliente', onlyDataCliente)
+router.get('/onlyDataClientebasica/:id_cliente', onlyDataClientebasica)
 router.patch('/patchDataCliente/:id_cliente', patchDataCliente)
 router.get('/:id_cliente', uno)
 
@@ -132,6 +133,13 @@ async function uno(req, res, next) {
         try {
             const { id_cliente } = req.params;
             const data_cliente = await controlador.clienteUnico(id_cliente)
+            respuesta.success(req, res, data_cliente, 200)
+        } catch (error) { next(error) }
+    }
+    async function onlyDataClientebasica(req, res, next){
+        try {
+            const { id_cliente } = req.params;
+            const data_cliente = await controlador.onlyDataClientebasica(id_cliente)
             respuesta.success(req, res, data_cliente, 200)
         } catch (error) { next(error) }
     }

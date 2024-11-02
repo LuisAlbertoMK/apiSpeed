@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -308,6 +308,14 @@ function semejantesClientesContador(data){
         })
     })
 }
+function onlyDataClientebasica(id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_clienteUnicoBasica(${id_cliente})`, (error, result) =>{
+            const sendadta = result[0]
+            return error ? reject(error) : resolve(sendadta[0])
+        })
+    })
+}
 function clientesTallerSucursal(id_taller, id_sucursal){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_clientesTallerSucursal(${id_taller},${id_sucursal})`, (error, result) =>{ 
@@ -344,6 +352,14 @@ function tallerActualCliente(id_cliente){
     })
 }
 //CONSULTA DE VEHICULOS
+function onlyDatavehiculobasica(id_vehiculo){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_vehiculoUnicobasica('${id_vehiculo}')`, (error, result) =>{
+            const sendadta = result[0]
+            return error ? reject(error) : resolve(sendadta[0])
+        })
+    })
+}
 function verificaPlacas(placas){
     return new Promise((resolve, reject) =>{
         conexion.query(`call verificaPlacas('${placas}')`, (error, result) =>{ 
@@ -556,6 +572,37 @@ function recepcionesTaller(id_taller, id_sucursal,start, end){
         conexion.query(`call sp_recepcionesTallerSucursal(${id_taller}, ${id_sucursal},'${start}','${end}')
         `, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function OnlyDataRecepcion(id_recepcion){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call onlydatarecepcion(${id_recepcion})
+        `, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function elementosrecepcion(id_recepcion){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call elementosrecepcion(${id_recepcion})
+        `, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function elementosrecepcionInternos(id_recepcion, id_paquete){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call elementosRecepcionPaquete(${id_recepcion},${id_paquete})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function elementosRecepciones(id_recepcion){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call elementosrecepcion(${id_recepcion})
+        `, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
         })
     })
 }
@@ -1252,8 +1299,10 @@ module.exports = {
     informaciontaller,
     empresasTaller,
     clientesTallerSucursal,
+    onlyDataClientebasica,
     patchDataCliente,
     verificaPlacas,
+    onlyDatavehiculobasica,
     vehiculosTallerSucursal,
     morefaccionesTaller,
     paquetesTaller,
@@ -1261,6 +1310,10 @@ module.exports = {
     gastosOrdenTaller,
     gastosOperacionTaller,
     recepcionesTaller,
+    OnlyDataRecepcion,
+    elementosrecepcion,
+    elementosrecepcionInternos,
+    elementosRecepciones,
     patchRecepcion,
     recepcionesTaller2,
     recepcionesTaller2contador,

@@ -8,6 +8,8 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/elementosR/:id_recepcion', elementosrecepcion)
+
 router.get('/:id_recepcion', uno)
 router.post('/', agregar)
 router.delete('/:id_eleRecepcion', eliminar);
@@ -17,10 +19,17 @@ async function todos (req, res, next){
     try {
         const items =  await controlador.todos()
         respuesta.success(req, res, items, 200)
-    } catch (error) {
-        next(error)
-    }
+    } catch (error) { next(error) }
 }
+
+async function elementosrecepcion (req, res, next){
+    try {
+        const {id_recepcion} = req.params
+        const items =  await controlador.elementosrecepcion(id_recepcion)
+        respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+
 async function uno(req, res, next){
     try {
         const {id_recepcion} = req.params

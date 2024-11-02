@@ -49,6 +49,9 @@ module.exports = function (dbIyectada){
     function patchDataCliente(id_cliente, body){
         return db.patchDataCliente(id_cliente, body)
     }
+    function onlyDataClientebasica(id_cliente){
+        return db.onlyDataClientebasica(id_cliente)
+    }
   
 
 
@@ -57,6 +60,7 @@ module.exports = function (dbIyectada){
         semejantesClientesContador,
         clientesSucursal,
         agregar,
+        onlyDataClientebasica,
         eliminar,
         contadorClientesUsuario,
         clientesTallerSucursal,

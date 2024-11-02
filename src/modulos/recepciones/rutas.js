@@ -30,8 +30,42 @@ router.get('/vehiculos', RecepcionesVehiculoConsulta)
 router.get('/recepcionesVehiculo/:id_vehiculo', recepcionesVehiculo)
 router.get('/recepcionesClienteB/:id_cliente', recepcionesClienteB)
 router.put('/', eliminar)
+router.get('/onlyData/:id_recepcion', OnlyData)
+router.get('/elementosRecepciones/:id_recepcion', elementos)
 router.get('/:id_recepcion', uno)
 
+async function OnlyData(req, res, next){
+    try {
+        const {id_recepcion} = req.params        
+        const recepcion = await controlador.OnlyData(id_recepcion)
+        const  {id_cliente, id_vehiculo } = recepcion[0]
+        const data_cliente = await clientes.onlyDataClientebasica(id_cliente)
+        const data_vehiculo = await vehiculos.onlyDatavehiculobasica(id_vehiculo)
+
+        const elementos1 = await elementos_recepcion.elementosrecepcion(id_recepcion)
+
+        const elementos = await Promise.all(elementos1.map(async e => {
+            const  {tipo, id_paquete,nombrePaquete,tipoPaquete } = e
+            if(tipoPaquete && tipoPaquete === 'paquete'){
+                const elementosInternos= await elementos_recepcion.elementosrecepcionInternos(id_recepcion, id_paquete)
+                e['elementos'] = [...elementosInternos]
+                e['tipo'] = 'paquete'
+                e['nombre'] = nombrePaquete
+            }
+            return e
+        }))
+
+        const data = {...recepcion[0], data_cliente, data_vehiculo, elementos}
+        respuesta.success(req, res, data , 200)
+    } catch (error) { next(error) }
+}
+async function elementos(req, res, next){
+    try {
+        const {id_recepcion} = req.params        
+        const recepcion = await controlador.elementos(id_recepcion)
+        respuesta.success(req, res, recepcion , 200)
+    } catch (error) { next(error) }
+}
 async function recepcionesFechas(req, res, next){
     try {
         const items =  await controlador.recepcionesFechas(req.query)

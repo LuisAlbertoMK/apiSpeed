@@ -21,9 +21,17 @@ module.exports = function (dbIyectada){
     function eliminar(id_eleRecepcion){
         return db.queryEliminar(TABLA, {id_eleRecepcion})
     }
+    function elementosrecepcion(id_recepcion){
+        return db.elementosrecepcion(id_recepcion)
+    }
+    function elementosrecepcionInternos(id_recepcion, id_paquete){
+        return db.elementosrecepcionInternos(id_recepcion, id_paquete)
+    }
 
     return {
         todos,
+        elementosrecepcion,
+        elementosrecepcionInternos,
         uno,
         agregar,
         eliminar

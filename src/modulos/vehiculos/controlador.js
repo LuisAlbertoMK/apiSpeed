@@ -91,6 +91,9 @@ module.exports = function (dbIyectada){
     function vehiculosPlacas(id_cliente){
         return db.vehiculosPlacas(id_cliente)
     }
+    function onlyDatavehiculobasica(id_vehiculo){
+        return db.onlyDatavehiculobasica(id_vehiculo)
+    }
 
     return {
         todos,
@@ -99,6 +102,7 @@ module.exports = function (dbIyectada){
         vehiculosCiente,
         vehiculoUnico,
         uno,
+        onlyDatavehiculobasica,
         vehiculo,
         agregar,
         updateTallerSucursalVehiculos,
