@@ -28,7 +28,8 @@ module.exports = function (dbIyectada){
             create_at: body.create_at,
             update_at: body.update_at,
             correo: body.correo,
-            activo: body.activo
+            activo: body.activo,
+            id_cliente: body.id_cliente || null
         }
         if(body.id_usuario) usuario.id_usuario = body.id_usuario
         const respuesta = await db.agregar(TABLA, usuario)
