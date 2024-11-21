@@ -29,6 +29,9 @@ module.exports = function (dbIyectada){
     function patchElementoPaquete(elementos){
         return db.patchElementoPaquete(elementos)
     }
+    function eliminaelementospaquete(id_paquete, elementos){
+        return db.eliminaelementospaquete(id_paquete, elementos)
+    }
 
     return {
         todos,
@@ -36,7 +39,8 @@ module.exports = function (dbIyectada){
         agregar,
         eliminar,
         registraElementosVarios,
-        patchElementoPaquete
+        patchElementoPaquete,
+        eliminaelementospaquete
     }
     
 }

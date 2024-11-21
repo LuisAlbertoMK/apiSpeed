@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -761,7 +761,7 @@ function registraElementosPaquetes(data) {
             item.activo,
             item.costo,
             item.cantidad
-          ]);
+        ]);
         const query = `
             INSERT INTO elementospaquetes (
                 id_elmenPaquete,
@@ -770,19 +770,28 @@ function registraElementosPaquetes(data) {
                 activo,
                 costo,
                 cantidad
-            ) VALUES ${conexion.escape(values)}
+            ) VALUES ? 
             ON DUPLICATE KEY UPDATE
                 id_paquete = VALUES(id_paquete),
                 id_moRefaccion = VALUES(id_moRefaccion),
                 activo = VALUES(activo),
                 costo = VALUES(costo),
                 cantidad = VALUES(cantidad)
-            `;
-            conexion.query(query, (error, result) =>{ 
+        `;
+            conexion.query(query,[values], (error, result) =>{ 
                 return error ? reject(error) : resolve(result[0])
             })
     });
   }
+
+    function eliminaelementospaquete(id_paquete, elementos){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL eliminar_elementos_paquetes(${id_paquete}, ${elementos})`, 
+        (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+        })
+    }
 
   function patchElementoPaquete(data) {
     return new Promise((resolve, reject) => {
@@ -1360,6 +1369,7 @@ module.exports = {
     semejantesVehiculos,
     semejantesVehiculosContador,
     registraElementosPaquetes,
+    eliminaelementospaquete,
     patchElementoPaquete,
     existeEmpresa
 }
