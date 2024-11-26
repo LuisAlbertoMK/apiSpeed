@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -51,6 +51,16 @@ function Todos(tabla){
             return error ? reject(error) : resolve(result)
         })
     })
+}
+function sucursalQuery(tabla, campo, ID){
+    return new Promise(async (resolve, reject) =>{
+        conexion.query(await regresaquery(tabla, campo, ID), (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function regresaquery(tabla, campo, ID){
+    return `SELECT id_sucursal, id_taller FROM ${tabla} where ${campo} = ${ID}`
 }
 function uno(tabla, id){
     return new Promise((resolve, reject) =>{
@@ -1249,6 +1259,7 @@ module.exports = {
     contadorClientesUsuario,
     cliente,
     Todos,
+    sucursalQuery,
     uno,
     agregar,
     eliminar,

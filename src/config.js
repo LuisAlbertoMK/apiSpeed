@@ -14,8 +14,8 @@ module.exports = {
     },
     mysql:{
         host: process.env.MYSQL_HOST || 'localhost',
-        user: process.env.MYSQL_USER || 'desarrollo',
-        password: process.env.MYSQL_PASSWORD || 'password',
+        user: process.env.MYSQL_USER || 'root',
+        password: process.env.MYSQL_PASSWORD || 'gers312',
         db: process.env.MYSQL_DB || 'desarrollo',
     }
 

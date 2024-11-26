@@ -8,6 +8,7 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/tabla-query', sucursalQuery)
 router.get('/sucursalesBasicaTaller', sucursalesBasicaTaller)
 router.get('/contadorSucursalesTaller', contadorSucursalesTaller)
 router.get('/sucursalesTaller/:id_taller', sucursalesTaller)
@@ -25,11 +26,23 @@ async function todos (req, res, next){
         next(error)
     }
 }
+async function sucursalQuery (req, res, next){
+    try {
+        const {tabla,campo, ID} = req.query
+        // console.log({tabla,campo,  ID})
+        const item = await controlador.sucursalQuery(tabla, campo, ID)
+        // console.log({item})
+        const {id_sucursal, id_taller} = item
+        respuesta.success(req, res, {id_sucursal, id_taller}, 200)
+    } catch (error) {
+        next(error)
+    }
+}
 async function contadorSucursalesTaller (req, res, next){
     try {
         const {id_taller} = req.query
         const items =  await controlador.contadorSucursalesTaller(id_taller)
-        respuesta.success(req, res, items[0], 200)
+        respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
 async function sucursalesBasicaTaller (req, res, next){
