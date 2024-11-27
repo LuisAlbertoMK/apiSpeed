@@ -28,12 +28,11 @@ async function todos (req, res, next){
 }
 async function sucursalQuery (req, res, next){
     try {
-        const {tabla,campo, ID} = req.query
-        // console.log({tabla,campo,  ID})
-        const item = await controlador.sucursalQuery(tabla, campo, ID)
-        // console.log({item})
-        const {id_sucursal, id_taller} = item
-        respuesta.success(req, res, {id_sucursal, id_taller}, 200)
+        const {tabla,campos, campo, ID} = req.query
+        console.log({tabla,campos,campo,  ID})
+        const item = await controlador.sucursalQuery(tabla,campos || '', campo, ID)
+
+        respuesta.success(req, res, item, 200)
     } catch (error) {
         next(error)
     }

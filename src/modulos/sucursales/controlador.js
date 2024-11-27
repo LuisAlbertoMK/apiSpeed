@@ -13,8 +13,8 @@ module.exports = function (dbIyectada){
     function todos(){
         return db.Todos(TABLA)
     }
-    function  sucursalQuery(tabla, campo, ID){
-        return db.sucursalQuery(tabla, campo, ID)
+    function  sucursalQuery(tabla, campos, condicion, ID){
+        return db.sucursalQuery(tabla,campos,  condicion, ID)
     }
     function sucursalesTaller(id_taller){
         return db.sucursalesTaller(id_taller)

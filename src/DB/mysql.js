@@ -52,15 +52,17 @@ function Todos(tabla){
         })
     })
 }
-function sucursalQuery(tabla, campo, ID){
+function sucursalQuery(tabla,campos, campo, ID){
     return new Promise(async (resolve, reject) =>{
-        conexion.query(await regresaquery(tabla, campo, ID), (error, result) =>{ 
+        conexion.query(await regresaquery(tabla,campos, campo, ID), (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
 }
-function regresaquery(tabla, campo, ID){
-    return `SELECT id_sucursal, id_taller FROM ${tabla} where ${campo} = ${ID}`
+function regresaquery(tabla, campos, campo, ID){
+    let datosSelect = `id_sucursal, id_taller`
+    if( `${campos}`.length) datosSelect += `,${campos}`
+    return `SELECT ${datosSelect} FROM ${tabla} where ${campo} = ${ID}`
 }
 function uno(tabla, id){
     return new Promise((resolve, reject) =>{
