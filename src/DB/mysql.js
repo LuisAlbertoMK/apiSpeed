@@ -268,6 +268,15 @@ function cotizacionesCliente(id_cliente){
         })
     })
 }
+function cotizacionesClienteX(id_cliente, start, end,ids){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL cotizacionesClientes(${id_cliente},'${start}','${end}','${ids}')`
+        , (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+
 function elementos_cotizaciones(id_cotizacion){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_elementosCotizaciones(${id_cotizacion})`
@@ -1291,6 +1300,7 @@ module.exports = {
     recepcionesIDs,
     patchDataCotizacion,
     elementos_cotizaciones,
+    cotizacionesClienteX,
     RecepcionConsulta,
     RecepcionesVehiculoConsulta,
     seriviciosAceptados,
