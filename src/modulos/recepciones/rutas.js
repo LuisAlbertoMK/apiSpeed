@@ -75,9 +75,8 @@ async function recepcionesFechas(req, res, next){
 }
 async function recepcionesIDs(req, res, next){
     try {
-        const  {ids, startDate, endDate} = req.query
-        console.log(req.query)
-        const items =  await controlador.recepcionesIDs(ids,startDate, endDate)
+        const  {idsStrings, startDate, endDate} = req.query
+        const items =  await controlador.recepcionesIDs(idsStrings,startDate, endDate)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }

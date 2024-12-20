@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -435,7 +435,7 @@ function recepcionesVehiculo(id_vehiculo){
 }
 function recepcionesIDs(ids, startDate, endDate){
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL ObtenerRecepcionesPorID('${ids}','${startDate}','${endDate}')`, (error, result) =>{ 
+        conexion.query(`CALL ObtenerRecepcionesPorID(9,'${startDate}','${endDate}','${ids}')`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
