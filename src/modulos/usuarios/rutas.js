@@ -11,6 +11,7 @@ router.get('/', todos)
 router.get('/rol', usuariosrol)
 router.get('/listaTecnicos/:id_sucursal', listaTecnicos)
 router.get('/consultacorreo', consultacorreo )
+router.get('/datausuarios', datausuarios)
 router.get('/:id', uno)
 // router.post('/', seguridad(), agregar)
 router.post('/', agregar)
@@ -44,6 +45,12 @@ async function updateData(req, res, next) {
         const  data = req.body
         await controlador.updateData(id_usuario, data)
         respuesta.success(req, res, 'actualización', 200)
+    } catch (error) { next(error) }
+}
+async function datausuarios(req, res, next) {
+    try {
+        const items = await controlador.datausuarios()
+        respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
 async function uno(req, res, next){

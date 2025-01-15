@@ -43,6 +43,7 @@ const reportes= require('./modulos/reportes/rutas')
 const reportecotizacion= require('./modulos/reportecotizacion/rutas')
 const tecnicos= require('./modulos/tecnicos/rutas')
 const obtenerToken= require('./modulos/obtenerToken/rutas')
+const tutoriales= require('./modulos/tutoriales/rutas')
 
 const app = express()
 // Middleware
@@ -141,6 +142,7 @@ app.use('/api/reportes', reportes)
 app.use('/api/reportecotizacion', reportecotizacion)
 app.use('/api/tecnicos', tecnicos)
 app.use('/api/obtenerToken', obtenerToken)
+app.use('/api/tutoriales', tutoriales)
 app.use(error)
 
 

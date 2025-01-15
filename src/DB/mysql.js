@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigmysql)
+    conexion = mysql.createConnection(dbconfigMariaDB)
 
     conexion.connect((err)=>{
         if (err) {
@@ -1252,7 +1252,31 @@ function tecnicoUnico(id_tecnico){
     })
 }
 
+function tutoriales(id_usuario){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT * FROM tutoriales where id_usuario = ${id_usuario}`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function patchTutoriales(id_usuario, data) {
+    return new Promise((resolve, reject) => {
+      conexion.query(`UPDATE tutoriales SET? WHERE id_usuario = ${id_usuario}`, data, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
+function usuariosrol() {
+    return new Promise((resolve, reject) => {
+      conexion.query(`call datausuarios()`, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
 module.exports = {
+    tutoriales,
+    patchTutoriales,
+    usuariosrol,
     tecnicoUnico,
     recepcionesCliente,
     recepcionesBasicasOtroTaller,
