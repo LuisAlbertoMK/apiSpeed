@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
