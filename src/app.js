@@ -44,6 +44,7 @@ const reportecotizacion= require('./modulos/reportecotizacion/rutas')
 const tecnicos= require('./modulos/tecnicos/rutas')
 const obtenerToken= require('./modulos/obtenerToken/rutas')
 const tutoriales= require('./modulos/tutoriales/rutas')
+const pagos= require('./modulos/pagos/rutas')
 
 const app = express()
 // Middleware
@@ -53,7 +54,9 @@ app.use(express.urlencoded({extended: true}))
 //configuracion
 app.set('port', config.app.port)
 
-const whiteList=['https://speed-pro-desarrollo.web.app','http://localhost:4200'];
+const whiteList=[
+  'https://speed-pro-desarrollo.web.app',
+  'http://localhost:4200','http://localhost:4242'];
 
 // Configuración de CORS
 const corsOptions = {
@@ -143,6 +146,7 @@ app.use('/api/reportecotizacion', reportecotizacion)
 app.use('/api/tecnicos', tecnicos)
 app.use('/api/obtenerToken', obtenerToken)
 app.use('/api/tutoriales', tutoriales)
+app.use('/api/pagos', pagos)
 app.use(error)
 
 

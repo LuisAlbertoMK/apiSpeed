@@ -73,7 +73,7 @@ function uno(tabla, id){
 }
 function uno2(tabla, [clave, valor]){
     return new Promise((resolve, reject) =>{
-        conexion.query(`SELECT * FROM ${tabla} WHERE ${clave} = ${valor}`, (error, result) =>{ 
+        conexion.query(`SELECT * FROM ${tabla} WHERE ${clave} = '${valor}'`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
