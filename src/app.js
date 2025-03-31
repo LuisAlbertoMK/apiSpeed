@@ -45,6 +45,7 @@ const tecnicos= require('./modulos/tecnicos/rutas')
 const obtenerToken= require('./modulos/obtenerToken/rutas')
 const tutoriales= require('./modulos/tutoriales/rutas')
 const pagos= require('./modulos/pagos/rutas')
+const clienterequest= require('./modulos/clienterequest/rutas')
 
 const app = express()
 // Middleware
@@ -147,6 +148,7 @@ app.use('/api/tecnicos', tecnicos)
 app.use('/api/obtenerToken', obtenerToken)
 app.use('/api/tutoriales', tutoriales)
 app.use('/api/pagos', pagos)
+app.use('/api/clienterequest', clienterequest)
 app.use(error)
 
 

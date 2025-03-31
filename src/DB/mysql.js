@@ -1273,6 +1273,22 @@ function usuariosrol() {
       })
     })
   }
+
+
+  function clienterequest(tabla, id_cliente, busqueda){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT * FROM ${tabla} WHERE id_cliente = ${id_cliente} AND request_type = '${busqueda}'`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+  }
+  function clienterequestUpdate(tabla, id_request, request_count, busqueda){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`UPDATE ${tabla} SET request_count = ${request_count} WHERE id_request=${id_request} and request_type = '${busqueda}';`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+  }
 module.exports = {
     tutoriales,
     patchTutoriales,
@@ -1418,5 +1434,7 @@ module.exports = {
     registraElementosPaquetes,
     eliminaelementospaquete,
     patchElementoPaquete,
-    existeEmpresa
+    existeEmpresa,
+    clienterequest,
+    clienterequestUpdate
 }
