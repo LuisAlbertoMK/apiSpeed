@@ -32,7 +32,17 @@ router.get('/historialVehiculo/:id_vehiculo', historialVehiculo)
 router.get('/fulldata/:id_vehiculo', vehiculo)
 router.get('/semejantesVehiculosCliente', semejantesVehiculosCliente)
 router.get('/:id_vehiculo', uno)
+router.get('/contadorVehiculos/:id_cliente', contador)
 
+
+ async function contador (req, res, next) {
+    try {
+        const {id_cliente} = req.params
+        const items = await controlador.contadorVehiculos(id_cliente)
+        const {total} = items[0]
+        respuesta.success(req, res, total , 200)
+    } catch (error) { next(error) }
+}
 async function semejantes (req, res, next){
     try {
         const response =  await controlador.semejantesVehiculosContador(req.query)

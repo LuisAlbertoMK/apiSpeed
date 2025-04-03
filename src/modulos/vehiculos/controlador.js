@@ -94,6 +94,9 @@ module.exports = function (dbIyectada){
     function onlyDatavehiculobasica(id_vehiculo){
         return db.onlyDatavehiculobasica(id_vehiculo)
     }
+    function contadorVehiculos(id_vehiculo) {
+        return db.contadorVehiculos(id_vehiculo)
+    }
 
     return {
         todos,
@@ -104,6 +107,7 @@ module.exports = function (dbIyectada){
         uno,
         onlyDatavehiculobasica,
         vehiculo,
+        contadorVehiculos,
         agregar,
         updateTallerSucursalVehiculos,
         semejantesVehiculosCliente,

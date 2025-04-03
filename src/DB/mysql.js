@@ -294,6 +294,14 @@ function contador(tabla){
         })
     })
 }
+function contadorVehiculos(id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query( `SELECT COUNT(*) as total FROM vehiculos WHERE id_cliente = ${id_cliente}`
+        , (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
 function cotizacinesCliente(data){
     const {id_taller, id_sucursal, id_cliente, limit, offset} = data
     return new Promise((resolve, reject) =>{
@@ -1410,6 +1418,7 @@ module.exports = {
     semejantesmorefacciones,
     cotizacinesCliente,
     cotizacinesClienteContador,
+    contadorVehiculos,
     semejantesClientes,
     semejantesClientesContador,
     clientesPaginacionTotales,
