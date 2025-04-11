@@ -754,9 +754,9 @@ function basicasConReporte(id_taller, id_sucursal, start, end) {
     })
   }
 function pagOdenesCliente(data) {
-    const {id_taller, id_sucursal,id_cliente, limit, offset} = data
+    const {id_taller, id_sucursal,id_cliente, limit, offset, estadoEntregado} = data
     return new Promise((resolve, reject) => {
-      conexion.query(`call sp_pagRecepcionesCliente(${id_taller},${id_sucursal},${id_cliente},${limit},${offset})`, data, (error, result) => {
+      conexion.query(`call sp_pagRecepcionesCliente(${id_taller},${id_sucursal},${id_cliente},${limit},${offset},${estadoEntregado} )`, data, (error, result) => {
         return error? reject(error) : resolve(result[0])
       })
     })
