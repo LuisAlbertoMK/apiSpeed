@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigmysql)
+    conexion = mysql.createConnection(dbconfigMariaDB)
 
     conexion.connect((err)=>{
         if (err) {
@@ -280,6 +280,20 @@ function favoritosCotizaciones(id_cliente, ids){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL cotizacionesFavoritas(${id_cliente},'${ids}')`
         , (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function updateFavoritosVehiculos(tabla,data){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`INSERT INTO  ${tabla} SET ? ON DUPLICATE KEY UPDATE ?`, [data, data], (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function getFavoritos(tabla, id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT * FROM  ${tabla} WHERE id_cliente = ${id_cliente}`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -1358,6 +1372,8 @@ module.exports = {
     elementos_cotizaciones,
     cotizacionesClienteX,
     favoritosCotizaciones,
+    updateFavoritosVehiculos,
+    getFavoritos,
     RecepcionConsulta,
     RecepcionesVehiculoConsulta,
     seriviciosAceptados,

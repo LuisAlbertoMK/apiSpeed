@@ -97,7 +97,12 @@ module.exports = function (dbIyectada){
     function contadorVehiculos(id_vehiculo) {
         return db.contadorVehiculos(id_vehiculo)
     }
+    function updateFavoritosVehiculos( id_cliente,ids) {
+        return db.updateFavoritosVehiculos('vehiculos_favoritos', {id_cliente,favoritos: ids})
+    }
 
+    
+    const getFavoritos = (id_cliente) => db.getFavoritos('vehiculos_favoritos', id_cliente)
     return {
         todos,
         vehiculosPlacas,
@@ -105,6 +110,8 @@ module.exports = function (dbIyectada){
         vehiculosCiente,
         vehiculoUnico,
         uno,
+        updateFavoritosVehiculos,
+        getFavoritos,
         onlyDatavehiculobasica,
         vehiculo,
         contadorVehiculos,

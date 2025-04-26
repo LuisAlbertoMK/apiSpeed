@@ -16,9 +16,12 @@ router.get('/', vehiculos)
 router.post('/', agregar)
 router.post('/ventaVehiculo', ventaVehiculo)
 router.patch('/', updateKilometraje)
+router.patch('/favoritos', favoritos)
 router.patch('/updateTallerSucursalVehiculos/:id_cliente', updateTallerSucursalVehiculos)
 router.put('/', eliminar)
+router.get('/getfavoritos/:id_cliente', getfavoritos)
 router.get('/semejantes', semejantes)
+
 router.get('/vehiculosPlacas/:id_cliente', vehiculosPlacas)
 router.get('/ventaVehiculoUnico/:id_vehiculo', ventaVehiculoUnico)
 router.get('/listaVehiculosClienteUnico/:id_cliente', listaVehiculosClienteUnico)
@@ -54,6 +57,14 @@ async function semejantes (req, res, next){
         }))
         const {total} = response[0]
         respuesta.success(req, res, {datos, total}, 200)
+    } catch (error) { next(error) }
+}
+async function getfavoritos (req, res, next){
+    try {
+        const {id_cliente}  = req.params
+        const cuales =  await controlador.getFavoritos(id_cliente)
+       
+        respuesta.success(req, res, cuales, 200)
     } catch (error) { next(error) }
 }
 async function vehiculosPlacas (req, res, next){
@@ -114,6 +125,18 @@ async function updateKilometraje(data) {
     const {id_vehiculo, kilometraje} = data
     try {
         const response = await controlador.updateKilometraje({id_vehiculo, kilometraje})
+        respuesta.success(req, res, response, 200)
+    } catch (error) {
+        
+    }
+}
+async function favoritos(req, res, next) {
+    try {
+        const {vehiculos, id_cliente} = req.body
+        
+        const newV = [...new Set(vehiculos)].slice(0,5);
+
+        const response = await controlador.updateFavoritosVehiculos(id_cliente, newV.toString())
         respuesta.success(req, res, response, 200)
     } catch (error) {
         
