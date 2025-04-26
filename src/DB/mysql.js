@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -271,6 +271,14 @@ function cotizacionesCliente(id_cliente){
 function cotizacionesClienteX(id_cliente, start, end,ids){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL cotizacionesClientes(${id_cliente},'${start}','${end}','${ids}')`
+        , (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function favoritosCotizaciones(id_cliente, ids){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL cotizacionesFavoritas(${id_cliente},'${ids}')`
         , (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
@@ -1349,6 +1357,7 @@ module.exports = {
     patchDataCotizacion,
     elementos_cotizaciones,
     cotizacionesClienteX,
+    favoritosCotizaciones,
     RecepcionConsulta,
     RecepcionesVehiculoConsulta,
     seriviciosAceptados,

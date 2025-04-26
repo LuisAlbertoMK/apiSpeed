@@ -14,6 +14,7 @@ const router = express.Router()
 
 router.get('/', todos)
 router.get('/basicas', basicas)
+router.get('/favoritos/:id_cliente', favoritos)
 router.get('/cliente/:id_cliente', cotizacionesCliente)
 router.get('/pagCotCliente', pagCotCliente)
 router.post('/', agregar)
@@ -132,6 +133,17 @@ async function eliminar(req, res, next){
     try {
         const items = await controlador.eliminar(req.body)
         respuesta.success(req, res, 'item eliminado', 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function favoritos(req, res, next){
+    try {
+        const {id_cliente} = req.params
+        const {vehiculos} = req.query
+
+        const items = await controlador.favoritosCotizaciones(id_cliente, vehiculos)
+        respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)
     }
