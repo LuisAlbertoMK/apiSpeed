@@ -79,8 +79,8 @@ module.exports = function (dbIyectada){
     function recepcionesVehiculo(data){
         return db.recepcionesVehiculo(data)
     }
-    function recepcionesIDs(ids, startDate, endDate){
-        return db.recepcionesIDs(ids, startDate, endDate)
+    function recepcionesIDs(id_cliente, ids, startDate, endDate){
+        return db.recepcionesIDs(id_cliente, ids, startDate, endDate)
     }
     function recepcionesBasicasOtroTaller(id_cliente, id_taller){
         return db.recepcionesBasicasOtroTaller(id_cliente, id_taller)
@@ -93,6 +93,10 @@ module.exports = function (dbIyectada){
     }
     function elementos(id_recepcion){
         return db.elementosRecepciones(id_recepcion)
+    }
+
+    const  favoritosRecepciones = (id_cliente, idsVehiculos) =>{
+        return db.favoritosRecepciones(id_cliente, idsVehiculos)
     }
    
 
@@ -122,7 +126,8 @@ module.exports = function (dbIyectada){
         recepcionesFechasContador,
         recepcionesVehiculo,
         recepcionesBasicasOtroTaller,
-        sp_recepcionesMismoTaller
+        sp_recepcionesMismoTaller,
+        favoritosRecepciones
     }
     
 }

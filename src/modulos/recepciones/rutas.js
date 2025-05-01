@@ -18,6 +18,7 @@ const router = express.Router()
 router.get('/', servicios)
 router.get('/recepcionesFechas', recepcionesFechas)
 router.get('/administracion', administracion)
+router.get('/favoritos/:id_cliente', favoritos)
 router.get('/pagRecepClientes', pagRecepClientes)
 router.get('/recepcionesTaller', recepcionesTaller)
 router.get('/recepcionesTaller2', recepcionesTaller2)
@@ -75,8 +76,8 @@ async function recepcionesFechas(req, res, next){
 }
 async function recepcionesIDs(req, res, next){
     try {
-        const  {idsStrings, startDate, endDate} = req.query
-        const items =  await controlador.recepcionesIDs(idsStrings,startDate, endDate)
+        const  {id_cliente,idsStrings, startDate, endDate} = req.query
+        const items =  await controlador.recepcionesIDs(id_cliente,idsStrings,startDate, endDate)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
@@ -114,7 +115,17 @@ async function pagRecepClientes(req, res, next) {
         respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }
+async function favoritos(req, res, next){
+    try {
+        const {id_cliente} = req.params
+        const {vehiculos} = req.query
 
+        const items = await controlador.favoritosRecepciones(id_cliente, vehiculos)
+        respuesta.success(req, res, items, 200)
+    } catch (error) {
+        next(error)
+    }
+}
 
 async function todos (req, res, next){
     try {

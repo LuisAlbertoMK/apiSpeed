@@ -463,9 +463,17 @@ function recepcionesVehiculo(id_vehiculo){
         })
     })
 }
-function recepcionesIDs(ids, startDate, endDate){
+function recepcionesIDs(id_cliente, ids, startDate, endDate){
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL ObtenerRecepcionesPorID(9,'${startDate}','${endDate}','${ids}')`, (error, result) =>{ 
+        conexion.query(`CALL ObtenerRecepcionesPorID(${id_cliente},'${ids}','${startDate}','${endDate}')`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function favoritosRecepciones(id_cliente, ids){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL recepcionesFavoritos(${id_cliente},'${ids}')`
+        , (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -1368,6 +1376,7 @@ module.exports = {
     cotizacionesVehiculo,
     recepcionesVehiculo,
     recepcionesIDs,
+    favoritosRecepciones,
     patchDataCotizacion,
     elementos_cotizaciones,
     cotizacionesClienteX,
