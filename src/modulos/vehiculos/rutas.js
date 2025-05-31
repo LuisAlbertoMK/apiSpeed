@@ -18,9 +18,11 @@ router.post('/ventaVehiculo', ventaVehiculo)
 router.patch('/', updateKilometraje)
 router.patch('/favoritos', favoritos)
 router.patch('/updateTallerSucursalVehiculos/:id_cliente', updateTallerSucursalVehiculos)
+router.patch('/update_venta/:id_venta', update_venta)
 router.put('/', eliminar)
 router.get('/getfavoritos/:id_cliente', getfavoritos)
 router.get('/semejantes', semejantes)
+router.get('/vehiculoVenta/:id_venta', vehiculoVenta)
 
 router.get('/vehiculosPlacas/:id_cliente', vehiculosPlacas)
 router.get('/ventaVehiculoUnico/:id_vehiculo', ventaVehiculoUnico)
@@ -57,6 +59,14 @@ async function semejantes (req, res, next){
         }))
         const {total} = response[0]
         respuesta.success(req, res, {datos, total}, 200)
+    } catch (error) { next(error) }
+}
+async function vehiculoVenta (req, res, next){
+    try {
+        const { id_venta }  = req.params
+        console.log(req.params)
+        const response =  await controlador.vehiculoVenta(id_venta)
+        respuesta.success(req, res, response, 200)
     } catch (error) { next(error) }
 }
 async function getfavoritos (req, res, next){
@@ -147,6 +157,15 @@ async function updateTallerSucursalVehiculos(req, res, next) {
     const {id_taller, id_sucursal} = req.body
     try {
         const response = await controlador.updateTallerSucursalVehiculos({id_cliente, id_taller, id_sucursal})
+        respuesta.success(req, res, response, 200)
+    } catch (error) {  next(error) }
+}
+async function update_venta(req, res, next) {
+    const {id_venta} = req.params
+    const {costoVenta, activo, version, tipo_factura, numero_duenio} = req.body
+    const data = {id_vehiculo: id_venta, costoVenta, activo, version, tipo_factura, numero_duenio}
+    try {
+        const response = await controlador.update_venta(id_venta, data)
         respuesta.success(req, res, response, 200)
     } catch (error) {  next(error) }
 }

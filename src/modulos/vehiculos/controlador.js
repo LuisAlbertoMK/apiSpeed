@@ -102,6 +102,8 @@ module.exports = function (dbIyectada){
     }
 
     
+    const vehiculoVenta = (id_vehiculo) => db.vehiculoVenta(id_vehiculo)
+    const update_venta = (id_vehiculo, data) => db.update_venta(id_vehiculo, data)
     const getFavoritos = (id_cliente) => db.getFavoritos('vehiculos_favoritos', id_cliente)
     return {
         todos,
@@ -120,6 +122,8 @@ module.exports = function (dbIyectada){
         semejantesVehiculosCliente,
         eliminar,
         placas,
+        vehiculoVenta,
+        update_venta,
         verificaPlacas,
         vehiculosTallerSucursal,
         vehiculosPaginacion,

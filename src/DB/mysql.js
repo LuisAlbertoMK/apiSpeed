@@ -246,6 +246,20 @@ function VehiculosRelacionados(id_sucursal){
         })
     })
 }
+function vehiculoVenta(id_vehiculo){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`select * FROM datosvehiculoventa WHERE id_vehiculo = ${id_vehiculo}`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function update_venta(id_vehiculo, data) {
+    return new Promise((resolve, reject) => {
+      conexion.query(`UPDATE datosvehiculoventa SET ? WHERE id_vehiculo = ${id_vehiculo}`, data, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
 function vehiculosCliente(id){
     return new Promise((resolve, reject) =>{
         conexion.query(`call sp_vehiculosCliente(${id})`, (error, result) =>{ 
@@ -1360,6 +1374,8 @@ module.exports = {
     eliminaEleModPaqRecep,
     consultaModeloMarca,
     VehiculosRelacionados,
+    vehiculoVenta,
+    update_venta,
     vehiculosCliente,
     vehiculo,
     getCompatibles,
