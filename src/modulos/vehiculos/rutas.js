@@ -27,6 +27,7 @@ router.get('/vehiculoVenta/:id_venta', vehiculoVenta)
 router.get('/vehiculosPlacas/:id_cliente', vehiculosPlacas)
 router.get('/ventaVehiculoUnico/:id_vehiculo', ventaVehiculoUnico)
 router.get('/listaVehiculosClienteUnico/:id_cliente', listaVehiculosClienteUnico)
+router.get('/likeVehiculosSesionCliente', likeVehiculosSesionCliente)
 router.get('/verificaPlacas', verificaPlacas)
 router.get('/vehiculosTallerSucursal', vehiculosTallerSucursal)
 router.get('/vehiculosCliente', vehiculosCliente)
@@ -59,6 +60,13 @@ async function semejantes (req, res, next){
         }))
         const {total} = response[0]
         respuesta.success(req, res, {datos, total}, 200)
+    } catch (error) { next(error) }
+}
+async function likeVehiculosSesionCliente (req, res, next){
+    try {
+        const vehiculos =  await controlador.likeVehiculosSesionCliente(req.query)
+        const total = vehiculo.length
+        respuesta.success(req, res, {datos: vehiculos, total}, 200)
     } catch (error) { next(error) }
 }
 async function vehiculoVenta (req, res, next){

@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -253,6 +253,13 @@ function vehiculoVenta(id_vehiculo){
         })
     })
 }
+function listaTS(id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call talleresCliente(${id_cliente})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function update_venta(id_vehiculo, data) {
     return new Promise((resolve, reject) => {
       conexion.query(`UPDATE datosvehiculoventa SET ? WHERE id_vehiculo = ${id_vehiculo}`, data, (error, result) => {
@@ -436,6 +443,14 @@ function semejantesVehiculos(data){
     const {semejantes, id_taller,id_sucursal, limit, offset} = data
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL busquedaLikeVehiculos('${semejantes}',${id_taller},${id_sucursal},${limit},${offset});`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function likeVehiculosSesionCliente(data){
+    const {semejantes, id_cliente, limit, offset} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_likeVehiculosSesionCliente('${semejantes}',${id_cliente},${limit},${offset});`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -1375,6 +1390,7 @@ module.exports = {
     consultaModeloMarca,
     VehiculosRelacionados,
     vehiculoVenta,
+    listaTS,
     update_venta,
     vehiculosCliente,
     vehiculo,
@@ -1489,6 +1505,7 @@ module.exports = {
     moRefacciones,
     totalMoRefacciones,
     semejantesVehiculos,
+    likeVehiculosSesionCliente,
     semejantesVehiculosContador,
     registraElementosPaquetes,
     eliminaelementospaquete,

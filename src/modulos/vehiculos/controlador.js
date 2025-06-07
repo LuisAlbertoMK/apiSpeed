@@ -100,7 +100,7 @@ module.exports = function (dbIyectada){
     function updateFavoritosVehiculos( id_cliente,ids) {
         return db.updateFavoritosVehiculos('vehiculos_favoritos', {id_cliente,favoritos: ids})
     }
-
+    const likeVehiculosSesionCliente = (params) => db.likeVehiculosSesionCliente(params)
     
     const vehiculoVenta = (id_vehiculo) => db.vehiculoVenta(id_vehiculo)
     const update_venta = (id_vehiculo, data) => db.update_venta(id_vehiculo, data)
@@ -120,6 +120,7 @@ module.exports = function (dbIyectada){
         agregar,
         updateTallerSucursalVehiculos,
         semejantesVehiculosCliente,
+        likeVehiculosSesionCliente,
         eliminar,
         placas,
         vehiculoVenta,

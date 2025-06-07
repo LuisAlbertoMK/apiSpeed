@@ -10,11 +10,14 @@ const router = express.Router()
 router.get('/', todos)
 router.get('/talleresSemejantes', talleresSemejantes)
 router.get('/listaTalleresB', listaTalleresB)
+router.get('/listaTS/:id_cliente', listaTS)
 router.get('/:id_usuario', uno)
 router.post('/tallerActual', agregaTallerActual)
 router.post('/historialclientetaller', historialclientetaller)
+router.post('/nuevoTS', nuevoTS)
 router.post('/', agregar)
 router.put('/', eliminar)
+router.put('/eliminaTS', eliminaTS)
 router.patch('/:id_taller', UpdateDataParcial)
 
 
@@ -28,6 +31,14 @@ async function listaTalleresB (req, res, next){
     try {
         const {id_taller} = req.query
         const items =  await controlador.listaTalleresB(id_taller)
+        
+        respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+async function listaTS (req, res, next){
+    try {
+        const {id_cliente} = req.params
+        const items =  await controlador.listaTS(id_cliente)
         
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
@@ -68,6 +79,13 @@ async function historialclientetaller(req, res, next){
         respuesta.success(req, res, mensaje, 201)
     } catch (error) { next(error) }
 }
+async function nuevoTS(req, res, next){
+    try {
+        const items = await controlador.nuevoTS(req.body)
+        const {insertId} = items
+        respuesta.success(req, res, {id_cliente_taller_sucursal: insertId}, 201)
+    } catch (error) { next(error) }
+}
 async function UpdateDataParcial(req, res, next){
     try{
         const {id_taller} = req.params
@@ -79,6 +97,14 @@ async function UpdateDataParcial(req, res, next){
 async function eliminar(req, res, next){
     try {
         const items = await controlador.eliminar(req.body)
+        respuesta.success(req, res, 'item eliminado', 200)
+    } catch (error) {
+        next(error)
+    }
+}
+async function eliminaTS(req, res, next){
+    try {
+        const items = await controlador.eliminaTS(req.body)
         respuesta.success(req, res, 'item eliminado', 200)
     } catch (error) {
         next(error)
