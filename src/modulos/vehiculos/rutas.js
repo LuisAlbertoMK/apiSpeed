@@ -51,15 +51,9 @@ router.get('/contadorVehiculos/:id_cliente', contador)
 }
 async function semejantes (req, res, next){
     try {
-        const response =  await controlador.semejantesVehiculosContador(req.query)
-        const vehiculos =  await controlador.semejantesVehiculos(req.query)
-        const datos = await Promise.all(vehiculos.map(async vehiculo => {
-            const {id_cliente} = vehiculo
-            const data_cliente = await clientes.clienteUnico(id_cliente)
-            return {...vehiculo, data_cliente}
-        }))
-        const {total} = response[0]
-        respuesta.success(req, res, {datos, total}, 200)
+        const [total_r, datos] =  await controlador.semejantesVehiculos(req.query)
+        const {total} = total_r[0]
+        respuesta.success(req, res, {datos , total}, 200)
     } catch (error) { next(error) }
 }
 async function likeVehiculosSesionCliente (req, res, next){
@@ -108,6 +102,7 @@ async function vehiculo (req, res, next){
 }
 async function ventaVehiculoUnico (req, res, next){
     try {
+        console.log('asfg')
         const {id_vehiculo} = req.params
         const items =  await controlador.ventaVehiculoUnico(id_vehiculo)
         respuesta.success(req, res, items, 200)
@@ -180,16 +175,13 @@ async function update_venta(req, res, next) {
 
 async function vehiculos(req, res, next){
     try {
-        const  {total} = await controlador.VehiculosPaginacionTotales(req.query)
-        const vehiculos = await controlador.vehiculosPaginacion(req.query)
-        
-        const datos = await Promise.all(vehiculos.map(async vehiculo => {
-            const {id_cliente} = vehiculo
-            const data_cliente = await clientes.clienteUnico(id_cliente)
-            return {...vehiculo, data_cliente}
-        }))
-        
-        respuesta.success(req, res, {total, datos}, 200)
+        const response = await controlador.vehiculosPaginacion(req.query)
+        const total = response[0]
+        const {total_registros} = total[0]
+        respuesta.success(req, res, {
+            total: total_registros, 
+            datos: response[1]
+        }, 200)
     } catch (error) { next(error) }
 }
 
@@ -328,7 +320,7 @@ async function agregar(req, res, next){
 }
 async function ventaVehiculo(req, res, next){
     try {
-        const {id_vehiculo} = req.body
+        const { id_vehiculo } = req.body
         const items = await controlador.ventaVehiculo(req.body)
         mensaje  =  (items.insertId) ? items.insertId : id_vehiculo
         respuesta.success(req, res, mensaje, 201)

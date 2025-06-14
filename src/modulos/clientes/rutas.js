@@ -43,11 +43,9 @@ router.get('/:id_cliente', uno)
     async function clientes(req, res, next){
         try {
             const {id_taller, id_sucursal, limit, offset} = req.query
-            const totalClientesResponse = await controlador.clientesPaginacionTotales({id_taller, id_sucursal})
-            const ClientesResponse = await controlador.clientesPaginacionClientes({id_taller, id_sucursal, limit, offset})
-            const datos = ClientesResponse
-            const {total} = totalClientesResponse
-            respuesta.success(req, res, {total, datos}, 200)
+            const [totales, clientes] = await controlador.clientesPaginacionClientes({id_taller, id_sucursal, limit, offset})
+            const {total} = totales[0]
+            respuesta.success(req, res, {total, datos:clientes}, 200)
         } catch (error) { next(error) }
     }
 

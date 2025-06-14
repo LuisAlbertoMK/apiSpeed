@@ -37,10 +37,12 @@ module.exports = function (dbIyectada){
     function historialclientetaller(body){
         return db.agregar('historialclientetaller', body)
     }
+    informaciontallerN = (id_taller) => db.informaciontallerN(id_taller)
     listaTS = (id_cliente) => db.listaTS(id_cliente)
     nuevoTS = (body) => db.agregar('cliente_taller_sucursal', body)
     eliminaTS = ({id_cliente_taller_sucursal}) => db.eliminarQuery('cliente_taller_sucursal', {id_cliente_taller_sucursal})
     return {
+        informaciontallerN,
         todos,
         uno,
         UpdateDataParcial,

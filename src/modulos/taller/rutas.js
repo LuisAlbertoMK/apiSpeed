@@ -11,7 +11,8 @@ router.get('/', todos)
 router.get('/talleresSemejantes', talleresSemejantes)
 router.get('/listaTalleresB', listaTalleresB)
 router.get('/listaTS/:id_cliente', listaTS)
-router.get('/:id_usuario', uno)
+router.get('/unico/:id_taller', informaciontallerN)
+router.get('/:id_taller', uno)
 router.post('/tallerActual', agregaTallerActual)
 router.post('/historialclientetaller', historialclientetaller)
 router.post('/nuevoTS', nuevoTS)
@@ -51,11 +52,17 @@ async function talleresSemejantes (req, res, next){
 }
 async function uno(req, res, next){
     try {
-        const items = await controlador.uno(req.params.id_usuario)
+        const items = await controlador.uno(req.params.id_taller)
         respuesta.success(req, res, items[0], 200)
     } catch (error) {
         next(error)
     }
+}
+async function informaciontallerN(req, res, next){
+    try {
+        const items = await controlador.informaciontallerN(req.params.id_taller)
+        respuesta.success(req, res, items[0], 200)
+    } catch (error) { next(error) }
 }
 async function agregar(req, res, next){
     try {

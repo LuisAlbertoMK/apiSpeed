@@ -59,7 +59,7 @@ module.exports = function (dbIyectada){
         return db.semejantesVehiculosCliente(data)
     }
     function semejantesVehiculos(semejantes){
-        return db.semejantesVehiculos(semejantes)
+        return db.semejantesV(semejantes)
     }
     function semejantesVehiculosContador(semejantes){
         return db.semejantesVehiculosContador(semejantes)

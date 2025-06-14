@@ -158,8 +158,16 @@ function VehiculosPaginacionTotales(data){
 function vehiculosPaginacion(data){
     const {id_taller,id_sucursal,limit,offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`call spPaginacionVehiculos(${id_taller},${id_sucursal},${limit},${offset},'','','')`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result[0])
+        conexion.query(`call spPaginacionVehiculos(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function semejantesV(data){
+    const {semejantes,id_taller,id_sucursal,limit,offset} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_likeVehiculosN('${semejantes}', ${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
         })
     })
 }
@@ -519,8 +527,8 @@ function clientesPaginacionTotales(data){
 function clientesPaginacionClientes(data){
     const {id_taller, id_sucursal, limit, offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`call spclientesPaginacionClientes(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result[0])
+        conexion.query(`call ConsultarClientesPorTallerYSucursal(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
         })
     })
 }
@@ -1168,6 +1176,13 @@ function informaciontaller(id_usuario){
         })
     })
 }
+function informaciontallerN(id_taller){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_informaciontallerN(${id_taller})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function UpdateDataParcial(id_taller, data){
     return new Promise((resolve, reject) =>{
         conexion.query(`UPDATE taller SET? WHERE id_taller = ${id_taller}`, data, (error, result) => {
@@ -1443,6 +1458,7 @@ module.exports = {
     consultacorreo,
     usuariosRol,
     informaciontaller,
+    informaciontallerN,
     empresasTaller,
     clientesTallerSucursal,
     onlyDataClientebasica,
@@ -1490,6 +1506,7 @@ module.exports = {
     clientesPaginacionTotales,
     clientesPaginacionClientes,
     vehiculosPaginacion,
+    semejantesV,
     clienteVehiculos,
     sp_pagVehiculosVenta,
     vehiculosPlacas,
