@@ -1371,7 +1371,25 @@ function usuariosrol() {
         })
     })
   }
+  function historial_cotizaciones(id_cliente, id_vehiculo, limit, offset){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_hitorialVehiculo(${id_cliente}, ${id_vehiculo}, ${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+  }
+  function historial_recepciones(id_cliente, id_vehiculo, limit, offset){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_historialRececpiones(${id_cliente}, ${id_vehiculo}, ${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+  }
+
+
 module.exports = {
+    historial_cotizaciones,
+    historial_recepciones,
     tutoriales,
     patchTutoriales,
     usuariosrol,

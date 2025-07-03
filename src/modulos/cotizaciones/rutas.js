@@ -12,18 +12,25 @@ const reportes = require('../reportecotizacion')
 
 const router = express.Router()
 
-router.get('/', todos)
-router.get('/basicas', basicas)
-router.get('/favoritos/:id_cliente', favoritos)
-router.get('/cliente/:id_cliente', cotizacionesCliente)
-router.get('/pagCotCliente', pagCotCliente)
-router.post('/', agregar)
-router.patch('/update/:id_cotizacion', actualizaData )
-router.put('/', eliminar)
-router.get('/no_cotizacion/:no_cotizacion', no_cotizacion)
-router.get('/cotizacionesVehiculo/:id_vehiculo', cotizacionesVehiculo )
-router.get('/cotizacionesClienteBasic', cotizacionesClienteBasic )
-router.get('/:id_cotizacion', uno)
+// Rutas específicas primero
+router.get('/basicas', basicas);
+router.get('/historial', historial);
+router.get('/favoritos/:id_cliente', favoritos);
+router.get('/getconsultaCotizacionUicaHistorial/:id_cotizacion', getconsultaCotizacionUicaHistorial);
+router.get('/cliente/:id_cliente', cotizacionesCliente);
+router.get('/pagCotCliente', pagCotCliente);
+router.get('/no_cotizacion/:no_cotizacion', no_cotizacion);
+router.get('/cotizacionesVehiculo/:id_vehiculo', cotizacionesVehiculo);
+router.get('/cotizacionesClienteBasic', cotizacionesClienteBasic);
+
+// Rutas con acciones de escritura
+router.post('/', agregar);
+router.patch('/update/:id_cotizacion', actualizaData);
+router.put('/', eliminar);
+
+// Ruta genérica al final
+router.get('/', todos);
+router.get('/:id_cotizacion', uno);
 
 
 async function actualizaData(req, res, next){
@@ -81,6 +88,18 @@ async function todos (req, res, next){
     } catch (error) {
         next(error)
     }
+}
+
+async function historial(req, res, next){
+    try {
+        const {id_cliente, id_vehiculo, limit, offset} = req.query
+        const response = await controlador.historial_cotizaciones(id_cliente, id_vehiculo, limit, offset)
+        const total = response[0]
+        const {total_registros} = total[0]
+        respuesta.success(req, res, 
+            { total: total_registros, datos: response[1] }, 
+            200)
+    } catch (error) { next(error) }
 }
 async function no_cotizacion(req, res, next){
     try {
@@ -173,4 +192,68 @@ async function uno(req, res, next){
         respuesta.success(req, res, dataRecepcion, 200)
     } catch (error) { next(error) }
 }
+async function getconsultaCotizacionUicaHistorial(req, res, next){
+    try {
+        const {id_cotizacion} = req.params 
+        const elementos = await elementos_cotizacion.uno(id_cotizacion)
+        const newElementos = await Promise.all(
+            elementos.map(async (e) => {
+                if (e.id_paquete) {
+                const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificado(
+                    id_cotizacion,
+                    e['id_paquete'],
+                    e['id_eleCotizacion']
+                );
+                if (detallePaqueteResp && detallePaqueteResp.length > 0) {
+                    e['elementos'] = [...detallePaqueteResp];
+                    e.nombre = detallePaqueteResp[0].paquete || 'Paquete sin nombre';
+                    e['tipo'] = 'paquete';
+                }
+                }
+                return e;
+            })
+            );
+        respuesta.success(req, res, newElementos, 200)
+    } catch (error) { next(error) }
+}
+// cotizaciones.controller.js
+// const getconsultaCotizacionUicaHistorial = async (req, res, next) => {
+//   try {
+//     const { id_cotizacion } = req.params;
+
+//     // Validar id_cotizacion
+//     if (!id_cotizacion || isNaN(parseInt(id_cotizacion))) {
+//       return res.status(400).json({ error: 'ID de cotización inválido' });
+//     }
+
+//     const elementos = await elementos_cotizacion.uno(id_cotizacion);
+//     if (!elementos || elementos.length === 0) {
+//       return res.status(404).json({ error: 'Cotización no encontrada', total: 0, datos: [] });
+//     }
+
+//     const newElementos = await Promise.all(
+//       elementos.map(async (e) => {
+//         if (e.id_paquete) {
+//           const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificado(
+//             id_cotizacion,
+//             e['id_paquete'],
+//             e['id_eleCotizacion']
+//           );
+//           if (detallePaqueteResp && detallePaqueteResp.length > 0) {
+//             e['elementos'] = [...detallePaqueteResp];
+//             e.nombre = detallePaqueteResp[0].paquete || 'Paquete sin nombre';
+//             e['tipo'] = 'paquete';
+//           }
+//         }
+//         return e;
+//       })
+//     );
+
+//     // Formato de respuesta compatible con el frontend
+//     respuesta.success(req, res, { total: newElementos.length, datos: newElementos }, 200);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 module.exports = router

@@ -98,9 +98,14 @@ module.exports = function (dbIyectada){
     const  favoritosRecepciones = (id_cliente, idsVehiculos) =>{
         return db.favoritosRecepciones(id_cliente, idsVehiculos)
     }
+     const historial_recepciones = (id_cliente, id_vehiculo, limit, offset) => {
+        console.log(id_cliente, id_vehiculo, limit, offset)
+        return db.historial_recepciones(id_cliente, id_vehiculo, limit, offset)
+    }
    
 
     return {
+        historial_recepciones,
         OnlyData,
         elementos,
         recepcionesCliente,

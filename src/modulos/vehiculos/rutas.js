@@ -178,10 +178,7 @@ async function vehiculos(req, res, next){
         const response = await controlador.vehiculosPaginacion(req.query)
         const total = response[0]
         const {total_registros} = total[0]
-        respuesta.success(req, res, {
-            total: total_registros, 
-            datos: response[1]
-        }, 200)
+        respuesta.success(req, res, { total: total_registros, datos: response[1] },  200)
     } catch (error) { next(error) }
 }
 

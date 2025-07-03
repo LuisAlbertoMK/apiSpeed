@@ -16,6 +16,7 @@ const sucursales = require('../sucursales')
 const router = express.Router()
 
 router.get('/', servicios)
+router.get('/historialVehiculo', historialVehiculo)
 router.get('/recepcionesFechas', recepcionesFechas)
 router.get('/administracion', administracion)
 router.get('/favoritos/:id_cliente', favoritos)
@@ -30,11 +31,25 @@ router.patch('/update/:id_recepcion',updateRecepcion)
 router.get('/vehiculos', RecepcionesVehiculoConsulta)
 router.get('/recepcionesVehiculo/:id_vehiculo', recepcionesVehiculo)
 router.get('/recepcionesClienteB/:id_cliente', recepcionesClienteB)
+router.get('/consultaRecepcionUicaHistorial/:id_recepcion', consultaRecepcionUicaHistorial)
 router.put('/', eliminar)
 router.get('/onlyData/:id_recepcion', OnlyData)
 router.get('/elementosRecepciones/:id_recepcion', elementos)
 router.get('/:id_recepcion', uno)
 
+
+
+async function historialVehiculo(req, res, next){
+    try {
+        const {id_cliente, id_vehiculo, limit, offset} = req.query
+        const response = await controlador.historial_recepciones(id_cliente, id_vehiculo, limit, offset)
+        const total = response[0]
+        const {total_registros} = total[0]
+        respuesta.success(req, res, 
+            { total: total_registros, datos: response[1] }, 
+            200)
+    } catch (error) { next(error) }
+}
 async function OnlyData(req, res, next){
     try {
         const {id_recepcion} = req.params        
@@ -212,6 +227,42 @@ async function uno(req, res, next){
         const {id_cliente: idVOb} = data_vehiculo
         if(idVOb === id_cliente){
             dataRecepcion.data_vehiculo = data_vehiculo
+        }
+        respuesta.success(req, res, dataRecepcion, 200)
+    } catch (error) { next(error) }
+}
+
+async function consultaRecepcionUicaHistorial(req, res, next){
+    try {
+        const {id_recepcion} = req.params
+        if (!id_recepcion || isNaN(id_recepcion) || id_recepcion <= 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'El parámetro id_recepcion es inválido',
+            });
+        }      
+        const recepcion = await controlador.getRecepcion(id_recepcion)
+        const {id_tecnico} = recepcion
+        if(id_tecnico){
+            const {usuario} = await tecnicos.uno(id_tecnico)
+            recepcion.tecnico = usuario
+        }
+        const elementos = await elementos_recepcion.uno(id_recepcion)
+        
+        const newElementos = await Promise.all(elementos.map(async e => {
+            if (e.id_paquete > 0) {
+                const detallePaqueteResp = 
+                await mod_paquetes.ObtenerDetallePaqueteModificadoRecep(id_recepcion, e['id_paquete'],e['id_eleRecepcion'] )
+                e['elementos'] = [...detallePaqueteResp];
+                e.nombre = detallePaqueteResp[0]?.paquete
+                e['tipo'] = 'paquete'
+            }
+            return e
+        }))
+        const dataRecepcion = 
+        {
+            ...recepcion, 
+            elementos: newElementos || []
         }
         respuesta.success(req, res, dataRecepcion, 200)
     } catch (error) { next(error) }
