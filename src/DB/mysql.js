@@ -625,6 +625,30 @@ function sp_cotizacionesClienteBasic(id_cliente, id_taller){
         })
     })
 }
+function sp_cotizacionesBSC(id_cliente, limite, omitir){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_cotizacionesBSC(${id_cliente},${limite},${omitir})`, 
+        (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function sp_pagCotizacionesBSC(id_cliente, limite, omitir){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_pagCotizacionesBSC(${id_cliente},${limite},${omitir})`, 
+        (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function sp_recepcionesBS(id_cliente, limite, omitir){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_recepcionesBS(${id_cliente},${limite},${omitir})`, 
+        (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
 function cotizacionesBasicas(data) {
     const {id_taller, id_sucursal, start, end, limit, offset} = data
     return new Promise((resolve, reject) => {
@@ -1434,6 +1458,9 @@ module.exports = {
     contadorCategorias,
     consultaCotizaciones,
     sp_cotizacionesClienteBasic,
+    sp_cotizacionesBSC,
+    sp_pagCotizacionesBSC,
+    sp_recepcionesBS,
     cotizacionesBasicas,
     cotizacionesBasicasContador,
     consultaCotizacion,
