@@ -282,6 +282,13 @@ function vehiculosCliente(id){
         })
     })
 }
+function sp_vehiculosCliente(id){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_vehiculosCliente(${id})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
 function vehiculo(id_vehiculo){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_vehiculo(${id_vehiculo})`, (error, result) =>{ 
@@ -1450,6 +1457,7 @@ module.exports = {
     listaTS,
     update_venta,
     vehiculosCliente,
+    sp_vehiculosCliente,
     vehiculo,
     getCompatibles,
     sucursalesEmpresas,

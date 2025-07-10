@@ -145,9 +145,9 @@ async function updateKilometraje(data) {
 }
 async function favoritos(req, res, next) {
     try {
-        const {vehiculos, id_cliente} = req.body
+        const {vehiculos, id_cliente, limite} = req.body
         
-        const newV = [...new Set(vehiculos)].slice(0,5);
+        const newV = [...new Set(vehiculos)].slice(0,parseInt(limite,10));
 
         const response = await controlador.updateFavoritosVehiculos(id_cliente, newV.toString())
         respuesta.success(req, res, response, 200)
@@ -233,7 +233,7 @@ async function vehiculosTallerSucursal (req, res, next){
 }
 async function vehiculosCliente (req, res, next){
     try {
-        const items =  await controlador.vehiculosCliente(req.query.id_cliente)
+        const items =  await controlador.sp_vehiculosCliente(req.query.id_cliente)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error)}
 }

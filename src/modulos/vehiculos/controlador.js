@@ -31,9 +31,7 @@ module.exports = function (dbIyectada){
     function eliminar(body){
         return db.eliminar(TABLA, body)
     }
-    function vehiculosCliente(id_cliente){
-        return db.sp_vehiculosCliente(id_cliente)
-    }
+    const sp_vehiculosCliente = (id_cliente) => db.sp_vehiculosCliente(id_cliente)
     function placas(){
         return db.placas(TABLA)
     }
@@ -138,7 +136,8 @@ module.exports = function (dbIyectada){
         ventaVehiculo,
         ventaVehiculoUnico,
         sp_pagVehiculosVenta,
-        contadorVehiculosVenta
+        contadorVehiculosVenta,
+        sp_vehiculosCliente
     }
     
 }
