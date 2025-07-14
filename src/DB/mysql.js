@@ -275,6 +275,13 @@ function update_venta(id_vehiculo, data) {
       })
     })
   }
+function patchVenta(id_vehiculo, enVenta) {
+    return new Promise((resolve, reject) => {
+      conexion.query(`UPDATE vehiculos SET ? WHERE id_vehiculo = ${id_vehiculo}`, {enVenta}, (error, result) => {
+        return error? reject(error) : resolve(result[0])
+      })
+    })
+  }
 function vehiculosCliente(id){
     return new Promise((resolve, reject) =>{
         conexion.query(`call sp_vehiculosCliente(${id})`, (error, result) =>{ 
@@ -463,9 +470,13 @@ function semejantesVehiculos(data){
     })
 }
 function likeVehiculosSesionCliente(data){
-    const {semejantes, id_cliente, limit, offset} = data
+    const {semejantes, id_cliente, limit, offset, enVenta} = data
+    console.log( typeof enVenta);
+    const venta = enVenta === 'true'
+    console.log( typeof venta);
+    
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_likeVehiculosSesionCliente('${semejantes}',${id_cliente},${limit},${offset});`, (error, result) =>{ 
+        conexion.query(`CALL sp_likeVehiculosSesionCliente('${semejantes}',${id_cliente},${limit},${offset},${venta});`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -1456,6 +1467,7 @@ module.exports = {
     vehiculoVenta,
     listaTS,
     update_venta,
+    patchVenta,
     vehiculosCliente,
     sp_vehiculosCliente,
     vehiculo,

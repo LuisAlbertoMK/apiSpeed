@@ -100,11 +100,13 @@ module.exports = function (dbIyectada){
     }
     const likeVehiculosSesionCliente = (params) => db.likeVehiculosSesionCliente(params)
     
+    const patchVenta = (id_vehiculo, enVenta) => db.patchVenta(id_vehiculo, enVenta)
     const vehiculoVenta = (id_vehiculo) => db.vehiculoVenta(id_vehiculo)
     const update_venta = (id_vehiculo, data) => db.update_venta(id_vehiculo, data)
     const getFavoritos = (id_cliente) => db.getFavoritos('vehiculos_favoritos', id_cliente)
     return {
         todos,
+        patchVenta,
         vehiculosPlacas,
         vehiculosCliente,
         vehiculosCiente,

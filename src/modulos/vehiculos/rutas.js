@@ -24,6 +24,8 @@ router.get('/getfavoritos/:id_cliente', getfavoritos)
 router.get('/semejantes', semejantes)
 router.get('/vehiculoVenta/:id_venta', vehiculoVenta)
 
+router.patch('/patchVenta/:id_vehiculo', patchVenta);
+
 router.get('/vehiculosPlacas/:id_cliente', vehiculosPlacas)
 router.get('/ventaVehiculoUnico/:id_vehiculo', ventaVehiculoUnico)
 router.get('/listaVehiculosClienteUnico/:id_cliente', listaVehiculosClienteUnico)
@@ -39,6 +41,7 @@ router.get('/fulldata/:id_vehiculo', vehiculo)
 router.get('/semejantesVehiculosCliente', semejantesVehiculosCliente)
 router.get('/:id_vehiculo', uno)
 router.get('/contadorVehiculos/:id_cliente', contador)
+router.get('/patchVenta/:id_vehiculo', patchVenta)
 
 
  async function contador (req, res, next) {
@@ -47,6 +50,14 @@ router.get('/contadorVehiculos/:id_cliente', contador)
         const items = await controlador.contadorVehiculos(id_cliente)
         const {total} = items[0]
         respuesta.success(req, res, total , 200)
+    } catch (error) { next(error) }
+}
+ async function patchVenta (req, res, next) {
+    try {
+        const {id_vehiculo} = req.params
+        const {enVenta} = req.body
+        const items = await controlador.patchVenta(id_vehiculo, enVenta)
+        respuesta.success(req, res, items , 200)
     } catch (error) { next(error) }
 }
 async function semejantes (req, res, next){
