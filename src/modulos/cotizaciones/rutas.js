@@ -23,6 +23,7 @@ router.get('/no_cotizacion/:no_cotizacion', no_cotizacion);
 router.get('/cotizacionesVehiculo/:id_vehiculo', cotizacionesVehiculo);
 router.get('/cotizacionesClienteBasic', cotizacionesClienteBasic);
 router.get('/sp_cotizacionesBSC', sp_cotizacionesBSC);
+router.get('/sp_cotizacionesBSCFavoritos', sp_cotizacionesBSCFavoritos);
 router.get('/sp_pagCotizacionesBSC', sp_pagCotizacionesBSC);
 
 // Rutas con acciones de escritura
@@ -133,6 +134,15 @@ async function sp_cotizacionesBSC(req, res, next){
     try {
         const {id_cliente, limit, offset} = req.query
         const response = await controlador.sp_cotizacionesBSC(id_cliente, limit, offset)
+        const total = response[0]
+        const {total_registros} = total[0]
+        respuesta.success(req, res, { total: total_registros, datos: response[1] }, 200)
+    } catch (error) { next(error) }
+}
+async function sp_cotizacionesBSCFavoritos(req, res, next){
+    try {
+        const {id_cliente, limit, offset, id_vehiculos} = req.query
+        const response = await controlador.sp_cotizacionesBSCFavoritos(id_cliente, limit, offset, id_vehiculos)
         const total = response[0]
         const {total_registros} = total[0]
         respuesta.success(req, res, { total: total_registros, datos: response[1] }, 200)

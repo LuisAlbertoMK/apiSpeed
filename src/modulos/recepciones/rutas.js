@@ -27,6 +27,7 @@ router.get('/coincidencias', coincidencias)
 router.get('/aceptados', aceptados)
 router.get('/recepcionesIDs', recepcionesIDs)
 router.get('/sp_recepcionesBS', sp_recepcionesBS)
+router.get('/sp_recepcionesBSFavoritos', sp_recepcionesBSFavoritos)
 router.post('/', agregar)
 router.patch('/update/:id_recepcion',updateRecepcion)
 router.get('/vehiculos', RecepcionesVehiculoConsulta)
@@ -101,6 +102,15 @@ async function sp_recepcionesBS(req, res, next){
     try {
            const {id_cliente, limit, offset} = req.query
            const response = await controlador.sp_recepcionesBS(id_cliente, limit, offset)
+           const total = response[0]
+           const {total_registros} = total[0]
+           respuesta.success(req, res, { total: total_registros, datos: response[1] }, 200)
+       } catch (error) { next(error) }
+}
+async function sp_recepcionesBSFavoritos(req, res, next){
+    try {
+           const {id_cliente, limit, offset,id_vehiculos} = req.query
+           const response = await controlador.sp_recepcionesBSFavoritos(id_cliente, limit, offset,id_vehiculos)
            const total = response[0]
            const {total_registros} = total[0]
            respuesta.success(req, res, { total: total_registros, datos: response[1] }, 200)
@@ -245,18 +255,6 @@ async function uno(req, res, next){
 async function consultaRecepcionUicaHistorial(req, res, next){
     try {
         const {id_recepcion} = req.params
-        if (!id_recepcion || isNaN(id_recepcion) || id_recepcion <= 0) {
-            return res.status(400).json({
-                success: false,
-                error: 'El parámetro id_recepcion es inválido',
-            });
-        }      
-        const recepcion = await controlador.getRecepcion(id_recepcion)
-        const {id_tecnico} = recepcion
-        if(id_tecnico){
-            const {usuario} = await tecnicos.uno(id_tecnico)
-            recepcion.tecnico = usuario
-        }
         const elementos = await elementos_recepcion.uno(id_recepcion)
         
         const newElementos = await Promise.all(elementos.map(async e => {
@@ -269,12 +267,8 @@ async function consultaRecepcionUicaHistorial(req, res, next){
             }
             return e
         }))
-        const dataRecepcion = 
-        {
-            ...recepcion, 
-            elementos: newElementos || []
-        }
-        respuesta.success(req, res, dataRecepcion, 200)
+        
+        respuesta.success(req, res, newElementos, 200)
     } catch (error) { next(error) }
 }
 async function agregar(req, res, next){

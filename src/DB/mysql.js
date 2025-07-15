@@ -651,6 +651,14 @@ function sp_cotizacionesBSC(id_cliente, limite, omitir){
         })
     })
 }
+function sp_cotizacionesBSCFavoritos(id_cliente, limite, omitir,id_vehiculos){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_cotizacionesBSCFavoritos(${id_cliente},${limite},${omitir},'${id_vehiculos}')`, 
+        (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
 function sp_pagCotizacionesBSC(id_cliente, limite, omitir){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_pagCotizacionesBSC(${id_cliente},${limite},${omitir})`, 
@@ -662,6 +670,14 @@ function sp_pagCotizacionesBSC(id_cliente, limite, omitir){
 function sp_recepcionesBS(id_cliente, limite, omitir){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_recepcionesBS(${id_cliente},${limite},${omitir})`, 
+        (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function sp_recepcionesBSFavoritos(id_cliente, limite, omitir,id_vehiculos){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_recepcionesBSFavoritos(${id_cliente},${limite},${omitir},'${id_vehiculos}')`, 
         (error, result) =>{
             return error ? reject(error) : resolve(result)
         })
@@ -1479,8 +1495,10 @@ module.exports = {
     consultaCotizaciones,
     sp_cotizacionesClienteBasic,
     sp_cotizacionesBSC,
+    sp_cotizacionesBSCFavoritos,
     sp_pagCotizacionesBSC,
     sp_recepcionesBS,
+    sp_recepcionesBSFavoritos,
     cotizacionesBasicas,
     cotizacionesBasicasContador,
     consultaCotizacion,

@@ -98,7 +98,9 @@ module.exports = function (dbIyectada){
     const  favoritosRecepciones = (id_cliente, idsVehiculos) =>{
         return db.favoritosRecepciones(id_cliente, idsVehiculos)
     }
-    const  sp_recepcionesBS = (id_cliente, idsVehiculos) => db.sp_recepcionesBS(id_cliente, idsVehiculos)
+    const  sp_recepcionesBS = (id_cliente, limit,offset) => db.sp_recepcionesBS(id_cliente, limit,offset)
+
+    const  sp_recepcionesBSFavoritos = (id_cliente,limit,offset,idsVehiculos) => db.sp_recepcionesBSFavoritos(id_cliente,limit,offset,idsVehiculos)
     
      const historial_recepciones = (id_cliente, id_vehiculo, limit, offset) => {
         console.log(id_cliente, id_vehiculo, limit, offset)
@@ -108,6 +110,7 @@ module.exports = function (dbIyectada){
 
     return {
         sp_recepcionesBS,
+        sp_recepcionesBSFavoritos,
         historial_recepciones,
         OnlyData,
         elementos,
