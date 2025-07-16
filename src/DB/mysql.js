@@ -543,9 +543,9 @@ function clientesPaginacionTotales(data){
     })
 }
 function clientesPaginacionClientes(data){
-    const {id_taller, id_sucursal, limit, offset} = data
+    const {id_taller, id_sucursal, limit, offset, direction, active} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`call ConsultarClientesPorTallerYSucursal(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+        conexion.query(`call ConsultarClientesPorTallerYSucursal(${id_taller},${id_sucursal},${limit},${offset},'${direction}','${active}')`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
     })
