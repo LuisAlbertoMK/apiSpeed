@@ -470,10 +470,10 @@ function semejantesVehiculos(data){
     })
 }
 function likeVehiculosSesionCliente(data){
+
     const {semejantes, id_cliente, limit, offset, enVenta} = data
-    console.log( typeof enVenta);
-    const venta = enVenta === 'true'
-    console.log( typeof venta);
+
+    const venta = typeof enVenta === 'boolean' ? enVenta :  enVenta === 'true' 
     
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_likeVehiculosSesionCliente('${semejantes}',${id_cliente},${limit},${offset},${venta});`, (error, result) =>{ 

@@ -58,6 +58,7 @@ app.set('port', config.app.port)
 const whiteList=[
   'https://speed-pro-desarrollo.web.app',
   'https://serverstripe.onrender.com',
+  'https://apputos.app',
   'http://localhost:4200','http://localhost:4242'];
 
 // Configuración de CORS
