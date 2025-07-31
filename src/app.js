@@ -60,7 +60,7 @@ const whiteList=[
   'https://serverstripe.onrender.com',
   'https://apputos.app',
   'http://localhost:4200','http://localhost:4242'];
-
+ 
 // Configuración de CORS
 const corsOptions = {
   origin: function (origin, callback) {

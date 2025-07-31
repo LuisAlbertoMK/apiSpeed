@@ -4,7 +4,7 @@ module.exports = {
         port: process.env.PORT || 3000,
     },
     jwt:{
-        secret: process.env.JET_SECRET || 'notaSecreta'
+        secret: process.env.JWT_SECRET || 'MtY845@_1gts'
     },
     mariadb:{
         host: process.env.MYSQL_HOST || 'speed-desarrollo.c9uymykace33.us-east-2.rds.amazonaws.com',

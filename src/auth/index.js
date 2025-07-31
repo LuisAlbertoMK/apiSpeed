@@ -13,7 +13,7 @@ function verificarToken(token) {
 const chequearToken =  {
     confirmarToken: function (req) {
         const decodificado = decodificarCabecera(req)
-        // if (decodificado.id !== id) throw new Error('No puedes hacer esto')
+        if (decodificado.id !== id) throw new Error('No puedes hacer esto')
     }
 }
 function obtenerToken(autorizacion){

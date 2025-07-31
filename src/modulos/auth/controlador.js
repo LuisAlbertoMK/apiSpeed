@@ -22,13 +22,7 @@ module.exports = function (dbIyectada){
             })
         if (token) {
             const newData =  await db.dataUsuario( data.id_usuario)
-            console.log(newData)
             dataUsuario = newData[0]
-            // taller  = await db.query('taller', {id_taller: dataUsuario.id_taller})
-            // if (dataUsuario.id_sucursal) {
-            //     const newSucursal = await db.sucursalUnica(dataUsuario.id_taller, dataUsuario.id_sucursal)
-            //     sucursal = newSucursal[0]
-            // }
             unico = {...dataUsuario, token}
         }
         return unico
