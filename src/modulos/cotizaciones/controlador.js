@@ -68,8 +68,8 @@ module.exports = function (dbIyectada){
     function cotizacionesVehiculo(id_vehiculo){
         return db.cotizacionesVehiculo(id_vehiculo)
     }
-    function cotizacionesClienteBasic(id_cliente, id_taller){
-        return db.sp_cotizacionesClienteBasic(id_cliente, id_taller)
+    function cotizacionesClienteBasic(data){
+        return db.sp_cotizacionesClienteBasic(data)
     }
 
     const historial_cotizaciones = (id_cliente, id_vehiculo, limit, offset) => {

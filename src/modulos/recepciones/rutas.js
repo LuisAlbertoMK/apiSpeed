@@ -32,7 +32,7 @@ router.post('/', agregar)
 router.patch('/update/:id_recepcion',updateRecepcion)
 router.get('/vehiculos', RecepcionesVehiculoConsulta)
 router.get('/recepcionesVehiculo/:id_vehiculo', recepcionesVehiculo)
-router.get('/recepcionesClienteB/:id_cliente', recepcionesClienteB)
+router.get('/recepcionesClienteB', recepcionesClienteB)
 router.get('/consultaRecepcionUicaHistorial/:id_recepcion', consultaRecepcionUicaHistorial)
 router.put('/', eliminar)
 router.get('/onlyData/:id_recepcion', OnlyData)
@@ -86,9 +86,10 @@ async function elementos(req, res, next){
 }
 async function recepcionesFechas(req, res, next){
     try {
-        const items =  await controlador.recepcionesFechas(req.query)
-        const {total} = await controlador.recepcionesFechasContador(req.query)
-        respuesta.success(req, res, {total,  datos:items}, 200)
+        const answer =  await controlador.recepcionesFechas(req.query)
+        const datos = answer[0] || [];
+        const total = answer[1][0]?.total || 0;
+        respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }
 async function recepcionesIDs(req, res, next){
@@ -171,15 +172,20 @@ async function todos (req, res, next){
 }
 async function recepcionesClienteB (req, res, next){
     try {
-        const {id_cliente} = req.params
-        const {id_taller, mismo} = req.query
-        let items = []
-        if(mismo){
-            items =  await controlador.sp_recepcionesMismoTaller(id_cliente, id_taller)
-        }else{
-            items =  await controlador.recepcionesBasicasOtroTaller(id_cliente, id_taller)
-        }
-        respuesta.success(req, res, items, 200)
+        // const {id_cliente} = req.params
+        // const {id_taller, mismo} = req.query
+        // let items = []
+        // if(mismo){
+        //     items =  await controlador.sp_recepcionesMismoTaller(id_cliente, id_taller)
+        // }else{
+        //     items =  await controlador.recepcionesBasicasOtroTaller(id_cliente, id_taller)
+        // }
+        const {id_cliente, id_taller, id_sucursal, active, direction, limit, offset} = req.query
+        const answer = await controlador.sp_recepcionesMismoTaller({id_cliente, id_taller, id_sucursal, active, direction, limit, offset})
+        const datos = answer[0] || []; // Primer result set
+        const total = answer[1][0]?.total || 0 ; // Segundo result set
+
+        respuesta.success(req, res, { total, datos }, 200);
     } catch (error) { next(error) }
 }
 async function recepcionesTaller (req, res, next){

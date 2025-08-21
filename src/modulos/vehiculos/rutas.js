@@ -13,6 +13,7 @@ const reportes = require('../reportes')
 const router = express.Router()
 
 router.get('/', vehiculos)
+router.get('/vehiculoscliente', vehiculoscliente)
 router.post('/', agregar)
 router.post('/ventaVehiculo', ventaVehiculo)
 router.patch('/', updateKilometraje)
@@ -113,7 +114,6 @@ async function vehiculo (req, res, next){
 }
 async function ventaVehiculoUnico (req, res, next){
     try {
-        console.log('asfg')
         const {id_vehiculo} = req.params
         const items =  await controlador.ventaVehiculoUnico(id_vehiculo)
         respuesta.success(req, res, items, 200)
@@ -186,10 +186,27 @@ async function update_venta(req, res, next) {
 
 async function vehiculos(req, res, next){
     try {
-        const response = await controlador.vehiculosPaginacion(req.query)
-        const total = response[0]
-        const {total_registros} = total[0]
-        respuesta.success(req, res, { total: total_registros, datos: response[1] },  200)
+        // const response = await controlador.vehiculosPaginacion(req.query)
+        // console.log(response);
+        
+        // respuesta.success(req, res, {datos: [], total: 0},  200)
+
+        const {semejantes,id_taller, id_sucursal, limit, offset, direction, active} = req.query
+        const answer = await controlador.vehiculosPaginacion({semejantes,id_taller, id_sucursal, limit, offset, direction, active})
+        const datos = answer[0];
+        const total = answer[1][0]?.total || [];
+        respuesta.success(req, res, {total, datos}, 200)
+
+    } catch (error) { next(error) }
+}
+async function vehiculoscliente(req, res, next){
+    try {
+        const {id_cliente,id_taller, id_sucursal, limit, offset, direction, active} = req.query
+        const answer = await controlador.vehiculoscliente({id_cliente,id_taller, id_sucursal, limit, offset, direction, active})
+        const datos = answer[0];
+        const total = answer[1][0]?.total || [];
+        respuesta.success(req, res, {total, datos}, 200)
+
     } catch (error) { next(error) }
 }
 

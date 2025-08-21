@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const config = require('./config')
+
 const cors = require('cors')
 
 
@@ -46,6 +47,8 @@ const obtenerToken= require('./modulos/obtenerToken/rutas')
 const tutoriales= require('./modulos/tutoriales/rutas')
 const pagos= require('./modulos/pagos/rutas')
 const clienterequest= require('./modulos/clienterequest/rutas')
+
+
 
 const app = express()
 // Middleware

@@ -46,9 +46,10 @@ async function actualizaData(req, res, next){
 }
 async function basicas(req, res, next){
     try {
-        const datos = await controlador.cotizacionesBasicas(req.query)
-        const {total} = await controlador.cotizacionesBasicasContador(req.query)
-        respuesta.success(req, res, {total, datos: datos}, 200)
+        const answer = await controlador.cotizacionesBasicas(req.query)
+        const datos = answer[0] || [];
+        const total = answer[1][0]?.total || 0;
+        respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }
 async function cotizacionesCliente(req, res, next){
@@ -123,9 +124,13 @@ async function cotizacionesVehiculo(req, res, next){
 }
 async function cotizacionesClienteBasic(req, res, next){
     try {
-        const {id_cliente, id_taller} = req.query
-        const items = await controlador.cotizacionesClienteBasic(id_cliente, id_taller)
-        respuesta.success(req, res, items, 200)
+        const {id_cliente, id_taller, id_sucursal, active, direction, limit, offset} = req.query
+        const answer = await controlador.cotizacionesClienteBasic({id_cliente, id_taller, id_sucursal, active, direction, limit, offset})
+        
+        const datos = answer[0] || []; // Primer result set
+        const total = answer[1][0]?.total || 0 ; // Segundo result set
+
+        respuesta.success(req, res, { total, datos }, 200);
     } catch (error) {
         next(error)
     }

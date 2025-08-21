@@ -1,6 +1,6 @@
+
 const  mysql = require('mysql')
 const config = require('../config')
-
 const dbconfigmysql = {
     host: config.mysql.host,
     user: config.mysql.user,
@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -156,9 +156,18 @@ function VehiculosPaginacionTotales(data){
     })
 }
 function vehiculosPaginacion(data){
-    const {id_taller,id_sucursal,limit,offset} = data
+    const {semejantes,active,direction,id_taller,id_sucursal,limit,offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`call spPaginacionVehiculos(${id_taller},${id_sucursal},${limit},${offset})`, (error, result) =>{ 
+        conexion.query(`call sp_busquedaVehiculosUnificada('${semejantes}',${id_taller},${id_sucursal},'${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
+function vehiculoscliente(data){
+    const {id_cliente,active,direction,id_taller,id_sucursal,limit,offset} = data
+    return new Promise((resolve, reject) =>{
+        // call sp_vehiculosClienteUnico(1472,1,1,'placas','desc',10,0)
+        conexion.query(`call sp_vehiculosClienteUnico('${id_cliente}',${id_taller},${id_sucursal},'${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
     })
@@ -218,6 +227,7 @@ function VehiculosPaginacionTotalesCliente(id_cliente){
 }
 function listaVehiculosClienteUnico(id_cliente){
     return new Promise((resolve, reject) =>{
+        // CALL sp_busquedaClientesUnificada('carlos cruz',1,1,'nombre','asc', 10,0);
         conexion.query(`call sp_vehiculosBasicaClienteUnico(${id_cliente})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
@@ -543,9 +553,9 @@ function clientesPaginacionTotales(data){
     })
 }
 function clientesPaginacionClientes(data){
-    const {id_taller, id_sucursal, limit, offset, direction, active} = data
+    const {semejantes,id_taller, id_sucursal, limit, offset, direction, active} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`call ConsultarClientesPorTallerYSucursal(${id_taller},${id_sucursal},${limit},${offset},'${direction}','${active}')`, (error, result) =>{ 
+        conexion.query(`CALL sp_busquedaClientesUnificada('${semejantes}',${id_taller},${id_sucursal},'${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
     })
@@ -635,11 +645,12 @@ function consultaCotizaciones(id_taller, id_sucursal,start, end){
         })
     })
 }
-function sp_cotizacionesClienteBasic(id_cliente, id_taller){
+function sp_cotizacionesClienteBasic(data){
+    const {id_cliente, id_taller, id_sucursal, active, direction, limit, offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_cotizacionesClienteBasic(${id_cliente},${id_taller})`, 
+        conexion.query(`CALL sp_cotizacionesClientePaginadas('${id_cliente}',${id_taller},${id_sucursal},'${active}','${direction}',${limit},${offset})`, 
         (error, result) =>{
-            return error ? reject(error) : resolve(result[0])
+            return error ? reject(error) : resolve(result)
         })
     })
 }
@@ -684,10 +695,10 @@ function sp_recepcionesBSFavoritos(id_cliente, limite, omitir,id_vehiculos){
     })
 }
 function cotizacionesBasicas(data) {
-    const {id_taller, id_sucursal, start, end, limit, offset} = data
+    const {id_taller, id_sucursal,active, direction, start, end, limit, offset} = data
     return new Promise((resolve, reject) => {
-      conexion.query(`call sp_cotizacionesTallerBasica(${id_taller},${id_sucursal},'${start}','${end}',${limit},${offset})`, data, (error, result) => {
-        return error? reject(error) : resolve(result[0])
+      conexion.query(`call sp_cotizacionesTallerBasica(${id_taller},${id_sucursal},'${start}','${end}',${limit},${offset},'${active}','${direction}')`, data, (error, result) => {
+        return error? reject(error) : resolve(result)
       })
     })
   }
@@ -768,10 +779,10 @@ function patchRecepcion(id_recepcion, data) {
     })
   }
 function recepcionesTaller2(data){
-    const {id_taller, id_sucursal,start, end, limit, offset} = data
+    const {id_taller, id_sucursal,start,active, direction, end, limit, offset} = data;
     return new Promise((resolve, reject) =>{
-        conexion.query(`call sp_recepcionesTallerBasica(${id_taller}, ${id_sucursal},'${start}','${end}',${limit},${offset})`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result[0])
+        conexion.query(`call sp_recepcionesTallerBasica(${id_taller}, ${id_sucursal},'${start}','${end}',${limit},${offset},'${active}','${direction}')`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
         })
     })
 }
@@ -863,10 +874,11 @@ function recepcionesBasicasOtroTaller(id_cliente, id_taller){
         })
     })
 }
-function sp_recepcionesMismoTaller(id_cliente, id_taller){
+function sp_recepcionesMismoTaller(data){
+    const {id_cliente, id_taller, id_sucursal, active, direction, limit, offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_recepcionesMismoTaller(${id_cliente},${id_taller})`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result[0])
+        conexion.query(`CALL sp_recepcionesMismoTaller('${id_cliente}',${id_taller},${id_sucursal},'${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
         })
     })
 }
@@ -1589,6 +1601,7 @@ module.exports = {
     clientesPaginacionTotales,
     clientesPaginacionClientes,
     vehiculosPaginacion,
+    vehiculoscliente,
     semejantesV,
     clienteVehiculos,
     sp_pagVehiculosVenta,

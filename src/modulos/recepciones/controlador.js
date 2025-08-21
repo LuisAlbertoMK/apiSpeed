@@ -85,8 +85,8 @@ module.exports = function (dbIyectada){
     function recepcionesBasicasOtroTaller(id_cliente, id_taller){
         return db.recepcionesBasicasOtroTaller(id_cliente, id_taller)
     }
-    function sp_recepcionesMismoTaller(id_cliente, id_taller){
-        return db.sp_recepcionesMismoTaller(id_cliente, id_taller)
+    function sp_recepcionesMismoTaller(data){
+        return db.sp_recepcionesMismoTaller(data)
     }
     function OnlyData(id_recepcion){
         return db.OnlyDataRecepcion(id_recepcion)

@@ -1,7 +1,6 @@
-// require('dotenv').config()
 module.exports = {
     app:{
-        port: process.env.PORT || 3000,
+        port: process.env.port || 3000, // Default port if not set in environment variables
     },
     jwt:{
         secret: process.env.JWT_SECRET || 'MtY845@_1gts'
