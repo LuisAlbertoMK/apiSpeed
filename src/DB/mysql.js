@@ -441,10 +441,11 @@ function clienteUnico(id_cliente){
         })
     })
 }
-function historialTallerescliente(id_cliente){
+function historialTallerescliente(data){
+    const {id_cliente, active, direction,limit, offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_tallersCliente(${id_cliente})`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result[0])
+        conexion.query(`CALL sp_tallersCliente(${id_cliente},'${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
         })
     })
 }
@@ -1021,10 +1022,11 @@ function totalPaquetes(data){
     })
 }
 function busquedaLikePaquetes(data){
-    const {semejantes,id_taller, limit, id_sucursal} = data
+    ('', 1, 'paquete', 'ASC', 10, 0);
+    const {semejantes,id_taller,active, direction, limit, offset } = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`call busquedaLikePaquetes('${semejantes}',${id_taller}, ${id_sucursal},${limit})`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result[0])
+            conexion.query(`call busquedaLikePaquetes('${semejantes}','${id_taller}','${active}','${direction}',${limit},${offset} )`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
         })
     })
 }
@@ -1441,9 +1443,10 @@ function usuariosrol() {
         })
     })
   }
-  function historial_cotizaciones(id_cliente, id_vehiculo, limit, offset){
+  function historial_cotizaciones(data){
+    const {id_cliente, id_vehiculo,active, direction, limit, offset} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`call sp_hitorialVehiculo(${id_cliente}, ${id_vehiculo}, ${limit},${offset})`, (error, result) =>{ 
+        conexion.query(`call sp_hitorialVehiculo(${id_cliente}, ${id_vehiculo},'${active}','${direction}', ${limit},${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
     })

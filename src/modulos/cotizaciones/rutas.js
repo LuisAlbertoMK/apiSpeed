@@ -96,13 +96,11 @@ async function todos (req, res, next){
 
 async function historial(req, res, next){
     try {
-        const {id_cliente, id_vehiculo, limit, offset} = req.query
-        const response = await controlador.historial_cotizaciones(id_cliente, id_vehiculo, limit, offset)
-        const total = response[0]
-        const {total_registros} = total[0]
-        respuesta.success(req, res, 
-            { total: total_registros, datos: response[1] }, 
-            200)
+        const {id_cliente, id_vehiculo, active, direction, limit, offset} = req.query
+        const answer = await controlador.historial_cotizaciones({id_cliente, id_vehiculo, active, direction, limit, offset})
+        const total = answer[1][0]?.total || 0; 
+        const datos = answer[0] || [];
+        respuesta.success(req, res,  { total, datos },  200)
     } catch (error) { next(error) }
 }
 async function no_cotizacion(req, res, next){

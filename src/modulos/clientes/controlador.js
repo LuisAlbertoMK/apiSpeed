@@ -40,8 +40,8 @@ module.exports = function (dbIyectada){
     function semejantesClientesContador(semejantes){
         return db.semejantesClientesContador(semejantes)
     }
-    function historialTallerescliente(id_cliente){
-        return db.historialTallerescliente(id_cliente)
+    function historialTallerescliente(data){
+        return db.historialTallerescliente(data)
     }
     function tallerActualCliente(id_cliente){
         return db.tallerActualCliente(id_cliente)

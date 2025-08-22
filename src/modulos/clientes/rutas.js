@@ -17,7 +17,7 @@ router.get('/clientesTallerSucursal', clientesTallerSucursal)
 router.get('/contadorClientesUsuario', contadorClientesUsuario)
 router.get('/semejantes', semejantes)
 router.get('/clientesSucursal/:id_sucursal', clientesSucursal)
-router.get('/histoTalleres/:id_cliente', histoTalleres)
+router.get('/histoTalleres', histoTalleres)
 router.get('/tallerActualCliente/:id_cliente', tallerActualCliente)
 router.get('/unicamentevehiculos/:id_cliente', unicamentevehiculos)
 router.get('/onlyDataCliente/:id_cliente', onlyDataCliente)
@@ -27,9 +27,13 @@ router.get('/:id_cliente', uno)
 
     async function histoTalleres (req, res, next){
         try {
-            const {id_cliente} = req.params
-            const items = await controlador.historialTallerescliente(id_cliente)
-            respuesta.success(req, res, items, 200)
+            const {id_cliente, active, direction,limit, offset} = req.query
+            const answer = await controlador.historialTallerescliente({id_cliente, active, direction,limit, offset})
+
+            const datos = answer[0] || []; // Primer result set
+            const total = answer[1][0]?.total || 0; // Segundo result set
+
+            respuesta.success(req, res, { total, datos }, 200);
         } catch (error) { next(error) }
     }
     async function tallerActualCliente (req, res, next){
