@@ -39,10 +39,11 @@ module.exports = function (dbIyectada){
     function totalMoRefacciones(data){ 
         return db.totalMoRefacciones(data)
     }
-
+    const spPaginacionmorefaccionesUnificado = (data) => db.spPaginacionmorefaccionesUnificado(data)
     return {
         todos,
         morefaccionesTaller,
+        spPaginacionmorefaccionesUnificado,
         uno,
         agregar,
         eliminar,

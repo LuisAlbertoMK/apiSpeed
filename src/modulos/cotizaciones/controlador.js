@@ -75,13 +75,14 @@ module.exports = function (dbIyectada){
     const historial_cotizaciones = (data) => db.historial_cotizaciones(data) 
     const sp_cotizacionesBSC = (id_cliente, limit, offset) => db.sp_cotizacionesBSC(id_cliente, limit, offset)
     const sp_cotizacionesBSCFavoritos = (id_cliente, limit, offset,id_vehiculos) => db.sp_cotizacionesBSCFavoritos(id_cliente, limit, offset, id_vehiculos)
-    const sp_pagCotizacionesBSC = (id_cliente, limit, offset) => db.sp_pagCotizacionesBSC(id_cliente, limit, offset)
+    const sp_cotizacionesPaginadas = (data) => db.sp_cotizacionesPaginadas(data)
+
 
 
     return {
         sp_cotizacionesBSC,
+        sp_cotizacionesPaginadas,
         sp_cotizacionesBSCFavoritos,
-        sp_pagCotizacionesBSC,
         todos,
         agregar,
         historial_cotizaciones,

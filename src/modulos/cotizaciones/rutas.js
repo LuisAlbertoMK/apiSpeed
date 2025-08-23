@@ -46,7 +46,8 @@ async function actualizaData(req, res, next){
 }
 async function basicas(req, res, next){
     try {
-        const answer = await controlador.cotizacionesBasicas(req.query)
+        const {id_taller, id_sucursal, active, direction, limit, offset,start, end} = req.query
+        const answer = await controlador.sp_cotizacionesPaginadas({id_taller, id_sucursal,start,end, active, direction, limit, offset})
         const datos = answer[0] || [];
         const total = answer[1][0]?.total || 0;
         respuesta.success(req, res, {total, datos}, 200)
@@ -135,11 +136,11 @@ async function cotizacionesClienteBasic(req, res, next){
 }
 async function sp_cotizacionesBSC(req, res, next){
     try {
-        const {id_cliente, limit, offset} = req.query
-        const response = await controlador.sp_cotizacionesBSC(id_cliente, limit, offset)
-        const total = response[0]
-        const {total_registros} = total[0]
-        respuesta.success(req, res, { total: total_registros, datos: response[1] }, 200)
+        // const {id_cliente, limit, offset} = req.query
+        // const response = await controlador.sp_cotizacionesBSC(id_cliente, limit, offset)
+        // const total = response[0]
+        // const {total_registros} = total[0]
+        respuesta.success(req, res, { total: 0, datos:[] }, 200)
     } catch (error) { next(error) }
 }
 async function sp_cotizacionesBSCFavoritos(req, res, next){
@@ -153,11 +154,11 @@ async function sp_cotizacionesBSCFavoritos(req, res, next){
 }
 async function sp_pagCotizacionesBSC(req, res, next){
     try {
-        const {id_cliente, limit, offset} = req.query
-        const response = await controlador.sp_pagCotizacionesBSC(id_cliente, limit, offset)
-        const total = response[0]
-        const {total_registros} = total[0]
-        respuesta.success(req, res, { total: total_registros, datos: response[1] }, 200)
+        // const {id_cliente, limit, offset} = req.query
+        // const response = await controlador.sp_pagCotizacionesBSC(id_cliente, limit, offset)
+        // const total = response[0]
+        // const {total_registros} = total[0]
+        respuesta.success(req, res, { total: 0, datos: [] }, 200)
     } catch (error) { next(error) }
 }
 

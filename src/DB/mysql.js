@@ -166,8 +166,9 @@ function vehiculosPaginacion(data){
 function vehiculoscliente(data){
     const {id_cliente,active,direction,id_taller,id_sucursal,limit,offset} = data
     return new Promise((resolve, reject) =>{
-        // call sp_vehiculosClienteUnico(1472,1,1,'placas','desc',10,0)
-        conexion.query(`call sp_vehiculosClienteUnico('${id_cliente}',${id_taller},${id_sucursal},'${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
+        // CALL sp_vehiculosClienteUnico(9, '', 1, 1, 'placas', 'ASC', 10, 0);
+        
+        conexion.query(`call sp_vehiculosClienteUnico('${id_cliente}','',${id_taller},${id_sucursal},'${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
     })
@@ -655,6 +656,16 @@ function sp_cotizacionesClienteBasic(data){
         })
     })
 }
+function sp_cotizacionesPaginadas(data){
+    const {id_taller, id_sucursal, active,start,end, direction, limit, offset} = data
+    // CALL sp_cotizacionesPaginadas(1, 1, '2025-08-22', '2025-08-22', 'no_cotizacion', 'asc', 10, 0);
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_cotizacionesPaginadas(${id_taller},${id_sucursal},'${start}','${end}','${active}','${direction}',${limit},${offset})`, 
+        (error, result) =>{
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
 function sp_cotizacionesBSC(id_cliente, limite, omitir){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_cotizacionesBSC(${id_cliente},${limite},${omitir})`, 
@@ -671,14 +682,7 @@ function sp_cotizacionesBSCFavoritos(id_cliente, limite, omitir,id_vehiculos){
         })
     })
 }
-function sp_pagCotizacionesBSC(id_cliente, limite, omitir){
-    return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_pagCotizacionesBSC(${id_cliente},${limite},${omitir})`, 
-        (error, result) =>{
-            return error ? reject(error) : resolve(result)
-        })
-    })
-}
+
 function sp_recepcionesBS(id_cliente, limite, omitir){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_recepcionesBS(${id_cliente},${limite},${omitir})`, 
@@ -1025,7 +1029,7 @@ function busquedaLikePaquetes(data){
     ('', 1, 'paquete', 'ASC', 10, 0);
     const {semejantes,id_taller,active, direction, limit, offset } = data
     return new Promise((resolve, reject) =>{
-            conexion.query(`call busquedaLikePaquetes('${semejantes}','${id_taller}','${active}','${direction}',${limit},${offset} )`, (error, result) =>{ 
+            conexion.query(`call busquedaLikePaquetes('${semejantes}',${id_taller},'${active}','${direction}',${limit},${offset} )`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
     })
@@ -1310,6 +1314,15 @@ function moRefacciones(data){
         })
     })
 }
+function spPaginacionmorefaccionesUnificado(data){
+    const {id_taller,semejantes, active, direction, limit, offset } = data
+    // CALL spPaginacionmorefacciones(1, 'refaccion1', 'descripcion', 'ASC', 10, 0);
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL spPaginacionmorefaccionesUnificado(${id_taller},'${semejantes}','${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
 function totalMoRefacciones(data){
     const {id_taller, id_sucursal} = data
     return new Promise((resolve, reject) =>{
@@ -1509,9 +1522,9 @@ module.exports = {
     contadorCategorias,
     consultaCotizaciones,
     sp_cotizacionesClienteBasic,
+    sp_cotizacionesPaginadas,
     sp_cotizacionesBSC,
     sp_cotizacionesBSCFavoritos,
-    sp_pagCotizacionesBSC,
     sp_recepcionesBS,
     sp_recepcionesBSFavoritos,
     cotizacionesBasicas,
@@ -1619,6 +1632,7 @@ module.exports = {
     totalPaquetes,
     busquedaLikePaquetes,
     moRefacciones,
+    spPaginacionmorefaccionesUnificado,
     totalMoRefacciones,
     semejantesVehiculos,
     likeVehiculosSesionCliente,
