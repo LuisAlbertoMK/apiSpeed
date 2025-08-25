@@ -15,9 +15,7 @@ module.exports = function (dbIyectada){
         return db.sp_pagosTallerSucursal(id_taller, id_sucursal, start, end)
         // return db.Todos(TABLA)
     }
-    function pagosTaller(id_taller, id_sucursal, start, end){
-        return db.pagosTaller(id_taller, id_sucursal, start, end)
-    }
+    const pagosTaller = (data) => db.pagosTaller(data) 
     function uno(id){
         return db.uno(TABLA, id)
     }

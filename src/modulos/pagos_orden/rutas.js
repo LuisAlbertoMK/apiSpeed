@@ -19,8 +19,12 @@ router.delete('/', eliminar)
 
 async function todos (req, res, next){
     try {
-        const items =  await controlador.todos(req.query)
-        respuesta.success(req, res, items, 200)
+        const {id_taller, id_sucursal, active, direction, limit, offset, start,end }= req.query
+        const answer =  await controlador.pagosTaller({id_taller, id_sucursal, active, direction, limit, offset, start, end })
+        const total = answer[1][0]?.total || 0; // Primer result set
+        const datos = answer[0] || []; // Segundo result set
+        const suma_montos = answer[1][0]?.suma_montos || 0;
+        respuesta.success(req, res, {total, datos, suma_montos}, 200)
     } catch (error) { next(error) }
 }
 async function pagoRecepcion (req, res, next){
@@ -40,9 +44,13 @@ async function updatepagoOrden(req, res, next){
 }
 async function pagosTaller (req, res, next){
     try {
-        const {id_taller, id_sucursal, start, end}= req.query
-        const items =  await controlador.pagosTaller(id_taller, id_sucursal, start, end)
-        respuesta.success(req, res, items[0], 200)
+        const {id_taller, id_sucursal, active, direction, limit, offset, start,end }= req.query
+        const answer =  await controlador.pagosTaller({id_taller, id_sucursal, active, direction, limit, offset, start, end })
+        console.log(answer);
+        
+        const total = answer[1][0]?.total || 0; // Primer result set
+        const datos = answer[0] || []; // Segundo result set
+        respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }
 async function PagosRecepcionUnica (req, res, next){

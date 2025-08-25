@@ -35,9 +35,12 @@ async function todosOrden (req, res, next){
 }
 async function gastosOrdenTaller (req, res, next){
     try {
-        const {id_taller, id_sucursal, start, end}= req.query
-        const items =  await controlador.gastosOrdenTaller(id_taller, id_sucursal, start, end)
-        respuesta.success(req, res, items[0], 200)
+        const {id_taller, id_sucursal, active, direction, limit, offset, start,end }= req.query
+        const answer =  await controlador.gastosOrdenTaller({id_taller, id_sucursal, active, direction, limit, offset, start, end })
+        const total = answer[1]?.[0]?.total || 0;
+        const suma_montos = answer[1]?.[0]?.suma_montos || 0;
+        const datos = answer[0] || [];
+        respuesta.success(req, res, {total, datos, suma_montos}, 200)
     } catch (error) { next(error) }
 }
 

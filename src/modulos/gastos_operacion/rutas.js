@@ -22,9 +22,13 @@ async function todos (req, res, next){
 }
 async function gastosOperacionTaller (req, res, next){
     try {
-        const {id_taller, id_sucursal, start, end}= req.query
-        const items =  await controlador.gastosOperacionTaller(id_taller, id_sucursal, start, end)
-        respuesta.success(req, res, items[0], 200)
+        const {id_taller, id_sucursal, active, direction, limit, offset, start,end }= req.query
+        const answer =  await controlador.gastosOperacionTaller({id_taller, id_sucursal, active, direction, limit, offset, start, end })
+        const total = answer[1][0]?.total || 0; // Primer result set
+        const suma_montos = answer[1]?.[0]?.suma_montos || 0;
+        const datos = answer[0] || []; // Segundo result set
+        //  const total = answer[1]?.[0]?.total || 0;
+        respuesta.success(req, res, {total, datos, suma_montos}, 200)
     } catch (error) { next(error) }
 }
 async function uno(req, res, next){

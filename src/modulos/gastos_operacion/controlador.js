@@ -14,8 +14,8 @@ module.exports = function (dbIyectada){
         const {id_taller, id_sucursal, start, end} = dataOperacion
         return db.sp_gastosOperacion(id_taller, id_sucursal, start, end)
     }
-    function gastosOperacionTaller(id_taller, id_sucursal, start, end){
-        return db.gastosOperacionTaller(id_taller, id_sucursal, start, end)
+    function gastosOperacionTaller(data){
+        return db.gastosOperacionTaller(data)
     }
 
     function uno(id){

@@ -1341,25 +1341,28 @@ function paquetesTaller(id_taller){
     })
 }
 // INFORMACION DE PAGOSTALLER
-function pagosTaller(id_taller, id_sucursal, start, end){
+function pagosTaller(data){
+     const {id_taller, id_sucursal, active, direction, limit, offset, start,end } = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_pagosOrdenesTaller(${id_taller}, ${id_sucursal},'${start}','${end}')`, (error, result) =>{ 
+        conexion.query(`CALL sp_pagosOrdenesTaller(${id_taller}, ${id_sucursal},'${start}','${end}','${active}', '${direction}', ${limit}, ${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
     })
 }
 // INFORMACION GASTOSORDEN
-function gastosOrdenTaller(id_taller, id_sucursal, start, end){
+function gastosOrdenTaller(data){
+    const {id_taller, id_sucursal, active, direction, limit, offset, start,end }= data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_gastosOrdenesTaller(${id_taller}, ${id_sucursal},'${start}','${end}')`, (error, result) =>{ 
+        conexion.query(`CALL sp_gastosOrdenesTaller(${id_taller}, ${id_sucursal},'${start}','${end}','${active}', '${direction}', ${limit}, ${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
     })
 }
 // INFORMACION GASTOSOPERACION TALLER
-function gastosOperacionTaller(id_taller, id_sucursal, start, end){
+function gastosOperacionTaller(data){
+    const {id_taller, id_sucursal, active, direction, limit, offset, start,end } = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_gastosOperacionTaller(${id_taller}, ${id_sucursal},'${start}','${end}')`, (error, result) =>{ 
+        conexion.query(`CALL sp_gastosOperacionTaller(${id_taller}, ${id_sucursal},'${start}','${end}','${active}', '${direction}', ${limit}, ${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
     })
