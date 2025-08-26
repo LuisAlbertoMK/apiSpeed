@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigmysql)
+    conexion = mysql.createConnection(dbconfigMariaDB)
 
     conexion.connect((err)=>{
         if (err) {
@@ -166,8 +166,6 @@ function vehiculosPaginacion(data){
 function vehiculoscliente(data){
     const {id_cliente,active,direction,id_taller,id_sucursal,limit,offset} = data
     return new Promise((resolve, reject) =>{
-        // CALL sp_vehiculosClienteUnico(9, '', 1, 1, 'placas', 'ASC', 10, 0);
-        
         conexion.query(`call sp_vehiculosClienteUnico('${id_cliente}','',${id_taller},${id_sucursal},'${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
@@ -658,7 +656,6 @@ function sp_cotizacionesClienteBasic(data){
 }
 function sp_cotizacionesPaginadas(data){
     const {id_taller, id_sucursal, active,start,end, direction, limit, offset} = data
-    // CALL sp_cotizacionesPaginadas(1, 1, '2025-08-22', '2025-08-22', 'no_cotizacion', 'asc', 10, 0);
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_cotizacionesPaginadas(${id_taller},${id_sucursal},'${start}','${end}','${active}','${direction}',${limit},${offset})`, 
         (error, result) =>{

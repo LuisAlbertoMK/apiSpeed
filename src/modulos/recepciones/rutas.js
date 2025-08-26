@@ -172,19 +172,10 @@ async function todos (req, res, next){
 }
 async function recepcionesClienteB (req, res, next){
     try {
-        // const {id_cliente} = req.params
-        // const {id_taller, mismo} = req.query
-        // let items = []
-        // if(mismo){
-        //     items =  await controlador.sp_recepcionesMismoTaller(id_cliente, id_taller)
-        // }else{
-        //     items =  await controlador.recepcionesBasicasOtroTaller(id_cliente, id_taller)
-        // }
         const {id_cliente, id_taller, id_sucursal, active, direction, limit, offset} = req.query
         const answer = await controlador.sp_recepcionesMismoTaller({id_cliente, id_taller, id_sucursal, active, direction, limit, offset})
         const datos = answer[0] || []; // Primer result set
         const total = answer[1][0]?.total || 0 ; // Segundo result set
-
         respuesta.success(req, res, { total, datos }, 200);
     } catch (error) { next(error) }
 }

@@ -8,6 +8,7 @@ const controlador= require('./index')
 const router = express.Router()
 
 router.get('/', todos)
+router.get('/paquetescondetalles', paquetescondetalles)
 router.get('/ObtenerDetallePaquete', ObtenerDetallePaquete)
 router.get('/paquetesTaller', paquetesTaller)
 router.get('/semejantes', semejantes)
@@ -28,6 +29,24 @@ async function todos (req, res, next){
         next(error)
     }
 }
+async function paquetescondetalles(req, res, next){
+    try {
+        const {semejantes,id_taller,active, direction, limit, offset } = req.query
+        const answer =  await controlador.paquetesSemejantes({semejantes,id_taller,active, direction, limit, offset })
+        const total = answer[1][0]?.total || 0;
+        const datos = answer[0] || [];
+        const newPaquetes = await Promise.all(datos.map(async e => {
+            const {id_paquete} = e 
+            const elementosPaquete = await controlador.ObtenerDetallePaquete(id_paquete)
+            e['elementos'] = elementosPaquete[0] || []
+            return e
+        }));
+        respuesta.success(req, res, {total, datos: newPaquetes}, 200)
+    } catch (error) {
+        next(error)
+    }
+}
+
 async function semejantes (req, res, next){
     try {
         const {semejantes,id_taller,active, direction, limit, offset } = req.query
