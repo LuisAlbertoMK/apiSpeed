@@ -29,8 +29,11 @@ async function todos (req, res, next){
 }
 async function usuariosrol (req, res, next){
     try {
-        const items =  await controlador.usuariosrol(req.query)
-        respuesta.success(req, res, items, 200)
+        const { id_taller ,id_sucursal ,semejantes, id_rol ,active ,direction ,limit ,offset } = req.query
+        const answer =  await controlador.usuariosrol({ id_taller ,id_sucursal ,semejantes, id_rol ,active ,direction ,limit ,offset }) 
+        const total = answer[1][0]?.total || 0; 
+        const datos = answer[0] || [];
+        respuesta.success(req, res,  { total, datos },  200)
     } catch (error) { next(error) }
 }
 async function listaTecnicos (req, res, next){

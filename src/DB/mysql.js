@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -1168,9 +1168,11 @@ function contadorSucursalesTaller(id_taller){
         })
     })
 }
-function sucursalesTaller(id_taller){
+function sucursalesTaller(data){
+    const { semejantes ,id_taller ,active ,direction ,limit ,offset } = data
+    // CALL sp_sucursales(1, 'Culhuacán', 'sucursal', 'ASC', 10, 0);
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_sucursales(${id_taller})`, (error, result) =>{ 
+        conexion.query(`CALL sp_sucursales(${id_taller},'${semejantes}','${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
     })
@@ -1213,11 +1215,12 @@ function updateDataUsuario(id_usuario,data){
     })
 }
 function sp_usuariosrol(data){
-    const {id_taller, rol} = data
-    return new Promise((resolve, reject) =>{
-        conexion.query(`call listausuariosRol(${id_taller},${rol})`, (error, result) => {
-            return error ? reject(error) : resolve(result[0])
-        })
+    const { id_taller ,id_sucursal ,semejantes, id_rol ,active ,direction ,limit ,offset } = data
+    return new Promise((resolve, reject) => {
+        // CALL datausuarios(1, 1, '', 5, 'create_at', 'ASC', 10, 0);
+      conexion.query(`call datausuarios(${id_taller},${id_sucursal},'${semejantes}',${id_rol},'${active}','${direction}',${limit},${offset})`, (error, result) => {
+        return error? reject(error) : resolve(result)
+      })
     })
 }
 function updateDataUsuarioIDcliente(id_cliente,data){
@@ -1433,9 +1436,11 @@ function patchTutoriales(id_usuario, data) {
       })
     })
   }
-function usuariosrol() {
+function usuariosrol(data) {
+    const { id_taller ,id_sucursal ,semejantes, id_rol ,active ,direction ,limit ,offset } = data
     return new Promise((resolve, reject) => {
-      conexion.query(`call datausuarios()`, (error, result) => {
+        // CALL datausuarios(1, 1, '', 5, 'create_at', 'ASC', 10, 0);
+      conexion.query(`call datausuarios(${id_taller},${id_sucursal},'${semejantes}',${id_rol},'${active}','${direction}',${limit},${offset})`, (error, result) => {
         return error? reject(error) : resolve(result[0])
       })
     })

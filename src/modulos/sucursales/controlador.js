@@ -16,8 +16,8 @@ module.exports = function (dbIyectada){
     function  sucursalQuery(tabla, campos, condicion, ID){
         return db.sucursalQuery(tabla,campos,  condicion, ID)
     }
-    function sucursalesTaller(id_taller){
-        return db.sucursalesTaller(id_taller)
+    function sucursalesTaller(data){
+        return db.sucursalesTaller(data)
     }
     function sucursalesTaller2(id_taller){
         return db.sucursalesTaller2(id_taller)

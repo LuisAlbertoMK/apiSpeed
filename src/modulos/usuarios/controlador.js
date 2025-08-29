@@ -18,7 +18,7 @@ module.exports = function (dbIyectada){
     function uno(id){
         return db.uno(TABLA, id)
     }
-    const datausuarios = () => db.usuariosrol()
+    const datausuarios = (data) => db.usuariosrol(data)
     async function agregar(body, passwordUpdate){
         const usuario = {
             id_usuario: body.id_usuario,

@@ -62,9 +62,12 @@ async function updateData(req, res, next) {
 async function sucursalesTaller (req, res, next){
     try {
         const {id_taller}= req.params
-        const items= await controlador.sucursalesTaller(id_taller)
-        // }
-        respuesta.success(req, res, items[0], 200)
+        const { semejantes ,id_sucursal ,active ,direction ,limit ,offset} = req.query
+        const answer= await controlador.sucursalesTaller({ semejantes ,id_taller ,id_sucursal ,active ,direction ,limit ,offset})
+        console.log(answer);
+        const datos = answer[0] || [];
+        const total = answer[1][0]?.total || 0;
+        respuesta.success(req, res, {total, datos}, 200)
     } catch (error) {
         next(error)
     }
