@@ -350,6 +350,13 @@ function getFavoritos(tabla, id_cliente){
         })
     })
 }
+function getClienteFavoritos(id_cliente){
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call sp_vehiculosClienteFavoritos(${id_cliente})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
 
 function elementos_cotizaciones(id_cotizacion){
     return new Promise((resolve, reject) =>{
@@ -671,9 +678,11 @@ function sp_cotizacionesBSC(id_cliente, limite, omitir){
         })
     })
 }
-function sp_cotizacionesBSCFavoritos(id_cliente, limite, omitir,id_vehiculos){
+function sp_cotizacionesBSCFavoritos(data){
+const {id_cliente,semejantes ,active ,direction ,limit ,offset,id_vehiculos} = data
+    // CALL sp_cotizacionesBSCFavoritos(9, '', 'createCotizacion_at', 'ASC', 10, 0, '12,14,15,16,17');
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_cotizacionesBSCFavoritos(${id_cliente},${limite},${omitir},'${id_vehiculos}')`, 
+        conexion.query(`CALL sp_cotizacionesBSCFavoritos(${id_cliente},'${semejantes}','${active}','${direction}',${limit},${offset},'${id_vehiculos}')`, 
         (error, result) =>{
             return error ? reject(error) : resolve(result)
         })
@@ -688,9 +697,10 @@ function sp_recepcionesBS(id_cliente, limite, omitir){
         })
     })
 }
-function sp_recepcionesBSFavoritos(id_cliente, limite, omitir,id_vehiculos){
+function sp_recepcionesBSFavoritos(data){
+    const {id_cliente,semejantes ,active ,direction ,limit ,offset,id_vehiculos} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_recepcionesBSFavoritos(${id_cliente},${limite},${omitir},'${id_vehiculos}')`, 
+        conexion.query(`CALL sp_recepcionesBSFavoritos(${id_cliente},'${semejantes}','${active}','${direction}',${limit},${offset},'${id_vehiculos}')`, 
         (error, result) =>{
             return error ? reject(error) : resolve(result)
         })
@@ -1546,6 +1556,7 @@ module.exports = {
     favoritosCotizaciones,
     updateFavoritosVehiculos,
     getFavoritos,
+    getClienteFavoritos,
     RecepcionConsulta,
     RecepcionesVehiculoConsulta,
     seriviciosAceptados,

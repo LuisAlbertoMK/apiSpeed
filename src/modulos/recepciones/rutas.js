@@ -110,11 +110,11 @@ async function sp_recepcionesBS(req, res, next){
 }
 async function sp_recepcionesBSFavoritos(req, res, next){
     try {
-           const {id_cliente, limit, offset,id_vehiculos} = req.query
-           const response = await controlador.sp_recepcionesBSFavoritos(id_cliente, limit, offset,id_vehiculos)
-           const total = response[0]
-           const {total_registros} = total[0]
-           respuesta.success(req, res, { total: total_registros, datos: response[1] }, 200)
+            const {id_cliente,semejantes ,active ,direction ,limit ,offset,id_vehiculos} = req.query
+            const answer = await controlador.sp_recepcionesBSFavoritos({id_cliente,semejantes ,active ,direction ,limit ,offset,id_vehiculos})
+            const datos = answer[0] || []; // Primer result set
+            const total = answer[1][0]?.total || 0 ; // Segundo result set
+            respuesta.success(req, res, { total, datos }, 200)
        } catch (error) { next(error) }
 }
 async function servicios(req, res, next) {

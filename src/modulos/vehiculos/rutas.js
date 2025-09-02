@@ -22,6 +22,7 @@ router.patch('/updateTallerSucursalVehiculos/:id_cliente', updateTallerSucursalV
 router.patch('/update_venta/:id_venta', update_venta)
 router.put('/', eliminar)
 router.get('/getfavoritos/:id_cliente', getfavoritos)
+router.get('/getClienteFavoritos/:id_cliente', getClienteFavoritos)
 router.get('/semejantes', semejantes)
 router.get('/vehiculoVenta/:id_venta', vehiculoVenta)
 
@@ -89,6 +90,15 @@ async function getfavoritos (req, res, next){
         const cuales =  await controlador.getFavoritos(id_cliente)
        
         respuesta.success(req, res, cuales, 200)
+    } catch (error) { next(error) }
+}
+async function getClienteFavoritos (req, res, next){
+    try {
+        const {id_cliente}  = req.params
+        const answer  =  await controlador.getClienteFavoritos(id_cliente)
+        const misVehiculos = answer[0]
+        const favoritosLista = answer[1]
+        respuesta.success(req, res, {misVehiculos, favoritosLista}, 200)
     } catch (error) { next(error) }
 }
 async function vehiculosPlacas (req, res, next){
