@@ -224,8 +224,11 @@ async function uno(req, res, next){
         const recepcion = await controlador.getRecepcion(id_recepcion)
         const {id_tecnico} = recepcion
         if(id_tecnico){
-            const {usuario} = await tecnicos.uno(id_tecnico)
-            recepcion.tecnico = usuario
+            // const {usuario} = await tecnicos.uno(id_tecnico)
+            const miUsuario = await tecnicos.uno(id_tecnico)
+            if(miUsuario){
+                recepcion.tecnico = miUsuario?.usuario
+            }
         }
         const {id_cliente, id_sucursal, id_vehiculo,id_taller} = recepcion
         const data_cliente = await clientes.clienteUnico(id_cliente)
