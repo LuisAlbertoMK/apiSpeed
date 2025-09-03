@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigmysql)
+    conexion = mysql.createConnection(dbconfigMariaDB)
 
     conexion.connect((err)=>{
         if (err) {
@@ -110,8 +110,6 @@ function query(tabla, consulta) {
     });
   }
 function query2(tabla, consulta, id_ocupar) {
-    console.log({ tabla, consulta });
-    // const key = Object.keys(consulta)[0];
     const value = consulta['id_ocupar'];
     const query = `SELECT * FROM ${tabla} WHERE ${id_ocupar} = ${value}`  
     return new Promise((resolve, reject) => {
@@ -894,6 +892,14 @@ function sp_recepcionesMismoTaller(data){
         })
     })
 }
+function recepcionesVehiculos(data){
+    const {id_vehiculo, id_taller, id_sucursal, active, direction, limit, offset} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL recepcionesVehiculos('${id_vehiculo}',${id_taller},${id_sucursal},'${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result)
+        })
+    })
+}
 function basicasConReporte(id_taller, id_sucursal, start, end) {
     return new Promise((resolve, reject) => {
         const {id_taller, id_sucursal, start, end} = data
@@ -1103,8 +1109,6 @@ function sp_gastosOrdenesTallerSucursal(id_taller, id_sucursal, start,end){
     })
 }
 function updateGastoOrden(id_gastoOrden,data){
-    console.log(data);
-    
     return new Promise((resolve, reject) =>{
         conexion.query(`UPDATE gastosorden SET ? WHERE id_gastoOrden = ${id_gastoOrden}`, data, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
@@ -1498,6 +1502,7 @@ module.exports = {
     recepcionesCliente,
     recepcionesBasicasOtroTaller,
     sp_recepcionesMismoTaller,
+    recepcionesVehiculos,
     basicasConReporte,
     correosClientes,
     cotizacionesCliente,

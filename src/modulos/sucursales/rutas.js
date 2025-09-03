@@ -29,9 +29,7 @@ async function todos (req, res, next){
 async function sucursalQuery (req, res, next){
     try {
         const {tabla,campos, campo, ID} = req.query
-        console.log({tabla,campos,campo,  ID})
         const item = await controlador.sucursalQuery(tabla,campos || '', campo, ID)
-
         respuesta.success(req, res, item, 200)
     } catch (error) {
         next(error)
@@ -64,7 +62,6 @@ async function sucursalesTaller (req, res, next){
         const {id_taller}= req.params
         const { semejantes ,id_sucursal ,active ,direction ,limit ,offset} = req.query
         const answer= await controlador.sucursalesTaller({ semejantes ,id_taller ,id_sucursal ,active ,direction ,limit ,offset})
-        console.log(answer);
         const datos = answer[0] || [];
         const total = answer[1][0]?.total || 0;
         respuesta.success(req, res, {total, datos}, 200)

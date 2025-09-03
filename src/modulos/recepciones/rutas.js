@@ -21,6 +21,7 @@ router.get('/recepcionesFechas', recepcionesFechas)
 router.get('/administracion', administracion)
 router.get('/favoritos/:id_cliente', favoritos)
 router.get('/pagRecepClientes', pagRecepClientes)
+router.get('/recepcionesVehiculos', recepcionesVehiculos)
 router.get('/recepcionesTaller', recepcionesTaller)
 router.get('/recepcionesTaller2', recepcionesTaller2)
 router.get('/coincidencias', coincidencias)
@@ -148,6 +149,16 @@ async function pagRecepClientes(req, res, next) {
         const datos = await controlador.pagOdenesCliente(req.query)
         const totalResponse = await controlador.pagOdenesClienteContador(req.query)
         const {total} = totalResponse
+        respuesta.success(req, res, {total, datos}, 200)
+    } catch (error) { next(error) }
+}
+async function recepcionesVehiculos(req, res, next) {
+    try {
+        const {id_vehiculo, id_sucursal, id_taller, active, direction, limit, offset} = req.query
+        const answer = await controlador.recepcionesVehiculos({id_vehiculo, id_sucursal, id_taller, active, direction, limit, offset})
+
+        const datos = answer[0] || []; // Primer result set
+        const total = answer[1][0]?.total || 0 ; // Segundo result set
         respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }
