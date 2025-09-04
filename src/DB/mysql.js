@@ -45,6 +45,16 @@ const escapeMySQL=(dato) =>{
     return mysql.escape(dato)
 }
 
+
+function contadorTabla(data){
+    const {tabla, id_taller, id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`call ContarRegistrosPorTallerSucursal('${tabla}',${id_taller},${id_sucursal});`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+
 function Todos(tabla){
     return new Promise((resolve, reject) =>{
         conexion.query(`SELECT * FROM ${tabla}`, (error, result) =>{ 
@@ -1516,6 +1526,7 @@ module.exports = {
     contadorClientesUsuario,
     cliente,
     Todos,
+    contadorTabla,
     sucursalQuery,
     uno,
     agregar,
