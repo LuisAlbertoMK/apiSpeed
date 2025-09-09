@@ -26,7 +26,7 @@ async function contadorTabla (req, res, next){
     try {
         const {tabla, id_taller, id_sucursal} = req.query
         const items =  await controlador.contadorTabla({tabla, id_taller, id_sucursal})
-        const total = items[0]?.total || 0
+        const total = items[0]?.total
         respuesta.success(req, res, total, 200)
     } catch (error) { next(error) }
 }

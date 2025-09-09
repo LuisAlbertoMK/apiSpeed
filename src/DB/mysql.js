@@ -49,7 +49,7 @@ const escapeMySQL=(dato) =>{
 function contadorTabla(data){
     const {tabla, id_taller, id_sucursal} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`call ContarRegistrosPorTallerSucursal('${tabla}',${id_taller},${id_sucursal});`, (error, result) =>{ 
+        conexion.query(`call ContarRegistrosPorTallerSucursal('${tabla}',${id_taller},${id_sucursal}); `, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -172,9 +172,9 @@ function vehiculosPaginacion(data){
     })
 }
 function vehiculoscliente(data){
-    const {id_cliente,active,direction,id_taller,id_sucursal,limit,offset} = data
+    const {id_cliente,active,direction,id_taller,id_sucursal,limit,offset, semejantes} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`call sp_vehiculosClienteUnico('${id_cliente}','',${id_taller},${id_sucursal},'${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
+        conexion.query(`call sp_vehiculosClienteUnico('${id_cliente}','${semejantes}',${id_taller},${id_sucursal},'${active}','${direction}',${limit},${offset})`, (error, result) =>{ 
             return error ? reject(error) : resolve(result)
         })
     })

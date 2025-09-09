@@ -15,6 +15,7 @@ const router = express.Router()
 // Rutas específicas primero
 router.get('/basicas', basicas);
 router.get('/historial', historial);
+router.get('/detalles/:id_cotizacion', detalles);
 router.get('/favoritos/:id_cliente', favoritos);
 router.get('/getconsultaCotizacionUicaHistorial/:id_cotizacion', getconsultaCotizacionUicaHistorial);
 router.get('/cliente/:id_cliente', cotizacionesCliente);
@@ -90,6 +91,16 @@ async function todos (req, res, next){
             return e
         }))
         respuesta.success(req, res, nuevasCotizaciones, 200)
+    } catch (error) {
+        next(error)
+    }
+}
+
+async function detalles (req, res, next){
+    try {
+        const {id_cotizacion} = req.params
+        const elementos = await elementos_cotizacion.uno(id_cotizacion)
+        respuesta.success(req, res, elementos, 200)
     } catch (error) {
         next(error)
     }
