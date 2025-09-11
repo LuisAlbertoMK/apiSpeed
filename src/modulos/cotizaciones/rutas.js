@@ -99,8 +99,18 @@ async function todos (req, res, next){
 async function detalles (req, res, next){
     try {
         const {id_cotizacion} = req.params
+        // const elementos = await elementos_cotizacion.uno(id_cotizacion)
         const elementos = await elementos_cotizacion.uno(id_cotizacion)
-        respuesta.success(req, res, elementos, 200)
+        const newElementos = await Promise.all(elementos.map(async e => {
+                if (e.id_paquete) {
+                    const detallePaqueteResp = await mod_paquetes.ObtenerDetallePaqueteModificado(id_cotizacion, e['id_paquete'],e['id_eleCotizacion'] )
+                    e['elementos'] = [...detallePaqueteResp];
+                    e.nombre = detallePaqueteResp[0].paquete
+                    e['tipo'] = 'paquete'
+                }
+                return e
+        }))
+        respuesta.success(req, res, newElementos, 200)
     } catch (error) {
         next(error)
     }
