@@ -60,6 +60,7 @@ module.exports = function (dbIyectada){
     function consultacorreo(correo){
         return db.consultacorreo(correo)
     }
+    const existeCorreo = (correo) => db.existeCorreo(correo)
 
     function updateData(id_usuario, data){
         return db.updateDataUsuario(id_usuario, data)
@@ -78,7 +79,8 @@ module.exports = function (dbIyectada){
         updateData,
         updateDataUsuarioIDcliente,
         listaTecnicos,
-        consultacorreo
+        consultacorreo,
+        existeCorreo
     }
     
 }

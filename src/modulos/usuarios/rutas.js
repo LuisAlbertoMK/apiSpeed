@@ -11,6 +11,7 @@ router.get('/', todos)
 router.get('/rol', usuariosrol)
 router.get('/listaTecnicos/:id_sucursal', listaTecnicos)
 router.get('/consultacorreo', consultacorreo )
+router.get('/existeCorreo', existeCorreo )
 router.get('/datausuarios', datausuarios)
 router.get('/:id', uno)
 // router.post('/', seguridad(), agregar)
@@ -83,6 +84,13 @@ async function consultacorreo(req, res, next){
     try {
         const {correo} = req.query
         const items = await controlador.consultacorreo(correo)
+        respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+async function existeCorreo(req, res, next){
+    try {
+        const {correo} = req.query
+        const items = await controlador.existeCorreo(correo)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }

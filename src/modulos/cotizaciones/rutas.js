@@ -47,10 +47,10 @@ async function actualizaData(req, res, next){
 }
 async function basicas(req, res, next){
     try {
-        const {id_taller, id_sucursal, active, direction, limit, offset,start, end} = req.query
-        const answer = await controlador.sp_cotizacionesPaginadas({id_taller, id_sucursal,start,end, active, direction, limit, offset})
-        const datos = answer[0] || [];
-        const total = answer[1][0]?.total || 0;
+        const {id_taller, id_sucursal, active, direction, limit, offset,start, end, semejantes} = req.query
+        const answer = await controlador.sp_cotizacionesPaginadas({id_taller, id_sucursal,semejantes,start,end, active, direction, limit, offset})
+        const datos = answer[1] || [];
+        const total = answer[0][0]?.total || 0;
         respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }

@@ -18,7 +18,7 @@ let conexion;
 
 
 function conMysql() {
-    conexion = mysql.createConnection(dbconfigMariaDB)
+    conexion = mysql.createConnection(dbconfigmysql)
 
     conexion.connect((err)=>{
         if (err) {
@@ -670,9 +670,9 @@ function sp_cotizacionesClienteBasic(data){
     })
 }
 function sp_cotizacionesPaginadas(data){
-    const {id_taller, id_sucursal, active,start,end, direction, limit, offset} = data
+    const {id_taller, id_sucursal, active,start,end, direction, limit, offset, semejantes} = data
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_cotizacionesPaginadas(${id_taller},${id_sucursal},'${start}','${end}','${active}','${direction}',${limit},${offset})`, 
+        conexion.query(`CALL sp_cotizacionesPaginadas(${id_taller},${id_sucursal},'${start}','${end}','${active}','${direction}',${limit},${offset}, '${semejantes} ')`, 
         (error, result) =>{
             return error ? reject(error) : resolve(result)
         })
@@ -1261,6 +1261,16 @@ function consultacorreo(correo){
         })
     })
 }
+function existeCorreo(correo){
+    const correoLimpio = correo.trim().toLowerCase();
+    const query = 'SELECT COUNT(*) as existe FROM usuarios WHERE LOWER(correo) = ?';
+    return new Promise((resolve, reject) =>{
+        conexion.query(query,[correoLimpio], (error, result) =>{ 
+            const existe = result[0].existe > 0;
+            return error ? reject(error) : resolve(existe)
+        })
+    })
+}
 function usuariosRol(){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_usuariosRol()`, (error, result) =>{ 
@@ -1599,6 +1609,7 @@ module.exports = {
     sp_usuariosrol,
     updateDataUsuarioIDcliente,
     consultacorreo,
+    existeCorreo,
     usuariosRol,
     informaciontaller,
     informaciontallerN,
