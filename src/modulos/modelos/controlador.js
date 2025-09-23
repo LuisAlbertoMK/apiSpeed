@@ -24,7 +24,6 @@ module.exports = function (dbIyectada){
         return db.eliminar(TABLA, body)
     }
     function modelosMarca(id_marca){
-        // return db.query(TABLA, {id_marca})
         return db.consultaModeloMarca(TABLA, id_marca)
     }
 

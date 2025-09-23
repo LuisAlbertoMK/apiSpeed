@@ -40,7 +40,7 @@ router.get('/:id_cotizacion', uno);
 async function actualizaData(req, res, next){
     try {
         const {id_cotizacion} = req.params
-        const data = req.body    
+        const data = req.body
         const items = await controlador.patchDataCotizacion(id_cotizacion, data)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
