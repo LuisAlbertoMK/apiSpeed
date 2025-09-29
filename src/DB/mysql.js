@@ -1261,16 +1261,29 @@ function consultacorreo(correo){
         })
     })
 }
-function existeCorreo(correo){
-    const correoLimpio = correo.trim().toLowerCase();
-    const query = 'SELECT COUNT(*) as existe FROM usuarios WHERE LOWER(correo) = ?';
-    return new Promise((resolve, reject) =>{
-        conexion.query(query,[correoLimpio], (error, result) =>{ 
-            const existe = result[0].existe > 0;
-            return error ? reject(error) : resolve(existe)
-        })
-    })
-}
+function existeCorreo(correo) {
+  const correoLimpio = correo.trim().toLowerCase();
+
+  const query = `
+    SELECT COUNT(*) AS total 
+    FROM (
+      SELECT 1 FROM usuarios WHERE LOWER(correo) = ?
+      UNION
+      SELECT 1 FROM clientes WHERE LOWER(correo) = ?
+    ) AS combined
+  `;
+
+  return new Promise((resolve, reject) => {
+    conexion.query(query, [correoLimpio, correoLimpio], (error, result) => {
+      if (error) {
+        return reject(error);
+      }
+      // Si total > 0, significa que el correo existe en al menos una tabla
+      const existe = result[0].total > 0;
+      resolve(existe);
+    });
+  });
+}   
 function usuariosRol(){
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_usuariosRol()`, (error, result) =>{ 

@@ -29,6 +29,8 @@ router.get('/:id_cliente', uno)
         try {
             const {id_cliente, active, direction,limit, offset} = req.query
             const answer = await controlador.historialTallerescliente({id_cliente, active, direction,limit, offset})
+            console.log(answer);
+            
             const datos = answer[0] || []; // Primer result set
             const total = answer[1][0]?.total || 0; // Segundo result set
             respuesta.success(req, res, { total, datos }, 200);
