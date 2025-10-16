@@ -825,7 +825,16 @@ function administracion(data){
 }
 function sp_ordenlike(id_taller, id_sucursal, search){
     return new Promise((resolve, reject) =>{
-        conexion.query(`call sp_ordenlike(${id_taller},${id_sucursal},${search})`, (error, result) =>{ 
+        conexion.query(`call sp_ordenlike(${id_taller},${id_sucursal},'${search}')`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function sp_ordenlikeLimitado(data){
+    console.log(data);
+    const {id_taller, id_sucursal, semejantes}= data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`CALL sp_ordenlikeLimitado(${id_taller},${id_sucursal},'${semejantes}')`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -1647,6 +1656,7 @@ module.exports = {
     recepcionesTaller2,
     recepcionesTaller2contador,
     sp_ordenlike,
+    sp_ordenlikeLimitado,
     administracion,
     reporteRecepcion,
     recepcionesTallerSucursal,

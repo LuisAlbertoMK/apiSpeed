@@ -25,6 +25,7 @@ router.get('/recepcionesVehiculos', recepcionesVehiculos)
 router.get('/recepcionesTaller', recepcionesTaller)
 router.get('/recepcionesTaller2', recepcionesTaller2)
 router.get('/coincidencias', coincidencias)
+router.get('/sp_ordenlikeLimitado', sp_ordenlikeLimitado)
 router.get('/aceptados', aceptados)
 router.get('/recepcionesIDs', recepcionesIDs)
 router.get('/sp_recepcionesBS', sp_recepcionesBS)
@@ -215,6 +216,13 @@ async function coincidencias (req, res, next){
     try {
         const {id_taller, semejantes,id_sucursal } = req.query
         const items =  await controlador.sp_ordenlike(id_taller,id_sucursal,semejantes)
+        respuesta.success(req, res, items, 200)
+    } catch (error) { next(error) }
+}
+async function sp_ordenlikeLimitado (req, res, next){
+    try {
+        const {id_taller, semejantes,id_sucursal } = req.query
+        const items =  await controlador.sp_ordenlikeLimitado({id_taller,id_sucursal,semejantes})
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
