@@ -108,9 +108,11 @@ module.exports = function (dbIyectada){
 
     const recepcionesVehiculos = (data) => db.recepcionesVehiculos(data)
     const sp_ordenlikeLimitado = (data) => db.sp_ordenlikeLimitado(data)
+    const nuevaConsulta = (data) => db.nuevaConsulta(data)
    
     return {
         sp_ordenlikeLimitado,
+        nuevaConsulta,
         recepcionesVehiculos,
         sp_recepcionesBS,
         sp_recepcionesBSFavoritos,

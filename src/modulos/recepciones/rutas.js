@@ -21,6 +21,7 @@ router.get('/recepcionesFechas', recepcionesFechas)
 router.get('/administracion', administracion)
 router.get('/favoritos/:id_cliente', favoritos)
 router.get('/pagRecepClientes', pagRecepClientes)
+router.get('/nuevaConsulta', nuevaConsulta)
 router.get('/recepcionesVehiculos', recepcionesVehiculos)
 router.get('/recepcionesTaller', recepcionesTaller)
 router.get('/recepcionesTaller2', recepcionesTaller2)
@@ -151,6 +152,14 @@ async function pagRecepClientes(req, res, next) {
         const totalResponse = await controlador.pagOdenesClienteContador(req.query)
         const {total} = totalResponse
         respuesta.success(req, res, {total, datos}, 200)
+    } catch (error) { next(error) }
+}
+async function nuevaConsulta(req, res, next) {
+    try {
+        const {start, end, id_taller, id_sucursal} = req.query
+        const totalReportes = await controlador.nuevaConsulta({start,end,id_taller, id_sucursal})
+        const {total} = totalReportes;
+        respuesta.success(req, res, {total}, 200)
     } catch (error) { next(error) }
 }
 async function recepcionesVehiculos(req, res, next) {

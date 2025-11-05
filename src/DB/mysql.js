@@ -831,10 +831,20 @@ function sp_ordenlike(id_taller, id_sucursal, search){
     })
 }
 function sp_ordenlikeLimitado(data){
-    console.log(data);
     const {id_taller, id_sucursal, semejantes}= data
     return new Promise((resolve, reject) =>{
         conexion.query(`CALL sp_ordenlikeLimitado(${id_taller},${id_sucursal},'${semejantes}')`, (error, result) =>{ 
+            return error ? reject(error) : resolve(result[0])
+        })
+    })
+}
+function nuevaConsulta(data){
+    const {start, end, id_taller, id_sucursal} = data
+    return new Promise((resolve, reject) =>{
+        conexion.query(`SELECT sum(reportes.total) as total FROM recepciones
+LEFT JOIN reportes ON recepciones.id_recepcion = reportes.id_recepcion
+WHERE recepciones.id_taller = ${id_taller} AND recepciones.id_sucursal = ${id_sucursal} 
+AND DATE(recepciones.createRecepciones_at) BETWEEN '${start}' AND '${end}'`, (error, result) =>{ 
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -1657,6 +1667,7 @@ module.exports = {
     recepcionesTaller2contador,
     sp_ordenlike,
     sp_ordenlikeLimitado,
+    nuevaConsulta,
     administracion,
     reporteRecepcion,
     recepcionesTallerSucursal,
