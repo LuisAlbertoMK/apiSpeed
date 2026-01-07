@@ -5,6 +5,7 @@ const config = require('./config')
 const cors = require('cors')
 
 
+const actualizacion = require('./modulos/actualizacion/rutas')
 const clientes = require('./modulos/clientes/rutas')
 const correos = require('./modulos/correos/rutas')
 const usuarios = require('./modulos/usuarios/rutas')
@@ -112,6 +113,7 @@ app.use((err, req, res, next) => {
   }
 });
 //rutas
+app.use('/api/actualizacion', actualizacion)
 app.use('/api/clientes', clientes)
 app.use('/api/correos', correos)
 app.use('/api/usuarios', usuarios)
