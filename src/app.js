@@ -60,6 +60,7 @@ app.use(express.urlencoded({extended: true}))
 app.set('port', config.app.port)
 
 const whiteList=[
+  'https://speed-329ca.web.app',
   'https://speed-pro-desarrollo.web.app',
   'https://serverstripe.onrender.com',
   'https://apputos.app',
