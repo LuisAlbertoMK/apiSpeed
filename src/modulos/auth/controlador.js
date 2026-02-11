@@ -20,6 +20,7 @@ module.exports = function (dbIyectada){
             .then(resultado=>{
                 return resultado ? auth.asignaToken({...data}) : false
             })
+        let unico = {}
         if (token) {
             const newData =  await db.dataUsuario( data.id_usuario)
             dataUsuario = newData[0]
