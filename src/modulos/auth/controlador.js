@@ -8,7 +8,7 @@ module.exports = function (dbIyectada){
     let db = dbIyectada
 
     if (!db) {
-        db = require('../../DB/mysql')
+        db = require('../../DB/postgres')
     }
     async function login(correo, password) {
         let dataUsuario = {}

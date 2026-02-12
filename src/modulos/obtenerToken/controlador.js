@@ -4,7 +4,7 @@ module.exports = function (dbIyectada){
     let db = dbIyectada
 
     if (!db) {
-        db = require('../../DB/mysql')
+        db = require('../../DB/postgres')
     }
     async function obtenerToken(correo, password) {
         const token = await auth.asignaToken({correo, password})

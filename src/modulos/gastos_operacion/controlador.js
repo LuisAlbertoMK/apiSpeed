@@ -7,7 +7,7 @@ module.exports = function (dbIyectada){
     let db = dbIyectada
 
     if (!db) {
-        db = require('../../DB/mysql')
+        db = require('../../DB/postgres')
     }
 
     function todos(dataOperacion){
