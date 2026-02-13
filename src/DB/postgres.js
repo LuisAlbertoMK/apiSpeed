@@ -7,9 +7,21 @@
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey =
+    process.env.SUPABASE_SERVICE_KEY ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+    throw new Error(
+        'Missing Supabase env vars. Set SUPABASE_URL and SUPABASE_SERVICE_KEY (or SUPABASE_SERVICE_ROLE_KEY) in Render environment settings.'
+    );
+}
+
 const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_KEY
+    supabaseUrl,
+    supabaseKey
 );
 
 console.log('DB Supabase conectada');
