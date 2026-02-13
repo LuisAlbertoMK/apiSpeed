@@ -5,6 +5,7 @@ const auth = require('../../auth')
 
 module.exports = function (dbIyectada){
 
+
     let db = dbIyectada
 
     if (!db) {
@@ -12,14 +13,27 @@ module.exports = function (dbIyectada){
     }
     async function login(correo, password) {
         let dataUsuario = {}
-        let taller = {}
-        let sucursal = {}
 
-        const data = await db.query(TABLA, {correo})
+        // Camino principal: auth por correo
+        let data = await db.query(TABLA, {correo})
+
+        // Fallback: algunos registros auth no tienen correo cargado
+        if (!data || !data.password) {
+            const usuario = await db.query('usuarios', { correo })
+            if (usuario && usuario.id_usuario) {
+                data = await db.query(TABLA, { id_usuario: usuario.id_usuario })
+            }
+        }
+
+        if (!data || !data.password) {
+            return {}
+        }
+
         const token = await bcrypt.compare(password, data.password)
             .then(resultado=>{
                 return resultado ? auth.asignaToken({...data}) : false
             })
+
         let unico = {}
         if (token) {
             const newData =  await db.dataUsuario( data.id_usuario)
