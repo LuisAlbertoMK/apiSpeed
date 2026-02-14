@@ -18,12 +18,26 @@ const supabase = createClient(
     supabaseKey
 );
 
+async function _clienteIdsPorTallerSucursal(id_taller, id_sucursal) {
+    const { data: cts } = await supabase.from('cliente_taller_sucursal')
+        .select('id_cliente').eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
+    return (cts || []).map(c => c.id_cliente);
+}
+
 async function contadorTabla(data) {
     const { tabla, id_taller, id_sucursal } = data;
     if (tabla === 'clientes') {
         const { count } = await supabase.from('cliente_taller_sucursal')
             .select('*', { count: 'exact', head: true })
             .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
+        return [{ total: count || 0 }];
+    }
+    if (tabla === 'vehiculos') {
+        const ids = await _clienteIdsPorTallerSucursal(id_taller, id_sucursal);
+        if (ids.length === 0) return [{ total: 0 }];
+        const { count } = await supabase.from('vehiculos')
+            .select('*', { count: 'exact', head: true })
+            .in('id_cliente', ids);
         return [{ total: count || 0 }];
     }
     const { count } = await supabase.from(tabla)
@@ -134,24 +148,28 @@ async function dataUsuario(id_usuario) {
 
 async function VehiculosPaginacionTotales(data) {
     const { id_taller, id_sucursal } = data;
+    const ids = await _clienteIdsPorTallerSucursal(id_taller, id_sucursal);
+    if (ids.length === 0) return { total: 0 };
     const { count } = await supabase.from('vehiculos')
         .select('*', { count: 'exact', head: true })
-        .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
+        .in('id_cliente', ids);
     return { total: count || 0 };
 }
 
 async function vehiculosPaginacion(data) {
     const { semejantes, active, direction, id_taller, id_sucursal, limit, offset } = data;
+    const clienteIds = await _clienteIdsPorTallerSucursal(id_taller, id_sucursal);
+    if (clienteIds.length === 0) return [[], [{ total: 0 }]];
     let q = supabase.from('vehiculos')
         .select(`*, clientes(nombre, apellidos, id_cliente, no_cliente), marcas(marca), modelos(modelo), categorias(categoria)`)
-        .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
+        .in('id_cliente', clienteIds);
     if (semejantes) q = q.or(`placas.ilike.%${semejantes}%,anio.ilike.%${semejantes}%`);
     if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
     q = q.range(offset, offset + limit - 1);
     const { data: rows, error } = await q;
     const { count } = await supabase.from('vehiculos')
         .select('*', { count: 'exact', head: true })
-        .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
+        .in('id_cliente', clienteIds);
     if (error) throw error;
     const flat = (rows || []).map(r => ({
         ...r, nombre: r.clientes?.nombre, apellidos: r.clientes?.apellidos,
@@ -340,9 +358,11 @@ async function vehiculoUnico(id_vehiculo) {
 }
 
 async function vehiculosTallerSucursal(id_taller, id_sucursal) {
+    const clienteIds = await _clienteIdsPorTallerSucursal(id_taller, id_sucursal);
+    if (clienteIds.length === 0) return [];
     const { data, error } = await supabase.from('vehiculos')
         .select('*, marcas(marca), modelos(modelo), clientes(nombre, apellidos)')
-        .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
+        .in('id_cliente', clienteIds);
     if (error) throw error;
     return data;
 }
@@ -588,9 +608,11 @@ async function likeVehiculosSesionCliente(data) {
 
 async function semejantesVehiculosContador(data) {
     const { semejantes, id_taller, id_sucursal } = data;
+    const clienteIds = await _clienteIdsPorTallerSucursal(id_taller, id_sucursal);
+    if (clienteIds.length === 0) return [{ total: 0 }];
     const { count } = await supabase.from('vehiculos')
         .select('*', { count: 'exact', head: true })
-        .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
+        .in('id_cliente', clienteIds)
         .or(`placas.ilike.%${semejantes}%,anio.ilike.%${semejantes}%`);
     return [{ total: count || 0 }];
 }
@@ -1688,7 +1710,7 @@ async function historial_recepciones(id_cliente, id_vehiculo, limit, offset) {
 }
 
 // =============================================
-// EXPORTAR - MISMA INTERFAZ QUE mysql.js
+// EXPORTS
 // =============================================
 
 module.exports = {
