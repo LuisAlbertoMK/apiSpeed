@@ -89,7 +89,6 @@ async function eliminaRelacionados(req, res, next){
 }
 async function subelementosPaquete(req, res, next){
     try {
-        console.log({params: req.params})
         const {id_modificacion} = req.params
         const items = await controlador.subelementosPaquete(id_modificacion)
         respuesta.success(req, res, 'item eliminado', 200)

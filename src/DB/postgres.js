@@ -1,9 +1,3 @@
-// =============================================
-// postgres.js - Reemplazo completo de mysql.js
-// Usa Supabase client para todas las operaciones
-// Replica EXACTAMENTE la interfaz exportada de mysql.js
-// =============================================
-
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
@@ -23,12 +17,6 @@ const supabase = createClient(
     supabaseUrl,
     supabaseKey
 );
-
-console.log('DB Supabase conectada');
-
-// =============================================
-// FUNCIONES GENÉRICAS (replican mysql.js)
-// =============================================
 
 async function contadorTabla(data) {
     const { tabla, id_taller, id_sucursal } = data;

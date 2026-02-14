@@ -32,13 +32,7 @@ async function uno(req, res, next){
 }
 async function agregar(req, res, next){
     try {
-        const {id_cliente, monto, metodo_pago, descripcion,
-        fecha_pago} = req.body
-        console.log('id_cliente', id_cliente)
-        // const items = await controlador.agregar(req.body)
-        console.log('vamos a registrar en BD' + id_cliente)
-        
-        const items = await controlador.agregar(req.body)
+        await controlador.agregar(req.body)
         
         mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
         respuesta.success(req, res, 'OKKO', 201)

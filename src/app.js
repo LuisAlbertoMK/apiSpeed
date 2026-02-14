@@ -94,15 +94,6 @@ const corsOptions = {
 };
 // Aplicar CORS
 app.use(cors(corsOptions));
-// Middleware para opciones de CORS adicionales
-
-// Agregar esto temporalmente para debug
-// app.use((req, res, next) => {
-//   console.log('Request Origin:', req.headers.origin);
-//   console.log('Request Method:', req.method);
-//   console.log('Request Headers:', req.headers);
-//   next();
-// });
 // Manejador de errores de CORS
 app.use((err, req, res, next) => {
   if (err.message === 'No permitido por CORS') {

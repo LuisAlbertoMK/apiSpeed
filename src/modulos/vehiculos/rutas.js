@@ -72,14 +72,13 @@ async function semejantes (req, res, next){
 async function likeVehiculosSesionCliente (req, res, next){
     try {
         const vehiculos =  await controlador.likeVehiculosSesionCliente(req.query)
-        const total = vehiculo.length
+        const total = vehiculos.length
         respuesta.success(req, res, {datos: vehiculos, total}, 200)
     } catch (error) { next(error) }
 }
 async function vehiculoVenta (req, res, next){
     try {
         const { id_venta }  = req.params
-        console.log(req.params)
         const response =  await controlador.vehiculoVenta(id_venta)
         respuesta.success(req, res, response, 200)
     } catch (error) { next(error) }
@@ -230,7 +229,6 @@ async function todos (req, res, next){
                 return asigna
             })
             const resultados = await Promise.all(promesas);
-            // return resultados
             items = resultados
         }
         respuesta.success(req, res, items, 200)
@@ -240,8 +238,6 @@ async function verificaPlacas (req, res, next){
     try {
         const {placas}= req.query
         const items =  await controlador.verificaPlacas(placas)
-        console.log(items);
-        
         respuesta.success(req, res, items[0], 200)
     } catch (error) { next(error)}
 }
@@ -252,7 +248,6 @@ async function vehiculosTallerSucursal (req, res, next){
         let  temps =  await controlador.vehiculosTallerSucursal(id_taller, id_sucursal)
         
         const respuestas = temps[0]
-        // const vehiculos =  await controlador.todos()
             const promesas = respuestas.map(async element => {
                 let asigna ={ ...element };
                 const { id_cliente } = element;
@@ -260,7 +255,6 @@ async function vehiculosTallerSucursal (req, res, next){
                 return asigna
             })
             const resultados = await Promise.all(promesas);
-            // return resultados
         const items = resultados
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error)}

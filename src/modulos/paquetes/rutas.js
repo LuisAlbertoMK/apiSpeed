@@ -52,17 +52,8 @@ async function semejantes (req, res, next){
         const {semejantes,id_taller,active, direction, limit, offset } = req.query
         
         const answer =  await controlador.paquetesSemejantes({semejantes,id_taller,active, direction, limit, offset })
-        console.log(answer);
-        
         const total = answer[0][0]?.total || 0;
         const datos = answer[1] || []; 
-
-        // const newPaquetes = await Promise.all(items.map(async e => {
-        //     const {id_paquete} = e 
-        //     const elementosPaquete = await controlador.ObtenerDetallePaquete(id_paquete)
-        //     e['elementos'] = elementosPaquete[0] || []
-        //     return e
-        // }));
         respuesta.success(req, res, {total, datos}, 200)
     } catch (error) { next(error) }
 }

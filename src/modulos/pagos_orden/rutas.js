@@ -14,7 +14,6 @@ router.get('/:id_recepcion', uno)
 router.post('/pagoRecepcion', pagoRecepcion)
 router.post('/', agregar)
 router.patch('/:id_pagoOrden', updatepagoOrden)
-// router.put('/', eliminar)
 router.delete('/', eliminar)
 
 async function todos (req, res, next){
@@ -46,8 +45,6 @@ async function pagosTaller (req, res, next){
     try {
         const {id_taller, id_sucursal, active, direction, limit, offset, start,end }= req.query
         const answer =  await controlador.pagosTaller({id_taller, id_sucursal, active, direction, limit, offset, start, end })
-        console.log(answer);
-        
         const total = answer[1][0]?.total || 0; // Primer result set
         const datos = answer[0] || []; // Segundo result set
         respuesta.success(req, res, {total, datos}, 200)
@@ -55,10 +52,8 @@ async function pagosTaller (req, res, next){
 }
 async function PagosRecepcionUnica (req, res, next){
     try {
-        const { pagototal }= req.query
         const { id_recepcion} = req.params
         let items =  await controlador.PagosRecepcionUnica(id_recepcion)
-        // if(pagototal) items = await controlador.pagoTotal(id_recepcion)
         respuesta.success(req, res, items, 200)
     } catch (error) { next(error) }
 }
@@ -74,7 +69,6 @@ async function agregar(req, res, next){
         const {insertId} = items
         const {id_gastoOrden} = req.body
         mensaje  =  insertId ? insertId : id_gastoOrden
-        // mensaje  =  (req.body.id === 0) ? 'Item registrado' : 'Item actualizado'
         respuesta.success(req, res, mensaje, 201)
     } catch (error) { next(error) }
 }
