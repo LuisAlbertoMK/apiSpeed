@@ -1,8 +1,27 @@
-/node_modules
+# Variables de entorno — NUNCA subir a GitHub
 .env
+.env.local
+.env.production
+.env.example
+
+# Archivos de migración con datos sensibles
+migration/
+*.sql
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+
+# Dependencias
+/node_modules
 pnpm-lock.yaml
 
-# Scripts temporales de migración
+# Build
+dist/
+build/
+
+# Scripts temporales de migración previos
 check_mariadb_schema.js
 create_tables_manually.js
 create_test_user.js
@@ -25,7 +44,6 @@ supabase_full_schema.sql
 supabase_schema.sql
 supabase_schema_v2.sql
 esquelo_actual.sql
-.env.example
 MIGRATION_GUIDE.md
 src/config.js.backup
 src/DB/mysql.js.backup
