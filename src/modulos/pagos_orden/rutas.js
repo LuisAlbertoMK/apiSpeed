@@ -43,8 +43,8 @@ async function updatepagoOrden(req, res, next){
 }
 async function pagosTaller (req, res, next){
     try {
-        const {id_taller, id_sucursal, active, direction, limit, offset, start,end }= req.query
-        const answer =  await controlador.pagosTaller({id_taller, id_sucursal, active, direction, limit, offset, start, end })
+        const {id_taller, id_sucursal, active, direction, limit, offset, start, end, semejantes }= req.query
+        const answer =  await controlador.pagosTaller({id_taller, id_sucursal, active, direction, limit, offset, start, end, semejantes })
         const total = answer[1][0]?.total || 0; // Primer result set
         const datos = answer[0] || []; // Segundo result set
         respuesta.success(req, res, {total, datos}, 200)

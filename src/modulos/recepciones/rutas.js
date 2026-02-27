@@ -92,7 +92,8 @@ async function recepcionesFechas(req, res, next){
         const answer =  await controlador.recepcionesFechas(req.query)
         const datos = answer[0] || [];
         const total = answer[1][0]?.total || 0;
-        respuesta.success(req, res, {total, datos}, 200)
+        const suma_montos = answer[1][0]?.suma_montos ?? 0;
+        respuesta.success(req, res, { total, datos, suma_montos }, 200)
     } catch (error) { next(error) }
 }
 async function recepcionesIDs(req, res, next){
@@ -122,16 +123,15 @@ async function sp_recepcionesBSFavoritos(req, res, next){
 }
 async function servicios(req, res, next) {
     try {
-        const items =  await controlador.recepcionesTaller2(req.query)
-        const conReportes = await Promise.all(items.map(async e => {
+        const answer = await controlador.recepcionesTaller2(req.query)
+        const rows = answer[0] || []
+        const total = answer[1][0]?.total || 0
+        const conReportes = await Promise.all(rows.map(async e => {
             const {id_recepcion} = e
             const reporteResponse = await controlador.reporteRecepcion(id_recepcion)
-            const reporte = reporteResponse
-            return {...e, reporte}
+            return {...e, reporte: reporteResponse}
         }))
-        const totalResponse = await controlador.recepcionesTaller2contador(req.query)
-        const {total} = totalResponse
-        respuesta.success(req, res, {total,  datos:conReportes}, 200)
+        respuesta.success(req, res, {total, datos:conReportes}, 200)
     } catch (error) { next(error) }
 }
 async function administracion(req, res, next) {

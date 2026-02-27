@@ -1,6 +1,16 @@
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
+// Normaliza las claves de un objeto a minúsculas para compatibilidad con PostgreSQL
+// (PostgreSQL normaliza identificadores no entrecomillados a minúsculas)
+function normalizeKeys(obj) {
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return obj;
+    return Object.keys(obj).reduce((acc, key) => {
+        acc[key.toLowerCase()] = obj[key];
+        return acc;
+    }, {});
+}
+
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey =
     process.env.SUPABASE_SERVICE_KEY ||
@@ -86,10 +96,89 @@ async function eliminarQuery(tabla, consulta) {
     return { affectedRows: 1 };
 }
 
+// Columnas permitidas por tabla para evitar enviar campos que no existen (ej. id_taller, id_sucursal en clientes)
+const COLUMNAS_POR_TABLA = {
+    clientes: ['id_cliente', 'id_rol', 'id_empresa', 'activo', 'apellidos', 'correo', 'generico', 'no_cliente', 'nombre', 'telefono', 'tipo', 'registroauth', 'updatecliente_at', 'createcliente_at', 'showhistorial']
+};
+
+// Columnas que en la BD son SMALLINT; convertir boolean del frontend a 1/0
+const COLUMNAS_INTEGER_CLIENTES = ['activo', 'generico', 'showhistorial', 'registroauth'];
+
+function filtrarPayloadParaTabla(tabla, data) {
+    const normalized = normalizeKeys(data);
+    const columnas = COLUMNAS_POR_TABLA[tabla];
+    if (!columnas) return normalized;
+    const out = columnas.reduce((acc, col) => {
+        if (normalized.hasOwnProperty(col)) acc[col] = normalized[col];
+        return acc;
+    }, {});
+    if (tabla === 'clientes') {
+        COLUMNAS_INTEGER_CLIENTES.forEach(col => {
+            if (out[col] === true) out[col] = 1;
+            else if (out[col] === false) out[col] = 0;
+        });
+    }
+    return out;
+}
+
+// Tablas con PK SERIAL sin DEFAULT en Supabase: al insertar sin PK, usar siguiente id como fallback
+const TABLA_PK = {
+    clientes: 'id_cliente',
+    cliente_taller_sucursal: 'id_cliente_taller_sucursal',
+    historialclientetaller: 'id_hist_cli_taller',
+    gastosoperacion: 'id_gastooperacion',
+    pagosorden: 'id_pagoorden',
+    gastosorden: 'id_gastoorden',
+    vehiculos: 'id_vehiculo'
+};
+
+function esInsertNuevo(tabla, payload) {
+    const pk = TABLA_PK[tabla];
+    if (!pk) return false;
+    const v = payload[pk];
+    return v === 0 || v === null || v === undefined || v === '0';
+}
+
+async function insertConFallbackPk(tabla, payload) {
+    const pk = TABLA_PK[tabla];
+    let res = await supabase.from(tabla).insert(payload).select();
+    if (res.error && res.error.code === '23502' && pk && res.error.message.includes(pk) && res.error.message.includes('not-null')) {
+        const { data: maxRow } = await supabase.from(tabla).select(pk).order(pk, { ascending: false }).limit(1).maybeSingle();
+        const nextId = (maxRow?.[pk] ?? 0) + 1;
+        res = await supabase.from(tabla).insert({ ...payload, [pk]: nextId }).select();
+    }
+    return res;
+}
+
 async function agregar(tabla, data) {
-    const { data: result, error } = await supabase.from(tabla).upsert(data).select();
-    if (error) throw error;
-    return result ? result[0] : { insertId: 0 };
+    let payload = filtrarPayloadParaTabla(tabla, data);
+    const pk = TABLA_PK[tabla];
+    const esNuevo = esInsertNuevo(tabla, payload);
+    if (esNuevo && pk) {
+        const rest = { ...payload };
+        delete rest[pk];
+        payload = rest;
+    }
+    if (tabla === 'clientes') {
+        console.log('[agregar clientes] método:', esNuevo ? 'INSERT' : 'UPSERT', 'payload keys:', Object.keys(payload).join(','));
+    }
+    let result, error;
+    if (esNuevo && pk) {
+        const res = await insertConFallbackPk(tabla, payload);
+        result = res.data;
+        error = res.error;
+    } else {
+        const res = await supabase.from(tabla).upsert(payload).select();
+        result = res.data;
+        error = res.error;
+    }
+    if (error) {
+        if (tabla === 'clientes') console.error('[agregar clientes] Supabase error:', error.message);
+        throw error;
+    }
+    const row = result && result[0];
+    const insertId = row && pk ? row[pk] : (row?.id_cliente ?? 0);
+    return row ? { insertId, ...row } : { insertId: 0 };
 }
 
 async function query(tabla, consulta) {
@@ -164,12 +253,14 @@ async function vehiculosPaginacion(data) {
         .select(`*, clientes(nombre, apellidos, id_cliente, no_cliente), marcas(marca), modelos(modelo), categorias(categoria)`)
         .in('id_cliente', clienteIds);
     if (semejantes) q = q.or(`placas.ilike.%${semejantes}%,anio.ilike.%${semejantes}%`);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
-    const { count } = await supabase.from('vehiculos')
+    let countQuery = supabase.from('vehiculos')
         .select('*', { count: 'exact', head: true })
         .in('id_cliente', clienteIds);
+    if (semejantes) countQuery = countQuery.or(`placas.ilike.%${semejantes}%,anio.ilike.%${semejantes}%`);
+    const { count } = await countQuery;
     if (error) throw error;
     const flat = (rows || []).map(r => ({
         ...r, nombre: r.clientes?.nombre, apellidos: r.clientes?.apellidos,
@@ -186,11 +277,14 @@ async function vehiculoscliente(data) {
         .select(`*, marcas(marca), modelos(modelo), categorias(categoria)`)
         .eq('id_cliente', id_cliente);
     if (semejantes) q = q.or(`placas.ilike.%${semejantes}%,anio.ilike.%${semejantes}%`);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
-    const { count } = await supabase.from('vehiculos')
-        .select('*', { count: 'exact', head: true }).eq('id_cliente', id_cliente);
+    let countQuery = supabase.from('vehiculos')
+        .select('*', { count: 'exact', head: true })
+        .eq('id_cliente', id_cliente);
+    if (semejantes) countQuery = countQuery.or(`placas.ilike.%${semejantes}%,anio.ilike.%${semejantes}%`);
+    const { count } = await countQuery;
     if (error) throw error;
     const flat = (rows || []).map(r => ({
         ...r, marca: r.marcas?.marca, modelo: r.modelos?.modelo, categoria: r.categorias?.categoria,
@@ -208,7 +302,7 @@ async function clienteVehiculos(data) {
     const { id_cliente, limit, offset } = data;
     const { data: rows, error } = await supabase.from('vehiculos')
         .select(`*, marcas(marca), modelos(modelo), categorias(categoria)`)
-        .eq('id_cliente', id_cliente).range(offset, offset + limit - 1);
+        .eq('id_cliente', id_cliente).range(+offset, +offset + +limit - 1);
     if (error) throw error;
     return (rows || []).map(r => ({
         ...r, marca: r.marcas?.marca, modelo: r.modelos?.modelo, categoria: r.categorias?.categoria,
@@ -229,7 +323,7 @@ async function sp_pagVehiculosVenta(data) {
     const { limit, offset } = data;
     const { data: rows, error } = await supabase.from('datosvehiculoventa')
         .select('*, vehiculos(*, marcas(marca), modelos(modelo))')
-        .eq('activo', true).range(offset, offset + limit - 1);
+        .eq('activo', true).range(+offset, +offset + +limit - 1);
     if (error) throw error;
     return rows;
 }
@@ -303,7 +397,7 @@ async function vehiculoVenta(id_vehiculo) {
 
 async function listaTS(id_cliente) {
     const { data, error } = await supabase.from('cliente_taller_sucursal')
-        .select('*, taller(nombretaller, acronimo), sucursales(sucursal)')
+        .select('id_cliente_taller_sucursal, id_cliente, id_taller, id_sucursal, taller(nombretaller, acronimo), sucursales(sucursal)')
         .eq('id_cliente', id_cliente);
     if (error) throw error;
     return data;
@@ -432,16 +526,21 @@ async function clientesPaginacionClientes(data) {
         .select('*, roles(rol), empresas(empresa), sucursales:cliente_taller_sucursal(sucursales(sucursal))')
         .in('id_cliente', ids);
     if (semejantes) q = q.or(`nombre.ilike.%${semejantes}%,apellidos.ilike.%${semejantes}%,correo.ilike.%${semejantes}%,no_cliente.ilike.%${semejantes}%`);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
-    const { data: rows, error, count } = await q;
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
+    const { data: rows, error } = await q;
     if (error) throw error;
+    let countQuery = supabase.from('clientes')
+        .select('*', { count: 'exact', head: true })
+        .in('id_cliente', ids);
+    if (semejantes) countQuery = countQuery.or(`nombre.ilike.%${semejantes}%,apellidos.ilike.%${semejantes}%,correo.ilike.%${semejantes}%,no_cliente.ilike.%${semejantes}%`);
+    const { count } = await countQuery;
     const flat = (rows || []).map(r => ({
         ...r, rol: r.roles?.rol, empresa: r.empresas?.empresa,
         sucursal: r.sucursales?.[0]?.sucursales?.sucursal,
         roles: undefined, empresas: undefined, sucursales: undefined
     }));
-    return [flat, [{ total: ids.length }]];
+    return [flat, [{ total: count ?? 0 }]];
 }
 
 async function clientes() {
@@ -504,7 +603,7 @@ async function semejantesClientes(data) {
         .select('*, roles(rol), empresas(empresa)')
         .in('id_cliente', ids)
         .or(`nombre.ilike.%${semejantes}%,apellidos.ilike.%${semejantes}%,correo.ilike.%${semejantes}%,no_cliente.ilike.%${semejantes}%`)
-        .range(offset, offset + limit - 1);
+        .range(+offset, +offset + +limit - 1);
     if (error) throw error;
     return (rows || []).map(r => ({
         ...r, rol: r.roles?.rol, empresa: r.empresas?.empresa,
@@ -531,10 +630,16 @@ async function onlyDataClientebasica(id_cliente) {
     if (error) throw error;
     if (!data) return null;
     const { data: cts } = await supabase.from('cliente_taller_sucursal')
-        .select('taller(acronimo), sucursales(sucursal)').eq('id_cliente', id_cliente).limit(1);
+        .select('id_taller, sucursales(sucursal)').eq('id_cliente', id_cliente).limit(1);
+    const id_taller = cts?.[0]?.id_taller;
+    let acronimo = null;
+    if (id_taller) {
+        const { data: t } = await supabase.from('taller').select('acronimo').eq('id_taller', id_taller).single();
+        acronimo = t?.acronimo ?? null;
+    }
     return {
         ...data, rol: data.roles?.rol, empresa: data.empresas?.empresa,
-        acronimo: cts?.[0]?.taller?.acronimo, sucursal: cts?.[0]?.sucursales?.sucursal,
+        acronimo, sucursal: cts?.[0]?.sucursales?.sucursal,
         roles: undefined, empresas: undefined
     };
 }
@@ -551,18 +656,69 @@ async function clientesTallerSucursal(id_taller, id_sucursal) {
 }
 
 async function patchDataCliente(id_cliente, data) {
-    const { error } = await supabase.from('clientes').update(data).eq('id_cliente', id_cliente);
+    const { error } = await supabase.from('clientes').update(normalizeKeys(data)).eq('id_cliente', id_cliente);
     if (error) throw error;
     return {};
 }
 
 async function historialTallerescliente(data) {
     const { id_cliente, active, direction, limit, offset } = data;
-    const { data: rows, error } = await supabase.from('cliente_taller_sucursal')
-        .select('*, taller(nombretaller, acronimo), sucursales(sucursal)')
-        .eq('id_cliente', id_cliente).range(offset, offset + limit - 1);
-    if (error) throw error;
-    return rows;
+    const orderColMap = { acronimo: 'id_taller', fecha_inicio: 'fecha_inicio', fecha_fin: 'fecha_fin' };
+    const col = orderColMap[active] || 'fecha_inicio';
+    const asc = (direction || 'asc') === 'asc';
+
+    // Intentar historial real (fecha_inicio, fecha_fin) desde historialclientetaller
+    let rows = [];
+    let count = 0;
+    const { data: histRows, error: histError } = await supabase
+        .from('historialclientetaller')
+        .select('id_hist_cli_taller, id_cliente, id_taller, fecha_inicio, fecha_fin, taller(nombretaller, acronimo)')
+        .eq('id_cliente', id_cliente)
+        .order(col, { ascending: asc })
+        .range(+offset, +offset + +limit - 1);
+    const { count: histCount } = await supabase
+        .from('historialclientetaller')
+        .select('*', { count: 'exact', head: true })
+        .eq('id_cliente', id_cliente);
+
+    if (!histError && histRows) {
+        count = histCount ?? 0;
+        rows = (histRows || []).map((r) => ({
+            id_hist_cli_taller: r.id_hist_cli_taller,
+            id_cliente: r.id_cliente,
+            id_taller: r.id_taller,
+            fecha_inicio: r.fecha_inicio ?? null,
+            fecha_fin: r.fecha_fin ?? null,
+            acronimo: r.taller?.acronimo ?? '',
+            nombretaller: r.taller?.nombretaller ?? '',
+        }));
+    } else {
+        // Fallback: cliente_taller_sucursal (sin fechas), aplanar para que el front vea acronimo
+        const colCts = { acronimo: 'id_taller', fecha_inicio: 'id_taller', fecha_fin: 'id_taller' }[active] || 'id_taller';
+        const { data: ctsRows, error: ctsError } = await supabase
+            .from('cliente_taller_sucursal')
+            .select('id_cliente_taller_sucursal, id_cliente, id_taller, id_sucursal, taller(nombretaller, acronimo), sucursales(sucursal)')
+            .eq('id_cliente', id_cliente)
+            .order(colCts, { ascending: asc })
+            .range(+offset, +offset + +limit - 1);
+        const { count: ctsCount } = await supabase
+            .from('cliente_taller_sucursal')
+            .select('*', { count: 'exact', head: true })
+            .eq('id_cliente', id_cliente);
+        if (ctsError) throw ctsError;
+        count = ctsCount ?? 0;
+        rows = (ctsRows || []).map((r) => ({
+            id_cliente_taller_sucursal: r.id_cliente_taller_sucursal,
+            id_cliente: r.id_cliente,
+            id_taller: r.id_taller,
+            id_sucursal: r.id_sucursal,
+            acronimo: r.taller?.acronimo ?? '',
+            sucursal: r.sucursales?.sucursal ?? '',
+            fecha_inicio: null,
+            fecha_fin: null,
+        }));
+    }
+    return [rows, [{ total: count }]];
 }
 
 async function tallerActualCliente(id_cliente) {
@@ -597,7 +753,7 @@ async function likeVehiculosSesionCliente(data) {
         .select('*, marcas(marca), modelos(modelo)').eq('id_cliente', id_cliente);
     if (venta) q = q.eq('enventa', true);
     if (semejantes) q = q.or(`placas.ilike.%${semejantes}%,anio.ilike.%${semejantes}%`);
-    q = q.range(offset, offset + limit - 1);
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     if (error) throw error;
     return (rows || []).map(r => ({
@@ -700,9 +856,14 @@ async function cotizacinesCliente(data) {
     const { data: rows, error } = await supabase.from('cotizaciones')
         .select('*, vehiculos(placas), reportescotizacion(total)')
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal).eq('id_cliente', id_cliente)
-        .range(offset, offset + limit - 1);
+        .range(+offset, +offset + +limit - 1);
     if (error) throw error;
-    return rows;
+    return (rows || []).map(r => ({
+        ...r,
+        placas: r.vehiculos?.placas,
+        total: r.reportescotizacion?.total,
+        vehiculos: undefined, reportescotizacion: undefined
+    }));
 }
 
 async function cotizacinesClienteContador(data) {
@@ -728,14 +889,24 @@ async function sp_cotizacionesClienteBasic(data) {
     let q = supabase.from('cotizaciones')
         .select('*, vehiculos(placas, anio, marcas(marca), modelos(modelo), categorias(categoria)), reportescotizacion(total)')
         .eq('id_cliente', id_cliente).eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error, count } = await q;
     if (error) throw error;
     const { count: total } = await supabase.from('cotizaciones')
         .select('*', { count: 'exact', head: true })
         .eq('id_cliente', id_cliente).eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
-    return [rows, [{ total: total || 0 }]];
+    const flat = (rows || []).map(r => ({
+        ...r,
+        placas: r.vehiculos?.placas,
+        anio: r.vehiculos?.anio,
+        marca: r.vehiculos?.marcas?.marca,
+        modelo: r.vehiculos?.modelos?.modelo,
+        categoria: r.vehiculos?.categorias?.categoria,
+        total: r.reportescotizacion?.total,
+        vehiculos: undefined, reportescotizacion: undefined
+    }));
+    return [flat, [{ total: total || 0 }]];
 }
 
 async function sp_cotizacionesPaginadas(data) {
@@ -744,15 +915,38 @@ async function sp_cotizacionesPaginadas(data) {
         .select('*, clientes(no_cliente, nombre, apellidos), vehiculos(placas, anio, marcas(marca), modelos(modelo)), formapago(formapago), servicios(servicio), sucursales(sucursal), reportescotizacion(total)')
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
         .gte('createcotizacion_at', start).lte('createcotizacion_at', end);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     const { count } = await supabase.from('cotizaciones')
         .select('*', { count: 'exact', head: true })
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
         .gte('createcotizacion_at', start).lte('createcotizacion_at', end);
     if (error) throw error;
-    return [rows, [{ total: count || 0 }]];
+    const flat = (rows || []).map(r => {
+        const nombre = r.clientes?.nombre || '';
+        const apellidos = r.clientes?.apellidos || '';
+        const cliente_completo = [nombre, apellidos].filter(Boolean).join(' ').trim() || r.clientes?.no_cliente || '';
+        return {
+            ...r,
+            no_cliente: r.clientes?.no_cliente,
+            nombre: r.clientes?.nombre,
+            apellidos: r.clientes?.apellidos,
+            cliente_completo,
+            createCotizacion_at: r.createcotizacion_at ?? r.createCotizacion_at,
+            placas: r.vehiculos?.placas,
+            anio: r.vehiculos?.anio,
+            marca: r.vehiculos?.marcas?.marca,
+            modelo: r.vehiculos?.modelos?.modelo,
+            formapago: r.formapago?.formapago,
+            servicio: r.servicios?.servicio,
+            sucursal: r.sucursales?.sucursal,
+            total: r.reportescotizacion?.total,
+            clientes: undefined, vehiculos: undefined,
+            servicios: undefined, sucursales: undefined, reportescotizacion: undefined
+        };
+    });
+    return [flat, [{ total: count || 0 }]];
 }
 
 async function sp_cotizacionesBSC(id_cliente, limite, omitir) {
@@ -762,9 +956,20 @@ async function sp_cotizacionesBSC(id_cliente, limite, omitir) {
         .select('*, vehiculos(placas, anio, marcas(marca), modelos(modelo)), formapago(formapago), sucursales(sucursal), reportescotizacion(total)')
         .eq('id_cliente', id_cliente)
         .order('id_cotizacion', { ascending: false })
-        .range(omitir, omitir + limite - 1);
+        .range(+omitir, +omitir + +limite - 1);
     if (error) throw error;
-    return [[{ total_registros: count || 0 }], data];
+    const flat = (data || []).map(r => ({
+        ...r,
+        placas: r.vehiculos?.placas,
+        anio: r.vehiculos?.anio,
+        marca: r.vehiculos?.marcas?.marca,
+        modelo: r.vehiculos?.modelos?.modelo,
+        formapago: r.formapago?.formapago,
+        sucursal: r.sucursales?.sucursal,
+        total: r.reportescotizacion?.total,
+        vehiculos: undefined, sucursales: undefined, reportescotizacion: undefined
+    }));
+    return [[{ total_registros: count || 0 }], flat];
 }
 
 async function sp_cotizacionesBSCFavoritos(data) {
@@ -776,11 +981,22 @@ async function sp_cotizacionesBSCFavoritos(data) {
     let q = supabase.from('cotizaciones')
         .select('*, vehiculos(placas, anio, marcas(marca), modelos(modelo)), formapago(formapago), sucursales(sucursal), reportescotizacion(total)')
         .eq('id_cliente', id_cliente).in('id_vehiculo', idArr);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     if (error) throw error;
-    return [[{ total_registros: count || 0 }], rows];
+    const flat = (rows || []).map(r => ({
+        ...r,
+        placas: r.vehiculos?.placas,
+        anio: r.vehiculos?.anio,
+        marca: r.vehiculos?.marcas?.marca,
+        modelo: r.vehiculos?.modelos?.modelo,
+        formapago: r.formapago?.formapago,
+        sucursal: r.sucursales?.sucursal,
+        total: r.reportescotizacion?.total,
+        vehiculos: undefined, sucursales: undefined, reportescotizacion: undefined
+    }));
+    return [[{ total_registros: count || 0 }], flat];
 }
 
 async function cotizacionesBasicas(data) {
@@ -798,7 +1014,7 @@ async function cotizacionesBasicasContador(data) {
 }
 
 async function patchDataCotizacion(id_cotizacion, data) {
-    const { error } = await supabase.from('cotizaciones').update(data).eq('id_cotizacion', id_cotizacion);
+    const { error } = await supabase.from('cotizaciones').update(normalizeKeys(data)).eq('id_cotizacion', id_cotizacion);
     if (error) throw error;
     return {};
 }
@@ -857,7 +1073,7 @@ async function elementosrecepcionInternos(id_recepcion, id_paquete) {
 async function elementosRecepciones(id_recepcion) { return elementosrecepcion(id_recepcion); }
 
 async function patchRecepcion(id_recepcion, data) {
-    const { error } = await supabase.from('recepciones').update(data).eq('id_recepcion', id_recepcion);
+    const { error } = await supabase.from('recepciones').update(normalizeKeys(data)).eq('id_recepcion', id_recepcion);
     if (error) throw error;
     return {};
 }
@@ -868,15 +1084,29 @@ async function recepcionesTaller2(data) {
         .select('*, clientes(nombre, apellidos, no_cliente), vehiculos(placas, anio, marcas(marca), modelos(modelo)), reportes(total)')
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
         .gte('createrecepciones_at', start).lte('createrecepciones_at', end);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     const { count } = await supabase.from('recepciones')
         .select('*', { count: 'exact', head: true })
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
         .gte('createrecepciones_at', start).lte('createrecepciones_at', end);
     if (error) throw error;
-    return [rows, [{ total: count || 0 }]];
+    const flat = (rows || []).map(r => ({
+        ...r,
+        nombre: r.clientes?.nombre,
+        apellidos: r.clientes?.apellidos,
+        no_cliente: r.clientes?.no_cliente,
+        placas: r.vehiculos?.placas,
+        anio: r.vehiculos?.anio,
+        marca: r.vehiculos?.marcas?.marca,
+        modelo: r.vehiculos?.modelos?.modelo,
+        total: r.reportes?.total ?? r.total ?? null,
+        createRecepciones_at: r.createrecepciones_at ?? r.createRecepciones_at ?? null,
+        clientes: undefined, vehiculos: undefined, reportes: undefined
+    }));
+    const suma_montos = flat.reduce((s, r) => s + (Number(r.total) || 0), 0);
+    return [flat, [{ total: count || 0, suma_montos }]];
 }
 
 async function recepcionesTaller2contador(data) {
@@ -897,7 +1127,14 @@ async function administracion(data) {
     if (estado) q = q.eq('estado', estado);
     const { data: rows, error } = await q;
     if (error) throw error;
-    return rows;
+    return (rows || []).map(r => ({
+        ...r,
+        nombre: r.clientes?.nombre,
+        apellidos: r.clientes?.apellidos,
+        placas: r.vehiculos?.placas,
+        total: r.reportes?.total,
+        clientes: undefined, vehiculos: undefined, reportes: undefined
+    }));
 }
 
 async function sp_ordenlike(id_taller, id_sucursal, search) {
@@ -906,7 +1143,14 @@ async function sp_ordenlike(id_taller, id_sucursal, search) {
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
         .or(`no_os.ilike.%${search}%`);
     if (error) throw error;
-    return data;
+    return (data || []).map(r => ({
+        ...r,
+        nombre: r.clientes?.nombre,
+        apellidos: r.clientes?.apellidos,
+        no_cliente: r.clientes?.no_cliente,
+        placas: r.vehiculos?.placas,
+        clientes: undefined, vehiculos: undefined
+    }));
 }
 
 async function sp_ordenlikeLimitado(data) {
@@ -938,7 +1182,14 @@ async function sp_ordenesAbiertas(id_taller, id_sucursal) {
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
         .neq('estado', 'entregado');
     if (error) throw error;
-    return data;
+    return (data || []).map(r => ({
+        ...r,
+        nombre: r.clientes?.nombre,
+        apellidos: r.clientes?.apellidos,
+        no_cliente: r.clientes?.no_cliente,
+        placas: r.vehiculos?.placas,
+        clientes: undefined, vehiculos: undefined
+    }));
 }
 
 async function RecepcionConsulta(id_recepcion) {
@@ -989,7 +1240,12 @@ async function recepcionesBasicasOtroTaller(id_cliente, id_taller) {
         .select('*, vehiculos(placas), sucursales(sucursal)')
         .eq('id_cliente', id_cliente).neq('id_taller', id_taller);
     if (error) throw error;
-    return data;
+    return (data || []).map(r => ({
+        ...r,
+        placas: r.vehiculos?.placas,
+        sucursal: r.sucursales?.sucursal,
+        vehiculos: undefined, sucursales: undefined
+    }));
 }
 
 async function sp_recepcionesMismoTaller(data) {
@@ -997,14 +1253,23 @@ async function sp_recepcionesMismoTaller(data) {
     let q = supabase.from('recepciones')
         .select('*, vehiculos(placas, anio, marcas(marca), modelos(modelo)), reportes(total)')
         .eq('id_cliente', id_cliente).eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     const { count } = await supabase.from('recepciones')
         .select('*', { count: 'exact', head: true })
         .eq('id_cliente', id_cliente).eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
     if (error) throw error;
-    return [rows, [{ total: count || 0 }]];
+    const flat = (rows || []).map(r => ({
+        ...r,
+        placas: r.vehiculos?.placas,
+        anio: r.vehiculos?.anio,
+        marca: r.vehiculos?.marcas?.marca,
+        modelo: r.vehiculos?.modelos?.modelo,
+        total: r.reportes?.total,
+        vehiculos: undefined, reportes: undefined
+    }));
+    return [flat, [{ total: count || 0 }]];
 }
 
 async function recepcionesVehiculos(data) {
@@ -1012,14 +1277,19 @@ async function recepcionesVehiculos(data) {
     let q = supabase.from('recepciones')
         .select('*, reportes(total)')
         .eq('id_vehiculo', id_vehiculo).eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     const { count } = await supabase.from('recepciones')
         .select('*', { count: 'exact', head: true })
         .eq('id_vehiculo', id_vehiculo).eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
     if (error) throw error;
-    return [rows, [{ total: count || 0 }]];
+    const flat = (rows || []).map(r => ({
+        ...r,
+        total: r.reportes?.total,
+        reportes: undefined
+    }));
+    return [flat, [{ total: count || 0 }]];
 }
 
 async function sp_recepcionesBS(id_cliente, limite, omitir) {
@@ -1029,9 +1299,19 @@ async function sp_recepcionesBS(id_cliente, limite, omitir) {
         .select('*, vehiculos(placas, anio, marcas(marca), modelos(modelo)), sucursales(sucursal), reportes(total)')
         .eq('id_cliente', id_cliente)
         .order('id_recepcion', { ascending: false })
-        .range(omitir, omitir + limite - 1);
+        .range(+omitir, +omitir + +limite - 1);
     if (error) throw error;
-    return [[{ total_registros: count || 0 }], data];
+    const flat = (data || []).map(r => ({
+        ...r,
+        placas: r.vehiculos?.placas,
+        anio: r.vehiculos?.anio,
+        marca: r.vehiculos?.marcas?.marca,
+        modelo: r.vehiculos?.modelos?.modelo,
+        sucursal: r.sucursales?.sucursal,
+        total: r.reportes?.total,
+        vehiculos: undefined, sucursales: undefined, reportes: undefined
+    }));
+    return [[{ total_registros: count || 0 }], flat];
 }
 
 async function sp_recepcionesBSFavoritos(data) {
@@ -1043,11 +1323,21 @@ async function sp_recepcionesBSFavoritos(data) {
     let q = supabase.from('recepciones')
         .select('*, vehiculos(placas, anio, marcas(marca), modelos(modelo)), sucursales(sucursal), reportes(total)')
         .eq('id_cliente', id_cliente).in('id_vehiculo', idArr);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     if (error) throw error;
-    return [[{ total_registros: count || 0 }], rows];
+    const flat = (rows || []).map(r => ({
+        ...r,
+        placas: r.vehiculos?.placas,
+        anio: r.vehiculos?.anio,
+        marca: r.vehiculos?.marcas?.marca,
+        modelo: r.vehiculos?.modelos?.modelo,
+        sucursal: r.sucursales?.sucursal,
+        total: r.reportes?.total,
+        vehiculos: undefined, sucursales: undefined, reportes: undefined
+    }));
+    return [[{ total_registros: count || 0 }], flat];
 }
 
 async function basicasConReporte(id_taller, id_sucursal, start, end) {
@@ -1060,10 +1350,15 @@ async function pagOdenesCliente(data) {
         .select('*, vehiculos(placas), reportes(total)')
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal).eq('id_cliente', id_cliente);
     if (estadoEntregado) q = q.eq('estado', 'entregado');
-    q = q.range(offset, offset + limit - 1);
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     if (error) throw error;
-    return rows;
+    return (rows || []).map(r => ({
+        ...r,
+        placas: r.vehiculos?.placas,
+        total: r.reportes?.total,
+        vehiculos: undefined, reportes: undefined
+    }));
 }
 
 async function pagOdenesClienteContador(data) {
@@ -1082,7 +1377,7 @@ async function consultaPaquetes(data) {
     const { id_taller, id_sucursal, limit, offset } = data;
     const { data: rows, error } = await supabase.from('paquetes')
         .select('*, elementospaquetes(id_elmenpaquete, morefacciones(nombre))')
-        .eq('id_taller', id_taller).range(offset, offset + limit - 1);
+        .eq('id_taller', id_taller).range(+offset, +offset + +limit - 1);
     if (error) throw error;
     return rows;
 }
@@ -1132,8 +1427,8 @@ async function busquedaLikePaquetes(data) {
         .select('*, marcas(marca), modelos(modelo)')
         .eq('id_taller', id_taller);
     if (semejantes) q = q.ilike('paquete', `%${semejantes}%`);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     const { count } = await supabase.from('paquetes')
         .select('*', { count: 'exact', head: true }).eq('id_taller', id_taller);
@@ -1199,7 +1494,7 @@ async function sp_gastosOrdenesTallerSucursal(id_taller, id_sucursal, start, end
 
 async function updateGastoOrden(id_gastoOrden, data) {
     const { error } = await supabase.from('gastosorden')
-        .update(data).eq('id_gastoorden', id_gastoOrden);
+        .update(normalizeKeys(data)).eq('id_gastoorden', id_gastoOrden);
     if (error) throw error;
     return {};
 }
@@ -1229,7 +1524,7 @@ async function sp_pagosTallerSucursal(id_taller, id_sucursal, start, end) {
 
 async function updatepagoOrden(id_pagoOrden, data) {
     const { error } = await supabase.from('pagosorden')
-        .update(data).eq('id_pagoorden', id_pagoOrden);
+        .update(normalizeKeys(data)).eq('id_pagoorden', id_pagoOrden);
     if (error) throw error;
     return {};
 }
@@ -1256,8 +1551,8 @@ async function sucursalesTaller(data) {
     const { semejantes, id_taller, active, direction, limit, offset } = data;
     let q = supabase.from('sucursales').select('*').eq('id_taller', id_taller);
     if (semejantes) q = q.ilike('sucursal', `%${semejantes}%`);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     const { count } = await supabase.from('sucursales')
         .select('*', { count: 'exact', head: true }).eq('id_taller', id_taller);
@@ -1309,8 +1604,8 @@ async function sp_usuariosrol(data) {
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
     if (id_rol && id_rol > 0) q = q.eq('id_rol', id_rol);
     if (semejantes) q = q.ilike('usuario', `%${semejantes}%`);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     const { count } = await supabase.from('usuarios')
         .select('*', { count: 'exact', head: true })
@@ -1480,7 +1775,7 @@ async function morefaccionesTaller(id_taller) {
 async function moRefacciones(data) {
     const { id_taller, id_sucursal, limit, offset } = data;
     const { data: rows, error } = await supabase.from('morefacciones')
-        .select('*').eq('id_taller', id_taller).range(offset, offset + limit - 1);
+        .select('*').eq('id_taller', id_taller).range(+offset, +offset + +limit - 1);
     if (error) throw error;
     return rows;
 }
@@ -1489,8 +1784,8 @@ async function spPaginacionmorefaccionesUnificado(data) {
     const { id_taller, semejantes, active, direction, limit, offset } = data;
     let q = supabase.from('morefacciones').select('*').eq('id_taller', id_taller);
     if (semejantes) q = q.or(`nombre.ilike.%${semejantes}%,descripcion.ilike.%${semejantes}%`);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     const { count } = await supabase.from('morefacciones')
         .select('*', { count: 'exact', head: true }).eq('id_taller', id_taller);
@@ -1522,52 +1817,94 @@ async function paquetesTaller(id_taller) {
 // =============================================
 
 async function pagosTaller(data) {
-    const { id_taller, id_sucursal, active, direction, limit, offset, start, end } = data;
+    const { id_taller, id_sucursal, active, direction, limit, offset, start, end, semejantes } = data;
     let q = supabase.from('pagosorden')
-        .select('*, recepciones(no_os), formapago(formapago), usuarios(usuario), roles(rol)')
+        .select('*, recepciones(no_os), formapago(formapago), usuarios(usuario), roles(rol), sucursales(sucursal)')
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
         .gte('createpagoorden_at', start).lte('createpagoorden_at', end);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (semejantes) q = q.or(`concepto.ilike.%${semejantes}%,referencia.ilike.%${semejantes}%`);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
-    const { count } = await supabase.from('pagosorden')
+    let countQ = supabase.from('pagosorden')
         .select('*', { count: 'exact', head: true })
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
         .gte('createpagoorden_at', start).lte('createpagoorden_at', end);
+    if (semejantes) countQ = countQ.or(`concepto.ilike.%${semejantes}%,referencia.ilike.%${semejantes}%`);
+    const { count } = await countQ;
     if (error) throw error;
-    return [rows, [{ total: count || 0 }]];
+    const flat = (rows || []).map(r => ({
+        ...r,
+        formapago: r.formapago?.formapago ?? r.formapago,
+        sucursal: r.sucursales?.sucursal ?? '',
+        sucursales: undefined,
+        usuarios: undefined,
+        roles: undefined,
+    }));
+    const suma_montos = flat.reduce((s, r) => s + (Number(r.monto) || 0), 0);
+    return [flat, [{ total: count || 0, suma_montos }]];
 }
 
 async function gastosOrdenTaller(data) {
-    const { id_taller, id_sucursal, active, direction, limit, offset, start, end } = data;
+    const { id_taller, id_sucursal, active, direction, limit, offset, start, end, semejantes } = data;
     let q = supabase.from('gastosorden')
-        .select('*, recepciones(no_os), formapago(formapago), usuarios(usuario), roles(rol)')
+        .select('*, recepciones(no_os), formapago(formapago), usuarios(usuario), roles(rol), sucursales(sucursal)')
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
         .gte('creategastoorden_at', start).lte('creategastoorden_at', end);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (semejantes) q = q.or(`concepto.ilike.%${semejantes}%,referencia.ilike.%${semejantes}%`);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
-    const { count } = await supabase.from('gastosorden')
+    let countQ = supabase.from('gastosorden')
         .select('*', { count: 'exact', head: true })
-        .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
+        .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
+        .gte('creategastoorden_at', start).lte('creategastoorden_at', end);
+    if (semejantes) countQ = countQ.or(`concepto.ilike.%${semejantes}%,referencia.ilike.%${semejantes}%`);
+    const { count } = await countQ;
     if (error) throw error;
-    return [rows, [{ total: count || 0 }]];
+    const flat = (rows || []).map(r => ({
+        ...r,
+        no_os: r.recepciones?.no_os,
+        formapago: r.formapago?.formapago ?? r.formapago,
+        sucursal: r.sucursales?.sucursal ?? '',
+        factura_remision: r.factura_remision ?? r.facturaremision ?? '',
+        recepciones: undefined,
+        sucursales: undefined,
+        usuarios: undefined,
+        roles: undefined,
+    }));
+    const suma_montos = flat.reduce((s, r) => s + (Number(r.monto) || 0), 0);
+    return [flat, [{ total: count || 0, suma_montos }]];
 }
 
 async function gastosOperacionTaller(data) {
-    const { id_taller, id_sucursal, active, direction, limit, offset, start, end } = data;
+    const { id_taller, id_sucursal, active, direction, limit, offset, start, end, semejantes } = data;
     let q = supabase.from('gastosoperacion')
-        .select('*, formapago(formapago), usuarios(usuario), roles(rol)')
+        .select('*, formapago(formapago), usuarios(usuario), roles(rol), sucursales(sucursal)')
         .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
         .gte('creategastooperacion_at', start).lte('creategastooperacion_at', end);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (semejantes) q = q.or(`concepto.ilike.%${semejantes}%,referencia.ilike.%${semejantes}%`);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
-    const { count } = await supabase.from('gastosoperacion')
+    let countQ = supabase.from('gastosoperacion')
         .select('*', { count: 'exact', head: true })
-        .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal);
+        .eq('id_taller', id_taller).eq('id_sucursal', id_sucursal)
+        .gte('creategastooperacion_at', start).lte('creategastooperacion_at', end);
+    if (semejantes) countQ = countQ.or(`concepto.ilike.%${semejantes}%,referencia.ilike.%${semejantes}%`);
+    const { count } = await countQ;
     if (error) throw error;
-    return [rows, [{ total: count || 0 }]];
+    const flat = (rows || []).map(r => ({
+        ...r,
+        formapago: r.formapago?.formapago ?? r.formapago,
+        sucursal: r.sucursales?.sucursal ?? '',
+        factura_remision: r.factura_remision ?? r.facturaremision ?? '',
+        sucursales: undefined,
+        usuarios: undefined,
+        roles: undefined,
+    }));
+    const suma_montos = flat.reduce((s, r) => s + (Number(r.monto) || 0), 0);
+    return [flat, [{ total: count || 0, suma_montos }]];
 }
 
 async function recepcionesTallerSucursal(id_taller, id_sucursal, start, end) {
@@ -1687,26 +2024,36 @@ async function historial_cotizaciones(data) {
     let q = supabase.from('cotizaciones')
         .select('*, reportescotizacion(total)')
         .eq('id_cliente', id_cliente).eq('id_vehiculo', id_vehiculo);
-    if (active) q = q.order(active, { ascending: direction !== 'desc' && direction !== 'DESC' });
-    q = q.range(offset, offset + limit - 1);
+    if (active) q = q.order(active.toLowerCase(), { ascending: direction !== 'desc' && direction !== 'DESC' });
+    q = q.range(+offset, +offset + +limit - 1);
     const { data: rows, error } = await q;
     const { count } = await supabase.from('cotizaciones')
         .select('*', { count: 'exact', head: true })
         .eq('id_cliente', id_cliente).eq('id_vehiculo', id_vehiculo);
     if (error) throw error;
-    return [rows, [{ total: count || 0 }]];
+    const flat = (rows || []).map(r => ({
+        ...r,
+        total: r.reportescotizacion?.total,
+        reportescotizacion: undefined
+    }));
+    return [flat, [{ total: count || 0 }]];
 }
 
 async function historial_recepciones(id_cliente, id_vehiculo, limit, offset) {
     const { data: rows, error } = await supabase.from('recepciones')
         .select('*, reportes(total)')
         .eq('id_cliente', id_cliente).eq('id_vehiculo', id_vehiculo)
-        .range(offset, offset + limit - 1);
+        .range(+offset, +offset + +limit - 1);
     const { count } = await supabase.from('recepciones')
         .select('*', { count: 'exact', head: true })
         .eq('id_cliente', id_cliente).eq('id_vehiculo', id_vehiculo);
     if (error) throw error;
-    return [rows, [{ total: count || 0 }]];
+    const flat = (rows || []).map(r => ({
+        ...r,
+        total: r.reportes?.total,
+        reportes: undefined
+    }));
+    return [flat, [{ total: count || 0 }]];
 }
 
 // =============================================

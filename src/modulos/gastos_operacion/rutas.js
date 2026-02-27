@@ -22,8 +22,8 @@ async function todos (req, res, next){
 }
 async function gastosOperacionTaller (req, res, next){
     try {
-        const {id_taller, id_sucursal, active, direction, limit, offset, start,end }= req.query
-        const answer =  await controlador.gastosOperacionTaller({id_taller, id_sucursal, active, direction, limit, offset, start, end })
+        const {id_taller, id_sucursal, active, direction, limit, offset, start, end, semejantes }= req.query
+        const answer =  await controlador.gastosOperacionTaller({id_taller, id_sucursal, active, direction, limit, offset, start, end, semejantes })
         const total = answer[1][0]?.total || 0; // Primer result set
         const suma_montos = answer[1]?.[0]?.suma_montos || 0;
         const datos = answer[0] || []; // Segundo result set

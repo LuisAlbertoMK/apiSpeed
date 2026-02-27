@@ -49,7 +49,11 @@ async function eliminar(req, res, next){
 }
 async function modelosMarca(req, res, next){
     try {
-        const items = await controlador.modelosMarca(req.params.id_marca)
+        const raw = req.params.id_marca
+        if (raw == null || raw === 'null' || raw === '' || isNaN(Number(raw))) {
+            return respuesta.success(req, res, [], 200)
+        }
+        const items = await controlador.modelosMarca(raw)
         respuesta.success(req, res, items, 200)
     } catch (error) {
         next(error)

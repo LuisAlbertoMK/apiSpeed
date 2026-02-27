@@ -30,7 +30,7 @@ router.get('/:id_cliente', uno)
             const {id_cliente, active, direction,limit, offset} = req.query
             const answer = await controlador.historialTallerescliente({id_cliente, active, direction,limit, offset})
             const datos = answer[0] || []; // Primer result set
-            const total = answer[1][0]?.total || 0; // Segundo result set
+            const total = answer[1]?.[0]?.total ?? 0; // Segundo result set
             respuesta.success(req, res, { total, datos }, 200);
         } catch (error) { next(error) }
     }
@@ -157,7 +157,11 @@ async function uno(req, res, next) {
             const items = await controlador.agregar(req.body)
             mensaje  =  (items.insertId) ? items.insertId : 'Item actualizado'
             respuesta.success(req, res, mensaje, 201)
-        } catch (error) { next(error) }
+        } catch (error) {
+            console.error('[POST /api/clientes] body:', JSON.stringify(req.body))
+            console.error('[POST /api/clientes] error:', error?.message || error)
+            next(error)
+        }
     }
 async function eliminar(req, res, next){
     try {

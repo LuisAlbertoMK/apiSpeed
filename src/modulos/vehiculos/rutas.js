@@ -238,7 +238,10 @@ async function verificaPlacas (req, res, next){
     try {
         const {placas}= req.query
         const items =  await controlador.verificaPlacas(placas)
-        respuesta.success(req, res, items[0], 200)
+        respuesta.success(req, res, {
+            total: items ? items.length : 0,
+            id_vehiculo: items && items[0] ? items[0].id_vehiculo : 0
+        }, 200)
     } catch (error) { next(error)}
 }
 async function vehiculosTallerSucursal (req, res, next){
