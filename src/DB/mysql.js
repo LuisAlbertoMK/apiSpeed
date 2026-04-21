@@ -76,14 +76,14 @@ function regresaquery(tabla, campos, campo, ID){
 }
 function uno(tabla, id){
     return new Promise((resolve, reject) =>{
-        conexion.query(`SELECT * FROM ${tabla} WHERE id = ${id}`, (error, result) =>{ 
+        conexion.query(`SELECT * FROM ?? WHERE id = ?`, [tabla, id], (error, result) =>{
             return error ? reject(error) : resolve(result)
         })
     })
 }
 function uno2(tabla, [clave, valor]){
     return new Promise((resolve, reject) =>{
-        conexion.query(`SELECT * FROM ${tabla} WHERE ${clave} = '${valor}'`, (error, result) =>{ 
+        conexion.query(`SELECT * FROM ?? WHERE ? = ?`, [tabla, clave, valor], (error, result) =>{
             return error ? reject(error) : resolve(result[0])
         })
     })
@@ -112,18 +112,16 @@ function agregar(tabla, data){
 function query(tabla, consulta) {
     const key = Object.keys(consulta)[0];
     const value = consulta[key];
-    const query = `SELECT * FROM ${tabla} WHERE ${key} = '${value}'`  
     return new Promise((resolve, reject) => {
-      conexion.query(`${query}`, (error, result) => {
+      conexion.query(`SELECT * FROM ?? WHERE ? = ?`, [tabla, key, value], (error, result) => {
         return error ? reject(error) : resolve(result[0]);
       });
     });
   }
 function query2(tabla, consulta, id_ocupar) {
     const value = consulta['id_ocupar'];
-    const query = `SELECT * FROM ${tabla} WHERE ${id_ocupar} = ${value}`  
     return new Promise((resolve, reject) => {
-      conexion.query(`${query}`, (error, result) => {
+      conexion.query(`SELECT * FROM ?? WHERE ?? = ?`, [tabla, id_ocupar, value], (error, result) => {
         return error ? reject(error) : resolve(result[0]);
       });
     });
@@ -1176,22 +1174,15 @@ function updatepagoOrden(id_pagoOrden,data){
 }
 function listaTecnicos(id_sucursal){
     return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_listaTecnicos(${id_sucursal})`, (error, result) =>{ 
+        conexion.query(`CALL sp_listaTecnicos(?)`, [id_sucursal], (error, result) =>{
             return error ? reject(error) : resolve(result)
         })
     })
 }
 function pagoTotal(id_recepcion){
     return new Promise((resolve, reject) =>{
-        conexion.query(`SELECT total FROM pagototalorden WHERE id_recepcion = ${id_recepcion} `, (error, result) =>{ 
+        conexion.query(`SELECT total FROM pagototalorden WHERE id_recepcion = ?`, [id_recepcion], (error, result) =>{
             return error ? reject(error) : resolve(result[0])
-        })
-    })
-}
-function listaTecnicos(id_sucursal){
-    return new Promise((resolve, reject) =>{
-        conexion.query(`CALL sp_listaTecnicos(${id_sucursal})`, (error, result) =>{ 
-            return error ? reject(error) : resolve(result)
         })
     })
 }

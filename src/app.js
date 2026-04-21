@@ -1,7 +1,8 @@
 const express = require('express')
 const morgan = require('morgan')
 const config = require('./config')
-
+const helmet = require('helmet')
+const rateLimit = require('express-rate-limit')
 const cors = require('cors')
 
 
@@ -92,6 +93,23 @@ const corsOptions = {
 };
 // Aplicar CORS
 app.use(cors(corsOptions));
+
+// Security headers
+app.use(helmet())
+
+// Rate limiting
+const limiter = rateLimit({
+    windowMs: config.rateLimit.windowMs,
+    max: config.rateLimit.max,
+    message: { error: true, message: 'Demasiadas solicitudes, intente más tarde' }
+})
+app.use('/api/', limiter)
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() })
+})
+
 // Middleware para opciones de CORS adicionales
 
 // Agregar esto temporalmente para debug
